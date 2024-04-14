@@ -1,0 +1,20 @@
+0: at line 1, in Verify:
+"": command
+^
+
+1: at line 1, in command name:
+"": command
+^
+
+2: at line 1, in command:
+"": command
+^
+
+3: at line 1, in block:
+"": command
+^
+
+4: at line 1, in ManyTill:
+"": command
+^
+

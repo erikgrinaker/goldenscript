@@ -1,0 +1,16 @@
+0: at line 1, in CrLf:
+com;mand
+   ^
+
+1: at line 1, in command:
+com;mand
+^
+
+2: at line 1, in block:
+com;mand
+^
+
+3: at line 1, in ManyTill:
+com;mand
+^
+

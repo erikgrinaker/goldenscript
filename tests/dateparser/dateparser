@@ -1,0 +1,29 @@
+parse 2024-04-30
+---
+2024-04-30T00:00:00+00:00
+
+# Test various other date formats.
+parse 2024-Apr-30
+parse 2024.04.30
+parse 04/30/2024
+---
+2024-04-30T00:00:00+00:00
+2024-04-30T00:00:00+00:00
+2024-04-30T00:00:00+00:00
+
+# Test some error cases.
+parse 30.04.2024
+parse 30/04/2024
+parse 30/04/24
+---
+Error: 30.04.2024 did not match any formats.
+Error: 30/04/2024 did not match any formats.
+Error: 30/04/24 did not match any formats.
+
+# Strings containing special characters like spaces, :, and non-ASCII characters
+# must be quoted using " or '.
+parse "2024-04-30 11:55:32"
+parse '2024年04月30日11时55分32秒'
+---
+2024-04-30T11:55:32+00:00
+2024-04-30T11:55:32+00:00

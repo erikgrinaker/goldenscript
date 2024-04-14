@@ -1,0 +1,43 @@
+# Block hooks should be called as expected.
+_set start_block="start" end_block="end"
+command
+---
+Command { name: "command", args: [], prefix: None, silent: false }
+end
+
+command
+---
+start
+Command { name: "command", args: [], prefix: None, silent: false }
+end
+
+# Newlines in block hooks should be handled appropriately.
+_set start_block="start\n" end_block="end\n"
+command
+---
+start
+Command { name: "command", args: [], prefix: None, silent: false }
+end
+
+command
+---
+start
+Command { name: "command", args: [], prefix: None, silent: false }
+end
+
+# As should empty lines.
+_set start_block="start\n\n" end_block="end\n\n"
+command
+---
+> start
+> Command { name: "command", args: [], prefix: None, silent: false }
+> end
+> 
+
+_set end_block="end"
+command
+---
+> start
+> 
+> Command { name: "command", args: [], prefix: None, silent: false }
+> end

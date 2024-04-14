@@ -1,0 +1,60 @@
+# Multi-line output should work fine.
+command
+command arg
+---
+Command { name: "command", args: [], prefix: None, silent: false }
+Command { name: "command", args: [Argument { key: None, value: "arg" }], prefix: None, silent: false }
+
+# Output that contains empty lines should automatically be prefixed with >.
+# This should be the case for empty lines at the start and end of the output,
+# as well as multiple empty lines.
+_set prefix="\n"
+command id=1
+command id=2
+---
+> 
+> Command { name: "command", args: [Argument { key: Some("id"), value: "1" }], prefix: None, silent: false }
+> 
+> Command { name: "command", args: [Argument { key: Some("id"), value: "2" }], prefix: None, silent: false }
+
+_set prefix="" suffix="\n\n"
+command id=1
+command id=2
+---
+> Command { name: "command", args: [Argument { key: Some("id"), value: "1" }], prefix: None, silent: false }
+> 
+> Command { name: "command", args: [Argument { key: Some("id"), value: "2" }], prefix: None, silent: false }
+> 
+
+_set prefix="\n" suffix="\n\n"
+command id=1
+command id=2
+---
+> 
+> Command { name: "command", args: [Argument { key: Some("id"), value: "1" }], prefix: None, silent: false }
+> 
+> 
+> Command { name: "command", args: [Argument { key: Some("id"), value: "2" }], prefix: None, silent: false }
+> 
+
+# Lines only containing whitespace are not considered empty, and not prefixed.
+# The output parser also handles them correctly when parsing this file.
+_set prefix= suffix=
+_echo " "
+_echo "  "
+_echo "\t"
+---
+ 
+  
+	
+
+# The parser should handle multiple empty output blocks in sequence, including
+# an empty block at the end of the file.
+(command)
+---
+
+(command)
+---
+
+(command)
+---

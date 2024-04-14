@@ -1,0 +1,16 @@
+0: at line 1, in CrLf:
+command ""=value
+          ^
+
+1: at line 1, in command:
+command ""=value
+^
+
+2: at line 1, in block:
+command ""=value
+^
+
+3: at line 1, in ManyTill:
+command ""=value
+^
+

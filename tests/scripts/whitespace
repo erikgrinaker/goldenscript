@@ -1,0 +1,25 @@
+
+
+
+
+# Tests that empty lines and whitespace is preserved.
+
+
+
+command
+---
+Command { name: "command", args: [], prefix: None, silent: false }
+
+
+  # Comment.
+
+
+	# Another comment after a tab.
+
+command     arg
+---
+Command { name: "command", args: [Argument { key: None, value: "arg" }], prefix: None, silent: false }
+
+
+
+
