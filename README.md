@@ -2,7 +2,7 @@
 
 [![Crates.io](https://img.shields.io/crates/v/goldenscript.svg)](https://crates.io/crates/goldenscript)
 [![Docs.rs](https://img.shields.io/docsrs/goldenscript/latest)](https://docs.rs/goldenscript)
-[![CI](https://github.com/erikgrinaker/toydb/actions/workflows/ci.yml/badge.svg)](https://github.com/erikgrinaker/toydb/actions/workflows/ci.yml)
+[![CI](https://github.com/erikgrinaker/goldenscript/actions/workflows/ci.yml/badge.svg)](https://github.com/erikgrinaker/goldenscript/actions/workflows/ci.yml)
 
 A Rust testing framework loosely based on Cockroach Labs'
 [`datadriven`](https://github.com/cockroachdb/datadriven) framework for Go. It
