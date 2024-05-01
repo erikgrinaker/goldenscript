@@ -1,5 +1,7 @@
 # Goldenscript
 
+[![CI](https://github.com/erikgrinaker/toydb/actions/workflows/ci.yml/badge.svg)](https://github.com/erikgrinaker/toydb/actions/workflows/ci.yml)
+
 A Rust testing framework loosely based on Cockroach Labs'
 [`datadriven`](https://github.com/cockroachdb/datadriven) framework for Go. It
 combines several testing techniques that make it easy and efficient to write and
