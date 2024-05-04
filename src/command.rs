@@ -1,5 +1,6 @@
 /// A block, consisting of multiple commands.
 #[derive(Debug, PartialEq)]
+#[non_exhaustive]
 pub(crate) struct Block {
     /// The commands in the block.
     pub commands: Vec<Command>,
@@ -9,6 +10,7 @@ pub(crate) struct Block {
 
 /// A command.
 #[derive(Debug, PartialEq)]
+#[non_exhaustive]
 pub struct Command {
     /// The name of the command. Never empty.
     pub name: String,
@@ -23,6 +25,7 @@ pub struct Command {
 
 /// A command argument.
 #[derive(Debug, PartialEq)]
+#[non_exhaustive]
 pub struct Argument {
     /// The argument key, for `key=value` style arguments. Not guaranteed to be
     /// unique, the [`Runner`](crate::Runner) can handle this as desired.
