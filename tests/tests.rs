@@ -1,5 +1,6 @@
 #![warn(clippy::all)]
 
+use std::error::Error;
 use std::io::Write as _;
 use test_each_file::test_each_path;
 
@@ -67,13 +68,13 @@ impl DebugRunner {
 }
 
 impl goldenscript::Runner for DebugRunner {
-    fn run(&mut self, command: &goldenscript::Command) -> Result<String, String> {
+    fn run(&mut self, command: &goldenscript::Command) -> Result<String, Box<dyn Error>> {
         // Process commands.
         let output = match command.name.as_str() {
             "_echo" => {
                 for arg in &command.args {
                     if arg.key.is_some() {
-                        return Err("echo args can't have keys".to_string());
+                        return Err("echo args can't have keys".into());
                     }
                 }
                 command.args.iter().map(|a| a.value.clone()).collect::<Vec<String>>().join(" ")
@@ -86,8 +87,8 @@ impl goldenscript::Runner for DebugRunner {
                         Some("suffix") => self.suffix = arg.value.clone(),
                         Some("start_block") => self.start_block = arg.value.clone(),
                         Some("end_block") => self.end_block = arg.value.clone(),
-                        Some(key) => return Err(format!("unknown argument key {key}")),
-                        None => return Err("argument must have a key".to_string()),
+                        Some(key) => return Err(format!("unknown argument key {key}").into()),
+                        None => return Err("argument must have a key".into()),
                     }
                 }
                 return Ok(String::new());
@@ -99,11 +100,11 @@ impl goldenscript::Runner for DebugRunner {
         Ok(format!("{}{output}{}", self.prefix, self.suffix))
     }
 
-    fn start_block(&mut self) -> Result<String, String> {
+    fn start_block(&mut self) -> Result<String, Box<dyn Error>> {
         Ok(self.start_block.clone())
     }
 
-    fn end_block(&mut self) -> Result<String, String> {
+    fn end_block(&mut self) -> Result<String, Box<dyn Error>> {
         Ok(self.end_block.clone())
     }
 }
@@ -113,12 +114,12 @@ impl goldenscript::Runner for DebugRunner {
 struct DateParserRunner;
 
 impl goldenscript::Runner for DateParserRunner {
-    fn run(&mut self, command: &goldenscript::Command) -> Result<String, String> {
+    fn run(&mut self, command: &goldenscript::Command) -> Result<String, Box<dyn Error>> {
         if command.name != "parse" {
-            return Err(format!("invalid command {}", command.name));
+            return Err(format!("invalid command {}", command.name).into());
         }
         if command.args.len() != 1 {
-            return Err("parse takes 1 argument".to_string());
+            return Err("parse takes 1 argument".into());
         }
         let input = &command.args[0].value;
         match ::dateparser::parse_with(input, &chrono::offset::Utc, chrono::NaiveTime::MIN) {

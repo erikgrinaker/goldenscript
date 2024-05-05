@@ -1,36 +1,37 @@
 use crate::parser::parse;
 use crate::Command;
 
-use std::io::{Error, ErrorKind, Write as _};
+use std::error::Error;
+use std::io::Write as _;
 
 /// Runs goldenscript commands, returning their output.
 pub trait Runner {
     /// Runs a goldenscript command, returning its output, or a string error if
     /// the command failed. To test error cases, return an `Ok` result
     /// containing e.g. the error message as output.
-    fn run(&mut self, command: &Command) -> Result<String, String>;
+    fn run(&mut self, command: &Command) -> Result<String, Box<dyn Error>>;
 
     /// Called at the start of a goldenscript. Used e.g. for initial setup.
     /// Can't return output, since it's not called in the context of a block.
-    fn start_script(&mut self) -> Result<(), String> {
+    fn start_script(&mut self) -> Result<(), Box<dyn Error>> {
         Ok(())
     }
 
     /// Called at the end of a goldenscript. Used e.g. for state assertions.
     /// Can't return output, since it's not called in the context of a block.
-    fn end_script(&mut self) -> Result<(), String> {
+    fn end_script(&mut self) -> Result<(), Box<dyn Error>> {
         Ok(())
     }
 
     /// Called at the start of a block. Used e.g. to output initial state.
     /// Any output is prepended to the block's output.
-    fn start_block(&mut self) -> Result<String, String> {
+    fn start_block(&mut self) -> Result<String, Box<dyn Error>> {
         Ok(String::new())
     }
 
     /// Called at the end of a block. Used e.g. to output final state.
     /// Any output is appended to the block's output.
-    fn end_block(&mut self) -> Result<String, String> {
+    fn end_block(&mut self) -> Result<String, Box<dyn Error>> {
         Ok(String::new())
     }
 }
@@ -44,10 +45,16 @@ pub trait Runner {
 pub fn run<R: Runner, P: AsRef<std::path::Path>>(runner: &mut R, path: P) -> std::io::Result<()> {
     let path = path.as_ref();
     let Some(dir) = path.parent() else {
-        return Err(Error::new(ErrorKind::InvalidInput, format!("invalid path '{path:?}'")));
+        return Err(std::io::Error::new(
+            std::io::ErrorKind::InvalidInput,
+            format!("invalid path '{path:?}'"),
+        ));
     };
     let Some(filename) = path.file_name() else {
-        return Err(Error::new(ErrorKind::InvalidInput, format!("invalid path '{path:?}'")));
+        return Err(std::io::Error::new(
+            std::io::ErrorKind::InvalidInput,
+            format!("invalid path '{path:?}'"),
+        ));
     };
 
     let input = std::fs::read_to_string(dir.join(filename))?;
@@ -68,8 +75,8 @@ pub fn generate<R: Runner>(runner: &mut R, input: &str) -> std::io::Result<Strin
 
     // Parse the script.
     let blocks = parse(input).map_err(|e| {
-        Error::new(
-            ErrorKind::InvalidInput,
+        std::io::Error::new(
+            std::io::ErrorKind::InvalidInput,
             format!(
                 "parse error at line {} column {} for {:?}:\n{}\n{}^",
                 e.input.location_line(),
@@ -82,9 +89,9 @@ pub fn generate<R: Runner>(runner: &mut R, input: &str) -> std::io::Result<Strin
     })?;
 
     // Call the start_script() hook.
-    runner
-        .start_script()
-        .map_err(|e| Error::new(ErrorKind::Other, format!("start_script failed: {e}")))?;
+    runner.start_script().map_err(|e| {
+        std::io::Error::new(std::io::ErrorKind::Other, format!("start_script failed: {e}"))
+    })?;
 
     for (i, block) in blocks.iter().enumerate() {
         // There may be a trailing block with no commands if the script has bare
@@ -100,8 +107,8 @@ pub fn generate<R: Runner>(runner: &mut R, input: &str) -> std::io::Result<Strin
         // Call the start_block() hook.
         block_output.push_str(&ensure_eol(
             runner.start_block().map_err(|e| {
-                Error::new(
-                    ErrorKind::Other,
+                std::io::Error::new(
+                    std::io::ErrorKind::Other,
                     format!("start_block failed at line {}: {e}", block.line_number),
                 )
             })?,
@@ -111,8 +118,8 @@ pub fn generate<R: Runner>(runner: &mut R, input: &str) -> std::io::Result<Strin
         for command in &block.commands {
             // Execute the command.
             let mut command_output = runner.run(command).map_err(|e| {
-                Error::new(
-                    ErrorKind::InvalidInput,
+                std::io::Error::new(
+                    std::io::ErrorKind::InvalidInput,
                     format!(
                         "command '{}' failed at line {}: {e}",
                         command.name, command.line_number
@@ -142,8 +149,8 @@ pub fn generate<R: Runner>(runner: &mut R, input: &str) -> std::io::Result<Strin
         // Call the end_block() hook.
         block_output.push_str(&ensure_eol(
             runner.end_block().map_err(|e| {
-                Error::new(
-                    ErrorKind::Other,
+                std::io::Error::new(
+                    std::io::ErrorKind::Other,
                     format!("end_block failed at line {}: {e}", block.line_number),
                 )
             })?,
@@ -180,9 +187,9 @@ pub fn generate<R: Runner>(runner: &mut R, input: &str) -> std::io::Result<Strin
     }
 
     // Call the end_script() hook.
-    runner
-        .end_script()
-        .map_err(|e| Error::new(ErrorKind::Other, format!("end_script failed: {e}")))?;
+    runner.end_script().map_err(|e| {
+        std::io::Error::new(std::io::ErrorKind::Other, format!("end_script failed: {e}"))
+    })?;
 
     Ok(output)
 }
@@ -212,26 +219,26 @@ mod tests {
     }
 
     impl Runner for HookRunner {
-        fn run(&mut self, _: &Command) -> Result<String, String> {
+        fn run(&mut self, _: &Command) -> Result<String, Box<dyn Error>> {
             Ok(String::new())
         }
 
-        fn start_script(&mut self) -> Result<(), String> {
+        fn start_script(&mut self) -> Result<(), Box<dyn Error>> {
             self.start_script_count += 1;
             Ok(())
         }
 
-        fn end_script(&mut self) -> Result<(), String> {
+        fn end_script(&mut self) -> Result<(), Box<dyn Error>> {
             self.end_script_count += 1;
             Ok(())
         }
 
-        fn start_block(&mut self) -> Result<String, String> {
+        fn start_block(&mut self) -> Result<String, Box<dyn Error>> {
             self.start_block_count += 1;
             Ok(String::new())
         }
 
-        fn end_block(&mut self) -> Result<String, String> {
+        fn end_block(&mut self) -> Result<String, Box<dyn Error>> {
             self.end_block_count += 1;
             Ok(String::new())
         }

@@ -81,13 +81,13 @@
 //! struct DateParserRunner;
 //!
 //! impl goldenscript::Runner for DateParserRunner {
-//!     fn run(&mut self, command: &goldenscript::Command) -> Result<String, String> {
+//!     fn run(&mut self, command: &goldenscript::Command) -> Result<String, Box<dyn std::error::Error>> {
 //!         // Only accept a parse command with a single argument.
 //!         if command.name != "parse" {
-//!             return Err(format!("invalid command {}", command.name))
+//!             return Err(format!("invalid command {}", command.name).into())
 //!         }
 //!         if command.args.len() != 1 {
-//!             return Err("parse takes 1 argument".to_string())
+//!             return Err("parse takes 1 argument".into())
 //!         }
 //!
 //!         // Parse the timestamp, and output the RFC 3339 timestamp or error string.
@@ -274,7 +274,7 @@
 //! struct Runner;
 //!
 //! impl goldenscript::Runner for Runner {
-//!     fn run(&mut self, command: &goldenscript::Command) -> Result<String, String> {
+//!     fn run(&mut self, command: &goldenscript::Command) -> Result<String, Box<dyn std::error::Error>> {
 //!         todo!();
 //!     }
 //! }
@@ -307,7 +307,7 @@
 //! # struct Runner;
 //! #
 //! # impl goldenscript::Runner for Runner {
-//! #     fn run(&mut self, command: &goldenscript::Command) -> Result<String, String> { todo!() }
+//! #     fn run(&mut self, command: &goldenscript::Command) -> Result<String, Box<dyn std::error::Error>> { todo!() }
 //! # }
 //! use test_each_file::test_each_path;
 //!
