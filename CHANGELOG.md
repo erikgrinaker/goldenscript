@@ -2,6 +2,7 @@
 
 Backwards-incompatible changes:
 
+* Default to "ok" for command blocks that don't yield any output.
 * Mark `Command` and `Argument` as `non_exhaustive`, to allow extending them.
 
 Improvements:

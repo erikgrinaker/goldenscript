@@ -150,6 +150,11 @@ pub fn generate<R: Runner>(runner: &mut R, input: &str) -> std::io::Result<Strin
             eol,
         ));
 
+        // If the block doesn't have any output, default to "ok".
+        if block_output.is_empty() {
+            block_output.push_str("ok\n")
+        }
+
         // If the block output contains blank lines, use a > prefix for it.
         //
         // We'd be better off using regular expressions here, but don't want to

@@ -215,7 +215,7 @@
 //! The command output following a `---` separator can contain any arbitrary
 //! Unicode string until an empty line (or end of file). If the command output
 //! contains empty lines, the entire output will automatically be prefixed with
-//! `> `.
+//! `> `. If no commands in a block yield any output, it defaults to "ok".
 //!
 //! ```text
 //! echo "output 1"
