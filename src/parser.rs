@@ -34,8 +34,9 @@ fn blocks(input: Span) -> IResult<Vec<Block>> {
 /// the command output.
 fn block(input: Span) -> IResult<Block> {
     // Parse the command section, preserving the literal for output.
+    let line_number = input.location_line();
     let (input, (literal, commands)) = consumed(commands)(input)?;
-    let block = Block { literal: literal.to_string(), commands };
+    let block = Block { literal: literal.to_string(), commands, line_number };
 
     // If there were no commands, and we're at the end of the input, preserve
     // the literal as an empty block for output.
@@ -93,6 +94,7 @@ fn command(input: Span) -> IResult<Command> {
 
     // The command itself.
     let (input, prefix) = opt(terminated(identifier, pair(tag(":"), space0)))(input)?;
+    let line_number = input.location_line();
     let (input, name) = identifier(input)?;
     let (mut input, args) = many0(preceded(space1, argument))(input)?;
 
@@ -106,7 +108,7 @@ fn command(input: Span) -> IResult<Command> {
     let (input, _) = opt(comment)(input)?;
     let (input, _) = line_ending(input)?;
 
-    Ok((input, Command { name, args, prefix, silent }))
+    Ok((input, Command { name, args, prefix, silent, line_number }))
 }
 
 /// Parses a single command argument, consisting of an argument value and

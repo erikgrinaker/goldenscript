@@ -7,8 +7,8 @@ command id=1
 (command id=2)
 command id=3
 ---
-Command { name: "command", args: [Argument { key: Some("id"), value: "1" }], prefix: None, silent: false }
-Command { name: "command", args: [Argument { key: Some("id"), value: "3" }], prefix: None, silent: false }
+Command { name: "command", args: [Argument { key: Some("id"), value: "1" }], prefix: None, silent: false, line_number: 6 }
+Command { name: "command", args: [Argument { key: Some("id"), value: "3" }], prefix: None, silent: false, line_number: 8 }
 
 # Whitespace is allowed around the parentheses, except for the first.
 ( command  )  # eol

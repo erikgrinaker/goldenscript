@@ -2,13 +2,13 @@
 _set start_block="start" end_block="end"
 command
 ---
-Command { name: "command", args: [], prefix: None, silent: false }
+Command { name: "command", args: [], prefix: None, silent: false, line_number: 3 }
 end
 
 command
 ---
 start
-Command { name: "command", args: [], prefix: None, silent: false }
+Command { name: "command", args: [], prefix: None, silent: false, line_number: 8 }
 end
 
 # Newlines in block hooks should be handled appropriately.
@@ -16,13 +16,13 @@ _set start_block="start\n" end_block="end\n"
 command
 ---
 start
-Command { name: "command", args: [], prefix: None, silent: false }
+Command { name: "command", args: [], prefix: None, silent: false, line_number: 16 }
 end
 
 command
 ---
 start
-Command { name: "command", args: [], prefix: None, silent: false }
+Command { name: "command", args: [], prefix: None, silent: false, line_number: 22 }
 end
 
 # As should empty lines.
@@ -30,7 +30,7 @@ _set start_block="start\n\n" end_block="end\n\n"
 command
 ---
 > start
-> Command { name: "command", args: [], prefix: None, silent: false }
+> Command { name: "command", args: [], prefix: None, silent: false, line_number: 30 }
 > end
 > 
 
@@ -39,5 +39,5 @@ command
 ---
 > start
 > 
-> Command { name: "command", args: [], prefix: None, silent: false }
+> Command { name: "command", args: [], prefix: None, silent: false, line_number: 38 }
 > end

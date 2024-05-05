@@ -82,7 +82,9 @@ pub(crate) fn generate<R: Runner>(runner: &mut R, input: &str) -> std::io::Resul
     })?;
 
     // Call the start_script() hook.
-    runner.start_script().map_err(|e| Error::new(ErrorKind::Other, e))?;
+    runner
+        .start_script()
+        .map_err(|e| Error::new(ErrorKind::Other, format!("start_script failed: {e}")))?;
 
     for (i, block) in blocks.iter().enumerate() {
         // There may be a trailing block with no commands if the script has bare
@@ -97,14 +99,23 @@ pub(crate) fn generate<R: Runner>(runner: &mut R, input: &str) -> std::io::Resul
 
         // Call the start_block() hook.
         block_output.push_str(&ensure_eol(
-            runner.start_block().map_err(|e| Error::new(ErrorKind::Other, e))?,
+            runner.start_block().map_err(|e| {
+                Error::new(
+                    ErrorKind::Other,
+                    format!("start_block failed at line {}: {e}", block.line_number),
+                )
+            })?,
             eol,
         ));
 
         for command in &block.commands {
             // Execute the command.
-            let mut command_output =
-                runner.run(command).map_err(|e| Error::new(ErrorKind::InvalidInput, e))?;
+            let mut command_output = runner.run(command).map_err(|e| {
+                Error::new(
+                    ErrorKind::InvalidInput,
+                    format!("command {} failed at line {}: {e}", command.name, command.line_number),
+                )
+            })?;
 
             // Silence the output if requested.
             if command.silent {
@@ -127,7 +138,12 @@ pub(crate) fn generate<R: Runner>(runner: &mut R, input: &str) -> std::io::Resul
 
         // Call the end_block() hook.
         block_output.push_str(&ensure_eol(
-            runner.end_block().map_err(|e| Error::new(ErrorKind::Other, e))?,
+            runner.end_block().map_err(|e| {
+                Error::new(
+                    ErrorKind::Other,
+                    format!("end_block failed at line {}: {e}", block.line_number),
+                )
+            })?,
             eol,
         ));
 
@@ -156,7 +172,9 @@ pub(crate) fn generate<R: Runner>(runner: &mut R, input: &str) -> std::io::Resul
     }
 
     // Call the end_script() hook.
-    runner.end_script().map_err(|e| Error::new(ErrorKind::Other, e))?;
+    runner
+        .end_script()
+        .map_err(|e| Error::new(ErrorKind::Other, format!("end_script failed: {e}")))?;
 
     Ok(output)
 }

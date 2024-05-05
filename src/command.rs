@@ -6,6 +6,8 @@ pub(crate) struct Block {
     pub commands: Vec<Command>,
     /// The literal string of the input commands. Used to generate the output.
     pub literal: String,
+    /// The block's line number position in the script.
+    pub line_number: u32,
 }
 
 /// A command.
@@ -21,6 +23,8 @@ pub struct Command {
     /// Silences the output of this command. This is handled automatically, the
     /// [`Runner`](crate::Runner) does not have to take this into account.
     pub silent: bool,
+    /// The command's line number position in the script.
+    pub line_number: u32,
 }
 
 /// A command argument.

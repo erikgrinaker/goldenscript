@@ -2,13 +2,13 @@
 
 Backwards-incompatible changes:
 
-* Mark `Command` and `Argument` as `non_exhaustive`, to allow extending them
-  in the future.
+* Mark `Command` and `Argument` as `non_exhaustive`, to allow extending them.
 
 Improvements:
 
-* Add `Argument.parse()` convenience method to parse argument values into e.g.
-  integers or booleans.
+* Add `Argument.parse()` to parse values into e.g. integers or booleans.
+* Add `Command.line_number` with the command's position in the script.
+* Add `Runner` error context such as the command or hook name and line number.
 * Make parse errors more concise.
 
 Bug fixes:
