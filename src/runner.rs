@@ -113,7 +113,10 @@ pub(crate) fn generate<R: Runner>(runner: &mut R, input: &str) -> std::io::Resul
             let mut command_output = runner.run(command).map_err(|e| {
                 Error::new(
                     ErrorKind::InvalidInput,
-                    format!("command {} failed at line {}: {e}", command.name, command.line_number),
+                    format!(
+                        "command '{}' failed at line {}: {e}",
+                        command.name, command.line_number
+                    ),
                 )
             })?;
 
