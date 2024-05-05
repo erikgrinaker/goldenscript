@@ -13,4 +13,4 @@ Improvements:
 
 Bug fixes:
 
-* Relax dependency version requirements (was tilde requirements).
+* Relax dependency version requirements.
