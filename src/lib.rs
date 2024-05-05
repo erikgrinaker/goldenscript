@@ -332,4 +332,4 @@ mod parser;
 mod runner;
 
 pub use command::{Argument, Command};
-pub use runner::{run, Runner};
+pub use runner::{generate, run, Runner};

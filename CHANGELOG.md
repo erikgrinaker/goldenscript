@@ -6,6 +6,7 @@ Backwards-incompatible changes:
 
 Improvements:
 
+* Add `generate()` to generate output for a goldenscript input.
 * Add `Argument.parse()` to parse values into e.g. integers or booleans.
 * Add `Command.line_number` with the command's position in the script.
 * Add `Runner` error context such as the command or hook name and line number.

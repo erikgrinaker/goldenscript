@@ -57,7 +57,7 @@ pub fn run<R: Runner, P: AsRef<std::path::Path>>(runner: &mut R, path: P) -> std
 }
 
 /// Generates output for a goldenscript input, without comparing them.
-pub(crate) fn generate<R: Runner>(runner: &mut R, input: &str) -> std::io::Result<String> {
+pub fn generate<R: Runner>(runner: &mut R, input: &str) -> std::io::Result<String> {
     let mut output = String::with_capacity(input.len()); // common case: output == input
 
     // Detect end-of-line format.
