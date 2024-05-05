@@ -40,7 +40,7 @@ pub struct Argument {
 
 impl Argument {
     /// Parses the argument value as a T using core::str::parse(). Convenience
-    /// method that returns a string error to easy error handling in a
+    /// method that returns a string error to ease error handling in a
     /// [`Runner`](crate::Runner).
     pub fn parse<T>(&self) -> Result<T, String>
     where
