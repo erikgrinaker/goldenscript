@@ -67,8 +67,18 @@ pub(crate) fn generate<R: Runner>(runner: &mut R, input: &str) -> std::io::Resul
     };
 
     // Parse the script.
-    let blocks = parse(input).map_err(|err| {
-        Error::new(ErrorKind::InvalidInput, nom::error::convert_error(input, err))
+    let blocks = parse(input).map_err(|e| {
+        Error::new(
+            ErrorKind::InvalidInput,
+            format!(
+                "parse error at line {} column {} for {:?}:\n{}\n{}^",
+                e.input.location_line(),
+                e.input.get_column(),
+                e.code,
+                String::from_utf8_lossy(e.input.get_line_beginning()),
+                ' '.to_string().repeat(e.input.get_utf8_column() - 1)
+            ),
+        )
     })?;
 
     // Call the start_script() hook.

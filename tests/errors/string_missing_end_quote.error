@@ -1,24 +1,3 @@
-0: at line 2, in Tag:
+parse error at line 2 column 4 for Tag:
 ---
    ^
-
-1: at line 1, in Alt:
-"command
-^
-
-2: at line 1, in command name:
-"command
-^
-
-3: at line 1, in command:
-"command
-^
-
-4: at line 1, in block:
-"command
-^
-
-5: at line 1, in ManyTill:
-"command
-^
-

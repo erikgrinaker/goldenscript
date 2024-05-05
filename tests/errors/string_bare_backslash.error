@@ -1,24 +1,3 @@
-0: at line 3, in Tag:
+parse error at line 3 column 1 for Tag:
 '\ '
 ^
-
-1: at line 3, in Alt:
-'\ '
-^
-
-2: at line 3, in command name:
-'\ '
-^
-
-3: at line 3, in command:
-'\ '
-^
-
-4: at line 1, in block:
-# A bare backslash in a quoted string errors, as an unknown escape sequence.
-^
-
-5: at line 1, in ManyTill:
-# A bare backslash in a quoted string errors, as an unknown escape sequence.
-^
-

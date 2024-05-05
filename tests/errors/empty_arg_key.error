@@ -1,16 +1,3 @@
-0: at line 1, in CrLf:
+parse error at line 1 column 11 for CrLf:
 command ""=value
           ^
-
-1: at line 1, in command:
-command ""=value
-^
-
-2: at line 1, in block:
-command ""=value
-^
-
-3: at line 1, in ManyTill:
-command ""=value
-^
-

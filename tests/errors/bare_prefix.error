@@ -1,24 +1,3 @@
-0: at line 1, in Tag:
+parse error at line 1 column 8 for Tag:
 prefix:
        ^
-
-1: at line 1, in Alt:
-prefix:
-       ^
-
-2: at line 1, in command name:
-prefix:
-       ^
-
-3: at line 1, in command:
-prefix:
-^
-
-4: at line 1, in block:
-prefix:
-^
-
-5: at line 1, in ManyTill:
-prefix:
-^
-
