@@ -47,14 +47,3 @@ _echo "\t"
  
   
 	
-
-# The parser should handle multiple empty output blocks in sequence, including
-# an empty block at the end of the file.
-(command)
----
-
-(command)
----
-
-(command)
----

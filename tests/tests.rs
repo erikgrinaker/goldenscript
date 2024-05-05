@@ -10,17 +10,35 @@ fn test_goldenscript(path: &std::path::Path) {
     goldenscript::run(&mut DebugRunner::new(), path).expect("runner failed")
 }
 
+// Run goldenscripts in tests/generate with output in a separate file. This is
+// particularly useful for parser tests where output hasn't yet been generated.
+test_each_path! { for ["in", "out"] in "tests/generate" as generate => test_generate }
+
+fn test_generate([in_path, out_path]: [&std::path::Path; 2]) {
+    let input = std::fs::read_to_string(in_path).expect("failed to read file");
+    let output = goldenscript::generate(&mut DebugRunner::new(), &input).expect("runner failed");
+
+    let dir = out_path.parent().expect("invalid path");
+    let filename = out_path.file_name().expect("invalid path");
+    let mut mint = goldenfile::Mint::new(dir);
+    let mut f = mint.new_goldenfile(filename).expect("failed to create goldenfile");
+    f.write_all(output.as_bytes()).expect("failed to write output");
+}
+
 // Generate error tests for each pair of *.in and *.error files in tests/errors/.
 // The input scripts are expected to error with the stored output.
 test_each_path! { for ["in", "error"] in "tests/errors" as errors => test_error }
 
-fn test_error([input, output]: [&std::path::Path; 2]) {
-    let error = goldenscript::run(&mut DebugRunner::new(), input).expect_err("unexpected success");
-    let dir = output.parent().expect("invalid path");
-    let filename = output.file_name().expect("invalid path");
+fn test_error([in_path, out_path]: [&std::path::Path; 2]) {
+    let input = std::fs::read_to_string(in_path).expect("failed to read file");
+    let error =
+        goldenscript::generate(&mut DebugRunner::new(), &input).expect_err("script succeeded");
+
+    let dir = out_path.parent().expect("invalid path");
+    let filename = out_path.file_name().expect("invalid path");
     let mut mint = goldenfile::Mint::new(dir);
     let mut f = mint.new_goldenfile(filename).expect("failed to create goldenfile");
-    f.write_all(format!("{error}").as_bytes()).expect("failed to write goldenfile");
+    f.write_all(error.to_string().as_bytes()).expect("failed to write goldenfile");
 }
 
 /// A goldenscript runner that debug-prints the parsed command. It
