@@ -4,6 +4,7 @@ permissions:
   contents: read
 
 jobs:
+  # Run tests and clippy/rustfmt checks.
   test:
     name: Test
     runs-on: ubuntu-latest
@@ -23,3 +24,23 @@ jobs:
     - run: cargo test
     - run: cargo clippy --tests --no-deps -- -D warnings
     - run: cargo fmt --check
+
+  # Verify that minimal dependency versions also pass tests.
+  versions:
+    name: Minimal Dependency Versions
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+    - uses: actions/checkout@v4
+    - uses: dtolnay/rust-toolchain@nightly
+      id: toolchain
+    - uses: actions/cache@v4
+      with:
+        path: target
+        key: ${{runner.os}}-target-${{steps.toolchain.outputs.cachekey}}-${{hashFiles('Cargo.lock')}}
+    - run: cargo +stable install cargo-hack --locked
+    - run: cargo +stable install cargo-minimal-versions --locked
+    - run: cargo minimal-versions check --direct
+    - run: cargo minimal-versions build --tests --direct
+    - run: cargo minimal-versions test --direct
