@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::error::Error;
 
 /// A block, consisting of multiple commands.
 #[derive(Debug, PartialEq)]
@@ -55,14 +56,14 @@ pub struct Argument {
 
 impl Argument {
     /// Parses the argument value as a T using core::str::parse(). Convenience
-    /// method that returns a string error to ease error handling in a
-    /// [`Runner`](crate::Runner).
-    pub fn parse<T>(&self) -> Result<T, String>
+    /// method that returns an improved error message as a boxed error to ease
+    /// error handling in a [`Runner`](crate::Runner).
+    pub fn parse<T>(&self) -> Result<T, Box<dyn Error>>
     where
         T: std::str::FromStr,
         <T as std::str::FromStr>::Err: std::fmt::Display,
     {
-        self.value.parse().map_err(|e| format!("invalid argument '{}': {e}", self.value))
+        self.value.parse().map_err(|e| format!("invalid argument '{}': {e}", self.value).into())
     }
 }
 
@@ -126,23 +127,25 @@ mod tests {
     /// to core::str::parse().
     #[test]
     fn argument_parse() {
-        assert_eq!(arg!("-1").parse(), Ok(-1_i64));
-        assert_eq!(arg!("0").parse(), Ok(0_i64));
-        assert_eq!(arg!("1").parse(), Ok(1_i64));
+        assert_eq!(arg!("-1").parse::<i64>().unwrap(), -1_i64);
+        assert_eq!(arg!("0").parse::<i64>().unwrap(), 0_i64);
+        assert_eq!(arg!("1").parse::<i64>().unwrap(), 1_i64);
+
         assert_eq!(
-            arg!("").parse::<i64>(),
-            Err("invalid argument '': cannot parse integer from empty string".to_string())
+            arg!("").parse::<i64>().unwrap_err().to_string(),
+            "invalid argument '': cannot parse integer from empty string"
         );
         assert_eq!(
-            arg!("foo").parse::<i64>(),
-            Err("invalid argument 'foo': invalid digit found in string".to_string())
+            arg!("foo").parse::<i64>().unwrap_err().to_string(),
+            "invalid argument 'foo': invalid digit found in string"
         );
 
-        assert_eq!(arg!("false").parse(), Ok(false));
-        assert_eq!(arg!("true").parse(), Ok(true));
+        assert!(!arg!("false").parse::<bool>().unwrap());
+        assert!(arg!("true").parse::<bool>().unwrap());
+
         assert_eq!(
-            arg!("").parse::<bool>(),
-            Err("invalid argument '': provided string was not `true` or `false`".to_string())
+            arg!("").parse::<bool>().unwrap_err().to_string(),
+            "invalid argument '': provided string was not `true` or `false`"
         );
     }
 }

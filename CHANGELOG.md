@@ -1,5 +1,9 @@
 # Unreleased
 
+**Breaking changes**
+
+* Return `Box<dyn Error>` from `Argument.parse()`, like `Runner` does.
+
 **Improvements**
 
 * Add `Command.pos_args()` and `key_args()` for filtering argument types.
