@@ -1,3 +1,9 @@
+# Unreleased
+
+**Improvements**
+
+* Add `Command.pos_args()` and `key_args()` for filtering argument types.
+
 # 0.2.0 (2024-05-05)
 
 **Breaking changes**
