@@ -1,4 +1,3 @@
-use std::collections::HashMap;
 use std::error::Error;
 
 /// A block, consisting of multiple commands.
@@ -31,10 +30,9 @@ pub struct Command {
 }
 
 impl Command {
-    /// Returns all key/value arguments as a HashMap. If duplicate keys are
-    /// given, the last one is used.
-    pub fn key_args(&self) -> HashMap<String, &Argument> {
-        self.args.iter().filter_map(|a| a.key.as_ref().map(|k| (k.clone(), a))).collect()
+    /// Returns all key/value arguments, in their original order.
+    pub fn key_args(&self) -> Vec<&Argument> {
+        self.args.iter().filter(|a| a.key.is_some()).collect()
     }
 
     /// Returns all positional arguments (no key), in their original order.
@@ -99,10 +97,7 @@ mod tests {
         // Only key/value arguments.
         cmd.args = vec![arg!("key" => "value"), arg!("foo" => "bar")];
         assert!(cmd.pos_args().is_empty());
-        assert_eq!(
-            cmd.key_args(),
-            HashMap::from([("key".to_string(), &cmd.args[0]), ("foo".to_string(), &cmd.args[1])])
-        );
+        assert_eq!(cmd.key_args(), vec![&cmd.args[0], &cmd.args[1]]);
 
         // Only positional arguments.
         cmd.args = vec![arg!("foo"), arg!("value")];
@@ -112,15 +107,12 @@ mod tests {
         // Mixed arguments.
         cmd.args = vec![arg!("foo"), arg!("foo" => "bar"), arg!("value"), arg!("key" => "value")];
         assert_eq!(cmd.pos_args(), vec![&cmd.args[0], &cmd.args[2]]);
-        assert_eq!(
-            cmd.key_args(),
-            HashMap::from([("foo".to_string(), &cmd.args[1]), ("key".to_string(), &cmd.args[3])])
-        );
+        assert_eq!(cmd.key_args(), vec![&cmd.args[1], &cmd.args[3]]);
 
         // Duplicate key/value arguments.
         cmd.args = vec![arg!("key" => "1"), arg!("key" => "2"), arg!("key" => "3")];
         assert!(cmd.pos_args().is_empty());
-        assert_eq!(cmd.key_args(), HashMap::from([("key".to_string(), &cmd.args[2])]));
+        assert_eq!(cmd.key_args(), vec![&cmd.args[0], &cmd.args[1], &cmd.args[2]]);
     }
 
     /// Basic tests of Argument.parse(). Not comprehensive, since it dispatches
