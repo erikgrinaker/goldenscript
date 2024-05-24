@@ -1,7 +1,7 @@
 use std::error::Error;
 
 /// A block, consisting of multiple commands.
-#[derive(Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 #[non_exhaustive]
 pub(crate) struct Block {
     /// The commands in the block.
@@ -13,7 +13,7 @@ pub(crate) struct Block {
 }
 
 /// A command.
-#[derive(Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 #[non_exhaustive]
 pub struct Command {
     /// The name of the command. Never empty.
@@ -42,7 +42,7 @@ impl Command {
 }
 
 /// A command argument.
-#[derive(Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 #[non_exhaustive]
 pub struct Argument {
     /// The argument key, for `key=value` style arguments. Not guaranteed to be

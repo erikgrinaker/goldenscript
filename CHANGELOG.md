@@ -8,6 +8,7 @@
 
 * Add `Command.pos_args()` and `key_args()` for filtering argument types.
 * Add `Argument.name()` to identify arguments.
+* Implement `Clone` for `Command` and `Argument`.
 
 # 0.2.0 (2024-05-05)
 
