@@ -7,6 +7,7 @@
 **Improvements**
 
 * Add `Command.pos_args()` and `key_args()` for filtering argument types.
+* Add `Argument.name()` to identify arguments.
 
 # 0.2.0 (2024-05-05)
 

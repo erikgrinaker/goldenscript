@@ -53,6 +53,14 @@ pub struct Argument {
 }
 
 impl Argument {
+    /// Returns a name for the argument -- either the key, if given, or value.
+    pub fn name(&self) -> &str {
+        match self.key.as_deref() {
+            Some(key) => key,
+            None => &self.value,
+        }
+    }
+
     /// Parses the argument value as a T using core::str::parse(). Convenience
     /// method that returns an improved error message as a boxed error to ease
     /// error handling in a [`Runner`](crate::Runner).
@@ -113,6 +121,13 @@ mod tests {
         cmd.args = vec![arg!("key" => "1"), arg!("key" => "2"), arg!("key" => "3")];
         assert!(cmd.pos_args().is_empty());
         assert_eq!(cmd.key_args(), vec![&cmd.args[0], &cmd.args[1], &cmd.args[2]]);
+    }
+
+    /// Tests Argument.name().
+    #[test]
+    fn argument_name() {
+        assert_eq!(arg!("value").name(), "value");
+        assert_eq!(arg!("key" => "value").name(), "key");
     }
 
     /// Basic tests of Argument.parse(). Not comprehensive, since it dispatches
