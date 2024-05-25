@@ -1,14 +1,19 @@
-# Unreleased
+# 0.3.0 (2024-05-25)
 
 **Breaking changes**
 
-* Return `Box<dyn Error>` from `Argument.parse()`, like `Runner` does.
+* [`44df27d`] Return `Box<dyn Error>` from `Argument.parse()`, like `Runner`.
 
 **Improvements**
 
-* Add `Command.pos_args()` and `key_args()` for filtering argument types.
-* Add `Argument.name()` to identify arguments.
-* Implement `Clone` for `Command` and `Argument`.
+* [`eb25a24`] Add `Command.pos_args()` and `key_args()` for filtering argument types.
+* [`f4bcae6`] Add `Argument.name()` to identify arguments.
+* [`5ff556d`] Implement `Clone` for `Command` and `Argument`.
+
+[`44df27d`]: https://github.com/erikgrinaker/goldenscript/commit/44df27daf3f6f31adde25238693daeb17611a057
+[`eb25a24`]: https://github.com/erikgrinaker/goldenscript/commit/eb25a24136ee0f90ec0f067e169fb70114003743
+[`f4bcae6`]: https://github.com/erikgrinaker/goldenscript/commit/f4bcae6f4dcd400deed1e2ad49de876ccccb6a25
+[`5ff556d`]: https://github.com/erikgrinaker/goldenscript/commit/5ff556dff5875243aff5efc914689da1078f1431
 
 # 0.2.0 (2024-05-05)
 
