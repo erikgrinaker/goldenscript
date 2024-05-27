@@ -154,7 +154,7 @@ fn string(input: Span) -> IResult<String> {
 fn unquoted_string(input: Span) -> IResult<String> {
     let (input, string) = recognize(pair(
         alt((alphanumeric1, tag("_"))),
-        many0_count(alt((alphanumeric1, tag("_"), tag("-"), tag("."), tag("/")))),
+        many0_count(alt((alphanumeric1, tag("_"), tag("-"), tag("."), tag("/"), tag("@")))),
     ))(input)?;
     Ok((input, string.to_string()))
 }

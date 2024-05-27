@@ -251,7 +251,7 @@
 //! ## Strings
 //!
 //! Unquoted strings can only contain alphanumeric ASCII characters
-//! `[a-zA-Z0-9]` and a handful of special characters: `_ - . /`
+//! `[a-zA-Z0-9]` and a handful of special characters: `_ - . / @`
 //! (only `_` at the start of a string).
 //!
 //! Strings can be quoted using `"` or `'`, in which case they can contain

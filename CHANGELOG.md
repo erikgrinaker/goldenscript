@@ -1,3 +1,9 @@
+# Unreleased
+
+**Improvements**
+
+* Allow `@` in unquoted strings.
+
 # 0.3.0 (2024-05-25)
 
 **Breaking changes**

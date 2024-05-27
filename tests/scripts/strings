@@ -10,10 +10,10 @@ _prefix: _command _arg _key=_value
 ---
 _prefix: Command { name: "_command", args: [Argument { key: None, value: "_arg" }, Argument { key: Some("_key"), value: "_value" }], prefix: Some("_prefix"), silent: false, line_number: 9 }
 
-# Unquoted strings can contain -_.
-prefix-_.: command-_. arg-_. key-_.=value-_.
+# Unquoted strings can contain -_./@
+prefix-_.: command-_./@ arg-_./@ key-_./@=value-_./@
 ---
-prefix-_.: Command { name: "command-_.", args: [Argument { key: None, value: "arg-_." }, Argument { key: Some("key-_."), value: "value-_." }], prefix: Some("prefix-_."), silent: false, line_number: 14 }
+prefix-_.: Command { name: "command-_./@", args: [Argument { key: None, value: "arg-_./@" }, Argument { key: Some("key-_./@"), value: "value-_./@" }], prefix: Some("prefix-_."), silent: false, line_number: 14 }
 
 # Single-quoted strings can contain any character, including newlines.
 '➡️': '😀' '"👋"' '\t'='\0' '
