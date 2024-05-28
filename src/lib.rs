@@ -268,14 +268,21 @@
 //!
 //! # Writing Tests
 //!
-//! In the simplest case, a goldenscript test is:
+//! In the simplest case, a goldenscript test might be:
 //!
 //! ```no_run
+//! # use std::error::Error;
 //! struct Runner;
 //!
 //! impl goldenscript::Runner for Runner {
-//!     fn run(&mut self, command: &goldenscript::Command) -> Result<String, Box<dyn std::error::Error>> {
-//!         todo!();
+//!     fn run(&mut self, command: &goldenscript::Command) -> Result<String, Box<dyn Error>> {
+//!         match command.name.as_str() {
+//!             "echo" => {
+//!                 let lines: Vec<&str> = command.args.iter().map(|a| a.value.as_str()).collect();
+//!                 Ok(lines.join("\n"))
+//!             }
+//!             name => return Err(format!("invalid command {name}").into())
+//!         }
 //!     }
 //! }
 //!
@@ -304,10 +311,11 @@
 //! crate:
 //!
 //! ```no_run
+//! # use std::error::Error;
 //! # struct Runner;
 //! #
 //! # impl goldenscript::Runner for Runner {
-//! #     fn run(&mut self, command: &goldenscript::Command) -> Result<String, Box<dyn std::error::Error>> { todo!() }
+//! #     fn run(&mut self, command: &goldenscript::Command) -> Result<String, Box<dyn Error>> { todo!() }
 //! # }
 //! use test_each_file::test_each_path;
 //!
