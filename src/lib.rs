@@ -292,6 +292,56 @@
 //! }
 //! ```
 //!
+//! ## Argument Processing
+//!
+//! Arguments can be processed manually via [`Command::args`], or using the
+//! [`Command::consume_args()`] helper which simplifies common argument
+//! handling. For example:
+//!
+//! ```
+//! # use std::error::Error;
+//! # struct Runner;
+//! # impl Runner {
+//! #   fn send(&self, ids: &[u32], message: &str, retry: bool) -> Result<String, Box<dyn Error>> {
+//! #     Ok(String::new())
+//! #   }
+//! # }
+//! #
+//! impl goldenscript::Runner for Runner {
+//!     /// Implement a send command, which sends a string message to a list
+//!     /// of nodes, optionally retrying.
+//!     ///
+//!     /// send [retry=BOOL] MESSAGE ID...
+//!     ///
+//!     /// Example: send foo 1 2 3
+//!     fn run(&mut self, command: &goldenscript::Command) -> Result<String, Box<dyn Error>> {
+//!         if command.name != "send" {
+//!             return Err(format!("invalid command {}", command.name).into())
+//!         }
+//!
+//!         let mut args = command.consume_args();
+//!
+//!         // The first positional argument is a required string message.
+//!         let message = &args.next_pos().ok_or("message not given")?.value;
+//!
+//!         // The remaining positional arguments are numeric node IDs.
+//!         let ids: Vec<u32> = args.rest_pos().iter().map(|a| a.parse()).collect::<Result<_, _>>()?;
+//!         if ids.is_empty() {
+//!             return Err("no node IDs given".into())
+//!         }
+//!
+//!         // An optional retry=bool key/value argument can also be given.
+//!         let retry: bool = args.lookup_parse("retry")?.unwrap_or(false);
+//!
+//!         // Any other arguments that haven't been processed above should error.
+//!         args.reject_rest()?;
+//!
+//!         // Execute the send.
+//!         self.send(&ids, message, retry)
+//!     }
+//! }
+//! ```
+//!
 //! ## Managing State
 //!
 //! The runner is free to manage internal state as desired. If it is stateful,
@@ -339,5 +389,5 @@ mod command;
 mod parser;
 mod runner;
 
-pub use command::{Argument, Command};
+pub use command::{Argument, ArgumentConsumer, Command};
 pub use runner::{generate, run, Runner};
