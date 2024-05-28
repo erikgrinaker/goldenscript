@@ -24,6 +24,12 @@ pub(crate) fn parse(input: &str) -> Result<Vec<Block>, Error> {
     blocks(Span::new(input)).finish().map(|(_, blocks)| blocks)
 }
 
+/// Parses a command, for use in tests.
+#[cfg(test)]
+pub(crate) fn parse_command(input: &str) -> Result<Command, Error> {
+    command(Span::new(input)).finish().map(|(_, cmd)| cmd)
+}
+
 /// Parses a list of blocks until EOF.
 fn blocks(input: Span) -> IResult<Vec<Block>> {
     let (input, (blocks, _)) = many_till(block, eof)(input)?;

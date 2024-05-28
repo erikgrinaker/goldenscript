@@ -77,7 +77,7 @@ impl Argument {
 mod tests {
     use super::*;
 
-    /// Constructs an Argument from a string value or string key => value.
+    /// Constructs an Argument from a string value or key => value.
     macro_rules! arg {
         ($value:expr) => {
             Argument { key: None, value: $value.to_string() }
@@ -87,38 +87,38 @@ mod tests {
         };
     }
 
+    /// Constructs a Command by parsing the given input string.
+    macro_rules! cmd {
+        ($input:expr) => {{
+            crate::parser::parse_command(&format!("{}\n", $input)).expect("invalid command")
+        }};
+    }
+
     /// Tests Command.pos_args() and key_args().
     #[test]
     fn command_pos_key_args() {
-        let mut cmd = Command {
-            name: "name".to_string(),
-            args: Vec::new(),
-            prefix: None,
-            silent: false,
-            line_number: 0,
-        };
-
         // Empty argument list.
+        let cmd = cmd!("cmd");
         assert!(cmd.pos_args().is_empty());
         assert!(cmd.key_args().is_empty());
 
         // Only key/value arguments.
-        cmd.args = vec![arg!("key" => "value"), arg!("foo" => "bar")];
+        let cmd = cmd!("cmd key=value foo=bar");
         assert!(cmd.pos_args().is_empty());
         assert_eq!(cmd.key_args(), vec![&cmd.args[0], &cmd.args[1]]);
 
         // Only positional arguments.
-        cmd.args = vec![arg!("foo"), arg!("value")];
+        let cmd = cmd!("cmd foo value");
         assert_eq!(cmd.pos_args(), vec![&cmd.args[0], &cmd.args[1]]);
         assert!(cmd.key_args().is_empty());
 
         // Mixed arguments.
-        cmd.args = vec![arg!("foo"), arg!("foo" => "bar"), arg!("value"), arg!("key" => "value")];
+        let cmd = cmd!("cmd foo foo=bar value key=value");
         assert_eq!(cmd.pos_args(), vec![&cmd.args[0], &cmd.args[2]]);
         assert_eq!(cmd.key_args(), vec![&cmd.args[1], &cmd.args[3]]);
 
         // Duplicate key/value arguments.
-        cmd.args = vec![arg!("key" => "1"), arg!("key" => "2"), arg!("key" => "3")];
+        let cmd = cmd!("cmd key=1 key=2 key=3");
         assert!(cmd.pos_args().is_empty());
         assert_eq!(cmd.key_args(), vec![&cmd.args[0], &cmd.args[1], &cmd.args[2]]);
     }
