@@ -1,5 +1,9 @@
 # Unreleased
 
+**Breaking changes**
+
+* Remove `Command.pos_args()` and `key_args()`, use `consume_args()`.
+
 **Improvements**
 
 * Add `Command.consume_args()` for convenient argument handling.

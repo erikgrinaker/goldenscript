@@ -39,16 +39,6 @@ impl Command {
     pub fn consume_args(&self) -> ArgumentConsumer<'_> {
         ArgumentConsumer::new(&self.args)
     }
-
-    /// Returns all key/value arguments, in their original order.
-    pub fn key_args(&self) -> Vec<&Argument> {
-        self.args.iter().filter(|a| a.key.is_some()).collect()
-    }
-
-    /// Returns all positional arguments (no key), in their original order.
-    pub fn pos_args(&self) -> Vec<&Argument> {
-        self.args.iter().filter(|a| a.key.is_none()).collect()
-    }
 }
 
 /// A command argument.
@@ -198,35 +188,6 @@ mod tests {
         ($input:expr) => {{
             crate::parser::parse_command(&format!("{}\n", $input)).expect("invalid command")
         }};
-    }
-
-    /// Tests Command.pos_args() and key_args().
-    #[test]
-    fn command_pos_key_args() {
-        // Empty argument list.
-        let cmd = cmd!("cmd");
-        assert!(cmd.pos_args().is_empty());
-        assert!(cmd.key_args().is_empty());
-
-        // Only key/value arguments.
-        let cmd = cmd!("cmd key=value foo=bar");
-        assert!(cmd.pos_args().is_empty());
-        assert_eq!(cmd.key_args(), vec![&cmd.args[0], &cmd.args[1]]);
-
-        // Only positional arguments.
-        let cmd = cmd!("cmd foo value");
-        assert_eq!(cmd.pos_args(), vec![&cmd.args[0], &cmd.args[1]]);
-        assert!(cmd.key_args().is_empty());
-
-        // Mixed arguments.
-        let cmd = cmd!("cmd foo foo=bar value key=value");
-        assert_eq!(cmd.pos_args(), vec![&cmd.args[0], &cmd.args[2]]);
-        assert_eq!(cmd.key_args(), vec![&cmd.args[1], &cmd.args[3]]);
-
-        // Duplicate key/value arguments.
-        let cmd = cmd!("cmd key=1 key=2 key=3");
-        assert!(cmd.pos_args().is_empty());
-        assert_eq!(cmd.key_args(), vec![&cmd.args[0], &cmd.args[1], &cmd.args[2]]);
     }
 
     /// Tests Argument.name().
