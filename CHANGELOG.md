@@ -1,15 +1,21 @@
-# Unreleased
+# 0.4.0 (2024-05-29)
 
 **Breaking changes**
 
-* Remove `Command.pos_args()` and `key_args()`, use `consume_args()`.
-* Return `ErrorKind::Other` from `run()` on command failure.
+* [`92ca419`] Remove `Command.pos_args()` and `key_args()`, use `consume_args()`.
+* [`1b54d07`] Return `ErrorKind::Other` from `run()` on command failure.
 
 **Improvements**
 
-* Add `!` syntax to expect command failures (panics or errors).
-* Add `Command.consume_args()` for convenient argument handling.
-* Allow `@` in unquoted strings.
+* [`bc9c253`] Add `!` syntax to expect command failures (panics or errors).
+* [`ae78f9e`] Add `Command.consume_args()` for convenient argument handling.
+* [`6e8c185`] Allow `@` in unquoted strings.
+
+[`92ca419`]: https://github.com/erikgrinaker/goldenscript/commit/92ca419d7618419adc4890994f40e1a577c705f4
+[`1b54d07`]: https://github.com/erikgrinaker/goldenscript/commit/1b54d07d47a379b6bc4c8b95f31d7b06c79394ff
+[`bc9c253`]: https://github.com/erikgrinaker/goldenscript/commit/bc9c2539c144fecc7496017113b1d7759c1a4794
+[`ae78f9e`]: https://github.com/erikgrinaker/goldenscript/commit/ae78f9eef1b5fc8007bd63165c4e8493e93ec692
+[`6e8c185`]: https://github.com/erikgrinaker/goldenscript/commit/6e8c185a252045100a99782317730e6ed2de05c3
 
 # 0.3.0 (2024-05-25)
 
