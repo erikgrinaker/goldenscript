@@ -119,7 +119,7 @@ pub fn generate<R: Runner>(runner: &mut R, input: &str) -> std::io::Result<Strin
             // Execute the command.
             let mut command_output = runner.run(command).map_err(|e| {
                 std::io::Error::new(
-                    std::io::ErrorKind::InvalidInput,
+                    std::io::ErrorKind::Other,
                     format!(
                         "command '{}' failed at line {}: {e}",
                         command.name, command.line_number

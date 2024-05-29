@@ -3,6 +3,7 @@
 **Breaking changes**
 
 * Remove `Command.pos_args()` and `key_args()`, use `consume_args()`.
+* Return `ErrorKind::Other` from `run()` on command failure.
 
 **Improvements**
 
