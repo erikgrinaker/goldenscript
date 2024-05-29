@@ -8,7 +8,7 @@
 
 command
 ---
-Command { name: "command", args: [], prefix: None, silent: false, line_number: 9 }
+Command { name: "command", args: [], prefix: None, silent: false, fail: false, line_number: 9 }
 
 
   # Comment.
@@ -18,7 +18,7 @@ Command { name: "command", args: [], prefix: None, silent: false, line_number: 9
 
 command     arg
 ---
-Command { name: "command", args: [Argument { key: None, value: "arg" }], prefix: None, silent: false, line_number: 19 }
+Command { name: "command", args: [Argument { key: None, value: "arg" }], prefix: None, silent: false, fail: false, line_number: 19 }
 
 
 

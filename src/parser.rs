@@ -98,8 +98,12 @@ fn command(input: Span) -> IResult<Command> {
     let (input, maybe_silent) = opt(terminated(char('('), space0))(input)?;
     let silent = maybe_silent.is_some();
 
-    // The command itself.
+    // The prefix and fail marker.
     let (input, prefix) = opt(terminated(identifier, pair(tag(":"), space0)))(input)?;
+    let (input, maybe_fail) = opt(terminated(char('!'), space0))(input)?;
+    let fail = maybe_fail.is_some();
+
+    // The command itself.
     let line_number = input.location_line();
     let (input, name) = identifier(input)?;
     let (mut input, args) = many0(preceded(space1, argument))(input)?;
@@ -114,7 +118,7 @@ fn command(input: Span) -> IResult<Command> {
     let (input, _) = opt(comment)(input)?;
     let (input, _) = line_ending(input)?;
 
-    Ok((input, Command { name, args, prefix, silent, line_number }))
+    Ok((input, Command { name, args, prefix, silent, fail, line_number }))
 }
 
 /// Parses a single command argument, consisting of an argument value and

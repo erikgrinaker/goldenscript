@@ -7,6 +7,7 @@
 
 **Improvements**
 
+* Add `!` syntax to expect command failures (panics or errors).
 * Add `Command.consume_args()` for convenient argument handling.
 * Allow `@` in unquoted strings.
 

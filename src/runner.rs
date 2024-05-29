@@ -116,16 +116,52 @@ pub fn generate<R: Runner>(runner: &mut R, input: &str) -> std::io::Result<Strin
         ));
 
         for command in &block.commands {
-            // Execute the command.
-            let mut command_output = runner.run(command).map_err(|e| {
-                std::io::Error::new(
-                    std::io::ErrorKind::Other,
-                    format!(
-                        "command '{}' failed at line {}: {e}",
-                        command.name, command.line_number
-                    ),
-                )
-            })?;
+            // Execute the command. Handle panics and errors if requested. We
+            // assume the command is unwind-safe when handling panics, it is up
+            // to callers to manage this appropriately.
+            let run = std::panic::AssertUnwindSafe(|| runner.run(command));
+            let mut command_output = match std::panic::catch_unwind(run) {
+                // Unexpected success, error out.
+                Ok(Ok(output)) if command.fail => {
+                    return Err(std::io::Error::new(
+                        std::io::ErrorKind::Other,
+                        format!(
+                            "expected command '{}' to fail at line {}, succeeded with: {output}",
+                            command.name, command.line_number
+                        ),
+                    ))
+                }
+
+                // Expected success, output the result.
+                Ok(Ok(output)) => output,
+
+                // Expected error, output it.
+                Ok(Err(e)) if command.fail => format!("Error: {e}"),
+
+                // Unexpected error, return it.
+                Ok(Err(e)) => {
+                    return Err(std::io::Error::new(
+                        std::io::ErrorKind::Other,
+                        format!(
+                            "command '{}' failed at line {}: {e}",
+                            command.name, command.line_number
+                        ),
+                    ))
+                }
+
+                // Expected panic, output it.
+                Err(panic) if command.fail => {
+                    let message = panic
+                        .downcast_ref::<&str>()
+                        .map(|s| s.to_string())
+                        .or_else(|| panic.downcast_ref::<String>().cloned())
+                        .unwrap_or_else(|| std::panic::resume_unwind(panic));
+                    format!("Panic: {message}")
+                }
+
+                // Unexpected panic, throw it.
+                Err(panic) => std::panic::resume_unwind(panic),
+            };
 
             // Silence the output if requested.
             if command.silent {

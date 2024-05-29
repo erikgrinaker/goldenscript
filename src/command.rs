@@ -26,6 +26,9 @@ pub struct Command {
     /// Silences the output of this command. This is handled automatically, the
     /// [`Runner`](crate::Runner) does not have to take this into account.
     pub silent: bool,
+    /// If true, the command is expected to fail with a panic or error. If the
+    /// command does not fail, the test fails.
+    pub fail: bool,
     /// The command's line number position in the script.
     pub line_number: u32,
 }

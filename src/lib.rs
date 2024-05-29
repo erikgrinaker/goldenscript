@@ -187,9 +187,9 @@
 //!     ```
 //!
 //! * [**Prefix:**](Command::prefix) an optional :-terminated string prefix
-//!   before the command name. The command's output will be given the same
-//!   prefix. The prefix can be used by the test runner, e.g. to signify two
-//!   different clients.
+//!   before the command. The command's output will be given the same prefix.
+//!   The prefix can be used by the test runner, e.g. to signify two different
+//!   clients.
 //!
 //!     ```text
 //!     client1: put key=value
@@ -208,6 +208,21 @@
 //!     (echo bar)
 //!     ---
 //!     foo
+//!     ```
+//!
+//! * [**Failure:**](Command::fail) if `!` precedes the command, it is expected
+//!   to fail with an error or panic, and the failure message is used as output.
+//!   If the command unexpectedly succeeds, the test fails. If the line contains
+//!   other symbols before the command name (e.g. a prefix or silencing), the
+//!   `!` must be used immediately before the command name.
+//!
+//!     ```text
+//!     ! command error=foo
+//!     prefix: ! command panic=bar
+//!     (!command error=foo)
+//!     ---
+//!     Error: foo
+//!     prefix: Panic: bar
 //!     ```
 //!
 //! ## Output

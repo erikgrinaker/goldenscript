@@ -27,25 +27,36 @@ fn test_generate([in_path, out_path]: [&std::path::Path; 2]) {
 }
 
 // Generate error tests for each pair of *.in and *.error files in tests/errors/.
-// The input scripts are expected to error with the stored output.
+// The input scripts are expected to error or panic with the stored output.
 test_each_path! { for ["in", "error"] in "tests/errors" as errors => test_error }
 
 fn test_error([in_path, out_path]: [&std::path::Path; 2]) {
     let input = std::fs::read_to_string(in_path).expect("failed to read file");
-    let error =
-        goldenscript::generate(&mut DebugRunner::new(), &input).expect_err("script succeeded");
+    let run =
+        std::panic::AssertUnwindSafe(|| goldenscript::generate(&mut DebugRunner::new(), &input));
+    let message = match std::panic::catch_unwind(run) {
+        Ok(Ok(_)) => panic!("script succeeded"),
+        Ok(Err(e)) => e.to_string(),
+        Err(panic) => panic
+            .downcast_ref::<&str>()
+            .map(|s| s.to_string())
+            .or_else(|| panic.downcast_ref::<String>().cloned())
+            .unwrap_or_else(|| std::panic::resume_unwind(panic)),
+    };
 
     let dir = out_path.parent().expect("invalid path");
     let filename = out_path.file_name().expect("invalid path");
     let mut mint = goldenfile::Mint::new(dir);
     let mut f = mint.new_goldenfile(filename).expect("failed to create goldenfile");
-    f.write_all(error.to_string().as_bytes()).expect("failed to write goldenfile");
+    f.write_all(message.as_bytes()).expect("failed to write goldenfile");
 }
 
 /// A goldenscript runner that debug-prints the parsed command. It
 /// understands the following special commands:
 ///
 /// _echo: prints back the arguments, one per line
+/// _error: errors with the given string
+/// _panic: panics with the given string
 /// _set: sets various options
 ///
 ///   - prefix=<string>: printed immediately before the command output
@@ -53,6 +64,8 @@ fn test_error([in_path, out_path]: [&std::path::Path; 2]) {
 ///   - start_block=<string>: printed at the start of a block
 ///   - end_block=<string>: printed at the end of a block
 ///
+/// If a command is expected to fail via !, the parsed command string is
+/// returned as an error.
 #[derive(Default)]
 struct DebugRunner {
     prefix: String,
@@ -80,6 +93,16 @@ impl goldenscript::Runner for DebugRunner {
                 command.args.iter().map(|a| a.value.clone()).collect::<Vec<String>>().join(" ")
             }
 
+            "_error" => {
+                let message = command.args.first().map(|a| a.value.as_str()).unwrap_or("error");
+                return Err(message.to_string().into());
+            }
+
+            "_panic" => {
+                let message = command.args.first().map(|a| a.value.as_str()).unwrap_or("panic");
+                panic!("{message}");
+            }
+
             "_set" => {
                 for arg in &command.args {
                     match arg.key.as_deref() {
@@ -93,6 +116,8 @@ impl goldenscript::Runner for DebugRunner {
                 }
                 return Ok(String::new());
             }
+
+            _ if command.fail => return Err(format!("{command:?}").into()),
 
             _ => format!("{command:?}"),
         };

@@ -2,12 +2,12 @@
 # an empty block at the end of the file.
 command
 ---
-Command { name: "command", args: [], prefix: None, silent: false, line_number: 3 }
+Command { name: "command", args: [], prefix: None, silent: false, fail: false, line_number: 3 }
 
 command
 ---
-Command { name: "command", args: [], prefix: None, silent: false, line_number: 6 }
+Command { name: "command", args: [], prefix: None, silent: false, fail: false, line_number: 6 }
 
 command
 ---
-Command { name: "command", args: [], prefix: None, silent: false, line_number: 9 }
+Command { name: "command", args: [], prefix: None, silent: false, fail: false, line_number: 9 }
