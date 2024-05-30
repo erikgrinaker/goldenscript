@@ -73,7 +73,7 @@ end
 command
 ---
 start
-Command { name: "command", args: [], prefix: None, silent: false, fail: false, line_number: 70 }
+Command { name: "command", args: [], prefix: None, silent: false, fail: false, line_number: 73 }
 end
 
 (_set start_command="start\n\n" end_command="end\n\n")
@@ -81,6 +81,6 @@ command
 ---
 > start
 > 
-> Command { name: "command", args: [], prefix: None, silent: false, fail: false, line_number: 77 }
+> Command { name: "command", args: [], prefix: None, silent: false, fail: false, line_number: 80 }
 > end
 > 
