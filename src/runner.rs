@@ -34,6 +34,22 @@ pub trait Runner {
     fn end_block(&mut self) -> Result<String, Box<dyn Error>> {
         Ok(String::new())
     }
+
+    /// Called at the start of a command. Used e.g. for setup. Any output is
+    /// prepended to the command's output, and is affected e.g. by the prefix
+    /// and silencing of the command.
+    #[allow(unused_variables)]
+    fn start_command(&mut self, command: &Command) -> Result<String, Box<dyn Error>> {
+        Ok(String::new())
+    }
+
+    /// Called at the end of a command. Used e.g. for cleanup. Any output is
+    /// appended to the command's output, and is affected e.g. by the prefix and
+    /// silencing of the command.
+    #[allow(unused_variables)]
+    fn end_command(&mut self, command: &Command) -> Result<String, Box<dyn Error>> {
+        Ok(String::new())
+    }
 }
 
 /// Runs a goldenscript at the given path.
@@ -116,11 +132,24 @@ pub fn generate<R: Runner>(runner: &mut R, input: &str) -> std::io::Result<Strin
         ));
 
         for command in &block.commands {
+            let mut command_output = String::new();
+
+            // Call the start_command() hook.
+            command_output.push_str(&ensure_eol(
+                runner.start_command(command).map_err(|e| {
+                    std::io::Error::new(
+                        std::io::ErrorKind::Other,
+                        format!("start_command failed at line {}: {e}", command.line_number),
+                    )
+                })?,
+                eol,
+            ));
+
             // Execute the command. Handle panics and errors if requested. We
             // assume the command is unwind-safe when handling panics, it is up
             // to callers to manage this appropriately.
             let run = std::panic::AssertUnwindSafe(|| runner.run(command));
-            let mut command_output = match std::panic::catch_unwind(run) {
+            command_output.push_str(&match std::panic::catch_unwind(run) {
                 // Unexpected success, error out.
                 Ok(Ok(output)) if command.fail => {
                     return Err(std::io::Error::new(
@@ -161,10 +190,21 @@ pub fn generate<R: Runner>(runner: &mut R, input: &str) -> std::io::Result<Strin
 
                 // Unexpected panic, throw it.
                 Err(panic) => std::panic::resume_unwind(panic),
-            };
+            });
 
             // Make sure the command output has a trailing newline, unless empty.
             command_output = ensure_eol(command_output, eol);
+
+            // Call the end_command() hook.
+            command_output.push_str(&ensure_eol(
+                runner.end_command(command).map_err(|e| {
+                    std::io::Error::new(
+                        std::io::ErrorKind::Other,
+                        format!("end_command failed at line {}: {e}", command.line_number),
+                    )
+                })?,
+                eol,
+            ));
 
             // Silence the output if requested.
             if command.silent {
@@ -257,6 +297,8 @@ mod tests {
         end_script_count: usize,
         start_block_count: usize,
         end_block_count: usize,
+        start_command_count: usize,
+        end_command_count: usize,
     }
 
     impl Runner for HookRunner {
@@ -283,6 +325,16 @@ mod tests {
             self.end_block_count += 1;
             Ok(String::new())
         }
+
+        fn start_command(&mut self, _: &Command) -> Result<String, Box<dyn Error>> {
+            self.start_command_count += 1;
+            Ok(String::new())
+        }
+
+        fn end_command(&mut self, _: &Command) -> Result<String, Box<dyn Error>> {
+            self.end_command_count += 1;
+            Ok(String::new())
+        }
     }
 
     /// Tests that runner hooks are called as expected.
@@ -296,6 +348,7 @@ command
 ---
 
 command
+command
 ---
 "#,
         )
@@ -305,5 +358,7 @@ command
         assert_eq!(runner.end_script_count, 1);
         assert_eq!(runner.start_block_count, 2);
         assert_eq!(runner.end_block_count, 2);
+        assert_eq!(runner.start_command_count, 3);
+        assert_eq!(runner.end_command_count, 3);
     }
 }

@@ -395,8 +395,9 @@
 //!
 //! Runners have various hooks that will be called during script execution:
 //! [`Runner::start_script`], [`Runner::end_script`], [`Runner::start_block`],
-//! and [`Runner::end_block`]. These can be used e.g. for initial setup,
-//! invariant assertions, or to output the current state.
+//! [`Runner::end_block`], [`Runner::start_command`], and
+//! [`Runner::end_command`]. These can be used e.g. for initial setup, invariant
+//! assertions, or to output the current state.
 
 #![warn(clippy::all)]
 

@@ -41,3 +41,46 @@ command
 > 
 > Command { name: "command", args: [], prefix: None, silent: false, fail: false, line_number: 38 }
 > end
+
+_set start_block="" end_block=""
+---
+> start
+> 
+
+# Command hooks should be called before/after each command. It should be affected
+# by command prefixes and silencing.
+(_set start_command="start" end_command="end")
+command
+prefix: command
+(command)
+---
+start
+Command { name: "command", args: [], prefix: None, silent: false, fail: false, line_number: 53 }
+end
+prefix: start
+prefix: Command { name: "command", args: [], prefix: Some("prefix"), silent: false, fail: false, line_number: 54 }
+prefix: end
+
+# They should also be called after commands that were expected to fail.
+! _panic foo
+---
+start
+Panic: foo
+end
+
+# Newlines should be handled properly.
+(_set start_command="start\n" end_command="end\n")
+command
+---
+start
+Command { name: "command", args: [], prefix: None, silent: false, fail: false, line_number: 70 }
+end
+
+(_set start_command="start\n\n" end_command="end\n\n")
+command
+---
+> start
+> 
+> Command { name: "command", args: [], prefix: None, silent: false, fail: false, line_number: 77 }
+> end
+> 

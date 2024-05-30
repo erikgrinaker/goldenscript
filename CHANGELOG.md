@@ -4,6 +4,10 @@
 
 * Fix spurious prefix emission with blank lines or empty output.
 
+**Improvements**
+
+* Add `Runner.start_command()` and `end_command()` hooks.
+
 # 0.4.0 (2024-05-29)
 
 **Breaking changes**

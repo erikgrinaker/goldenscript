@@ -62,7 +62,9 @@ fn test_error([in_path, out_path]: [&std::path::Path; 2]) {
 ///   - prefix=<string>: printed immediately before the command output
 ///   - suffix=<string>: printed immediately after the command output
 ///   - start_block=<string>: printed at the start of a block
+///   - start_command=<string>: printed at the start of a command
 ///   - end_block=<string>: printed at the end of a block
+///   - end_command=<string>: printed at the end of a command
 ///
 /// If a command is expected to fail via !, the parsed command string is
 /// returned as an error.
@@ -72,6 +74,8 @@ struct DebugRunner {
     suffix: String,
     start_block: String,
     end_block: String,
+    start_command: String,
+    end_command: String,
 }
 
 impl DebugRunner {
@@ -110,6 +114,8 @@ impl goldenscript::Runner for DebugRunner {
                         Some("suffix") => self.suffix = arg.value.clone(),
                         Some("start_block") => self.start_block = arg.value.clone(),
                         Some("end_block") => self.end_block = arg.value.clone(),
+                        Some("start_command") => self.start_command = arg.value.clone(),
+                        Some("end_command") => self.end_command = arg.value.clone(),
                         Some(key) => return Err(format!("unknown argument key {key}").into()),
                         None => return Err("argument must have a key".into()),
                     }
@@ -131,6 +137,14 @@ impl goldenscript::Runner for DebugRunner {
 
     fn end_block(&mut self) -> Result<String, Box<dyn Error>> {
         Ok(self.end_block.clone())
+    }
+
+    fn start_command(&mut self, _: &goldenscript::Command) -> Result<String, Box<dyn Error>> {
+        Ok(self.start_command.clone())
+    }
+
+    fn end_command(&mut self, _: &goldenscript::Command) -> Result<String, Box<dyn Error>> {
+        Ok(self.end_command.clone())
     }
 }
 
