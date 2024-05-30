@@ -1,3 +1,9 @@
+# Unreleased
+
+**Bug Fixes**
+
+* Fix spurious prefix emission with blank lines or empty output.
+
 # 0.4.0 (2024-05-29)
 
 **Breaking changes**

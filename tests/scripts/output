@@ -64,6 +64,20 @@ _set start_block="" end_block=""
 ---
 ok
 
+# Prefixes should handle empty output and output ending with a newline properly.
+prefix: _echo ""
+---
+ok
+
+prefix: _echo "\n"
+---
+prefix: 
+
+prefix: _echo "\n\n"
+---
+prefix: 
+prefix: 
+
 # Lines only containing whitespace are not considered empty, and not prefixed.
 # The output parser also handles them correctly when parsing this file.
 _set prefix= suffix=

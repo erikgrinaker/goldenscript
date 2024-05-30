@@ -54,7 +54,7 @@ fn test_error([in_path, out_path]: [&std::path::Path; 2]) {
 /// A goldenscript runner that debug-prints the parsed command. It
 /// understands the following special commands:
 ///
-/// _echo: prints back the arguments, one per line
+/// _echo: prints back the arguments, space-separated
 /// _error: errors with the given string
 /// _panic: panics with the given string
 /// _set: sets various options

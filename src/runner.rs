@@ -163,6 +163,9 @@ pub fn generate<R: Runner>(runner: &mut R, input: &str) -> std::io::Result<Strin
                 Err(panic) => std::panic::resume_unwind(panic),
             };
 
+            // Make sure the command output has a trailing newline, unless empty.
+            command_output = ensure_eol(command_output, eol);
+
             // Silence the output if requested.
             if command.silent {
                 command_output = "".to_string();
@@ -170,14 +173,16 @@ pub fn generate<R: Runner>(runner: &mut R, input: &str) -> std::io::Result<Strin
 
             // Prefix output lines if requested.
             if let Some(prefix) = &command.prefix {
-                command_output = format!(
-                    "{prefix}: {}{eol}",
-                    command_output.replace('\n', &format!("\n{prefix}: "))
-                );
+                if !command_output.is_empty() {
+                    command_output = format!(
+                        "{prefix}: {}{eol}",
+                        command_output
+                            .strip_suffix(eol)
+                            .unwrap_or(command_output.as_str())
+                            .replace('\n', &format!("\n{prefix}: "))
+                    );
+                }
             }
-
-            // Make sure the command output has a trailing newline, unless empty.
-            command_output = ensure_eol(command_output, eol);
 
             block_output.push_str(&command_output);
         }
