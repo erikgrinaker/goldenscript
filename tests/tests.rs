@@ -148,32 +148,55 @@ impl goldenscript::Runner for DebugRunner {
     }
 }
 
-/// A runner for dateparser tests. This is used to generate example
-/// goldenscripts for the documentation in src/lib.rs.
-struct DateParserRunner;
+/// A runner for BTreeMap tests. This is used as a documentation example.
+#[derive(Default)]
+struct BTreeMapRunner {
+    map: std::collections::BTreeMap<String, String>,
+}
 
-impl goldenscript::Runner for DateParserRunner {
+impl goldenscript::Runner for BTreeMapRunner {
     fn run(&mut self, command: &goldenscript::Command) -> Result<String, Box<dyn Error>> {
-        // Only accept a parse command with a single argument.
-        if command.name != "parse" {
-            return Err(format!("invalid command {}", command.name).into());
-        }
-        if command.args.len() != 1 {
-            return Err("parse takes 1 argument".into());
-        }
+        let mut output = String::new();
+        match command.name.as_str() {
+            // get KEY: fetches the value of the given key, or None if it does not exist.
+            "get" => {
+                let mut args = command.consume_args();
+                let key = &args.next_pos().ok_or("key not given")?.value;
+                args.reject_rest()?;
+                let value = self.map.get(key);
+                output.push_str(&format!("get → {value:?}\n"))
+            }
 
-        // Parse the timestamp, and output the RFC 3339 timestamp or error string.
-        let input = &command.args[0].value;
-        match ::dateparser::parse_with(input, &chrono::offset::Utc, chrono::NaiveTime::MIN) {
-            Ok(datetime) => Ok(datetime.to_rfc3339()),
-            Err(error) => Ok(format!("Error: {error}")),
-        }
+            // insert KEY=VALUE...: inserts the given key/value pairs, returning the old value.
+            "insert" => {
+                let mut args = command.consume_args();
+                for arg in args.rest_key() {
+                    let old = self.map.insert(arg.key.clone().unwrap(), arg.value.clone());
+                    output.push_str(&format!("insert → {old:?}\n"));
+                }
+                args.reject_rest()?;
+            }
+
+            // range [FROM] [TO]: iterates over the key/value pairs in the range from..to.
+            "range" => {
+                use std::ops::Bound::*;
+                let mut args = command.consume_args();
+                let from = args.next_pos().map(|a| Included(a.value.clone())).unwrap_or(Unbounded);
+                let to = args.next_pos().map(|a| Excluded(a.value.clone())).unwrap_or(Unbounded);
+                args.reject_rest()?;
+                for (key, value) in self.map.range((from, to)) {
+                    output.push_str(&format!("{key}={value}\n"));
+                }
+            }
+
+            name => return Err(format!("invalid command {name}").into()),
+        };
+        Ok(output)
     }
 }
 
-// Run goldenscripts in tests/dateparser, for use in documentation.
-test_each_path! { in "tests/dateparser" as dateparser => test_dateparser }
-
-fn test_dateparser(path: &std::path::Path) {
-    goldenscript::run(&mut DateParserRunner, path).expect("runner failed")
+#[test]
+fn btreemap() {
+    goldenscript::run(&mut BTreeMapRunner::default(), "tests/btreemap")
+        .expect("goldenscript failed")
 }

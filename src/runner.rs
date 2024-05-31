@@ -6,9 +6,15 @@ use std::io::Write as _;
 
 /// Runs goldenscript commands, returning their output.
 pub trait Runner {
-    /// Runs a goldenscript command, returning its output, or a string error if
-    /// the command failed. To test error cases, return an `Ok` result
-    /// containing e.g. the error message as output.
+    /// Runs a goldenscript command, returning its output, or an error if the
+    /// command fails.
+    ///
+    /// Arguments can be accessed directly via [`Command::args`], or by using
+    /// the [`Command::consume_args`] helper for more convenient processing.
+    ///
+    /// Error cases are typically tested by running the command with a `!`
+    /// prefix (expecting a failure), but the runner can also handle these
+    /// itself and return an `Ok` result with appropriate output.
     fn run(&mut self, command: &Command) -> Result<String, Box<dyn Error>>;
 
     /// Called at the start of a goldenscript. Used e.g. for initial setup.
