@@ -2,11 +2,14 @@
 
 **Bug Fixes**
 
-* Fix spurious prefix emission with blank lines or empty output.
+* [`9a824ad`] Fix spurious prefix emission with blank lines or empty output.
 
 **Improvements**
 
-* Add `Runner.start_command()` and `end_command()` hooks.
+* [`4fad99e`] Add `Runner.start_command()` and `end_command()` hooks.
+
+[`9a824ad`]: https://github.com/erikgrinaker/goldenscript/commit/9a824add3e26c3e1ba31611f9f962a734700a5b3
+[`4fad99e`]: https://github.com/erikgrinaker/goldenscript/commit/4fad99e7f8c5fb604da35ed54b9037f2d1058d59
 
 # 0.4.0 (2024-05-29)
 
