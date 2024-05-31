@@ -109,7 +109,6 @@
 //!
 //! ```
 //! # use std::error::Error;
-//!
 //! #[derive(Default)]
 //! struct BTreeMapRunner {
 //!     map: std::collections::BTreeMap<String, String>,
