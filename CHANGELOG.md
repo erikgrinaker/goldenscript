@@ -1,4 +1,4 @@
-# Unreleased
+# 0.5.0 (2024-05-31)
 
 **Bug Fixes**
 
