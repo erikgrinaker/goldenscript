@@ -1,3 +1,9 @@
+# Unreleased
+
+**Improvements**
+
+* Allow empty commands, keys, and prefixes.
+
 # 0.5.0 (2024-05-31)
 
 **Bug Fixes**

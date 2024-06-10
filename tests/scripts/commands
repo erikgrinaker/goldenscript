@@ -24,17 +24,21 @@ b: Command { name: "bar", args: [Argument { key: Some("key"), value: "value" }],
 ---
 Error: Command { name: "foo", args: [Argument { key: None, value: "bar" }], prefix: None, silent: false, fail: true, line_number: 23 }
 
-# Both prefixes, commands, and argument identifiers can be whitespace, but not
-# empty (tested under errors/).
+# Prefixes, commands, and keys can be empty.
+"": "" ""=""
+---
+: Command { name: "", args: [Argument { key: Some(""), value: "" }], prefix: Some(""), silent: false, fail: false, line_number: 28 }
+
+# Prefixes, commands, and keys can be whitespace.
 " ": " " " "=" "
 ---
- : Command { name: " ", args: [Argument { key: Some(" "), value: " " }], prefix: Some(" "), silent: false, fail: false, line_number: 29 }
+ : Command { name: " ", args: [Argument { key: Some(" "), value: " " }], prefix: Some(" "), silent: false, fail: false, line_number: 33 }
 
-# Empty argument values are fine.
+# Empty argument keys and values are fine.
 command ""
 command arg=""
 command arg=
 ---
-Command { name: "command", args: [Argument { key: None, value: "" }], prefix: None, silent: false, fail: false, line_number: 34 }
-Command { name: "command", args: [Argument { key: Some("arg"), value: "" }], prefix: None, silent: false, fail: false, line_number: 35 }
-Command { name: "command", args: [Argument { key: Some("arg"), value: "" }], prefix: None, silent: false, fail: false, line_number: 36 }
+Command { name: "command", args: [Argument { key: None, value: "" }], prefix: None, silent: false, fail: false, line_number: 38 }
+Command { name: "command", args: [Argument { key: Some("arg"), value: "" }], prefix: None, silent: false, fail: false, line_number: 39 }
+Command { name: "command", args: [Argument { key: Some("arg"), value: "" }], prefix: None, silent: false, fail: false, line_number: 40 }

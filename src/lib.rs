@@ -185,7 +185,7 @@
 //!
 //! ## Commands
 //!
-//! A [`Command`] must have a command name, which can be any arbitrary non-empty
+//! A [`Command`] must have a command name, which can be any arbitrary
 //! [string](#strings), e.g.:
 //!
 //! ```text
@@ -198,8 +198,9 @@
 //!
 //! * [**Arguments:**](Argument) any number of space-separated arguments.
 //!   These have a string [value](Argument::value), and optionally also a string
-//!   [key](Argument::key) as `key=value`. Values can be empty, and duplicate
-//!   keys are allowed by the parser (the runner can handle this as desired).
+//!   [key](Argument::key) as `key=value`. Keys and values can be empty, and
+//!   duplicate keys are allowed by the parser (the runner can handle this as
+//!   desired).
 //!
 //!     ```text
 //!     command argument key=value

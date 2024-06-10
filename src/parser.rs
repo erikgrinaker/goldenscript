@@ -99,13 +99,13 @@ fn command(input: Span) -> IResult<Command> {
     let silent = maybe_silent.is_some();
 
     // The prefix and fail marker.
-    let (input, prefix) = opt(terminated(identifier, pair(tag(":"), space0)))(input)?;
+    let (input, prefix) = opt(terminated(string, pair(tag(":"), space0)))(input)?;
     let (input, maybe_fail) = opt(terminated(char('!'), space0))(input)?;
     let fail = maybe_fail.is_some();
 
     // The command itself.
     let line_number = input.location_line();
-    let (input, name) = identifier(input)?;
+    let (input, name) = string(input)?;
     let (mut input, args) = many0(preceded(space1, argument))(input)?;
 
     // If silenced, look for the closing brace.
@@ -124,7 +124,7 @@ fn command(input: Span) -> IResult<Command> {
 /// Parses a single command argument, consisting of an argument value and
 /// optionally a key separated by =.
 fn argument(input: Span) -> IResult<Argument> {
-    if let Ok((input, (key, value))) = separated_pair(identifier, tag("="), opt(string))(input) {
+    if let Ok((input, (key, value))) = separated_pair(string, tag("="), opt(string))(input) {
         return Ok((input, Argument { key: Some(key), value: value.unwrap_or_default() }));
     }
     let (input, value) = string(input)?;
@@ -146,12 +146,6 @@ fn output(input: Span) -> IResult<Span> {
     }
     // TODO: many_till(anychar) is probably too expensive.
     recognize(many_till(anychar, pair(alt((line_ending, eof)), alt((line_ending, eof)))))(input)
-}
-
-/// Parses an identifier. This is any unquoted or quoted string that
-/// isn't entirely empty.
-fn identifier(input: Span) -> IResult<String> {
-    verify(string, |s: &str| !s.is_empty())(input)
 }
 
 /// Parses a string, both quoted (' or ") and unquoted.
