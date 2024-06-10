@@ -1,6 +1,7 @@
 #![warn(clippy::all)]
 
 use std::error::Error;
+use std::fmt::Write as _;
 use std::io::Write as _;
 use test_each_file::test_each_path;
 
@@ -164,7 +165,7 @@ impl goldenscript::Runner for BTreeMapRunner {
                 let key = &args.next_pos().ok_or("key not given")?.value;
                 args.reject_rest()?;
                 let value = self.map.get(key);
-                output.push_str(&format!("get → {value:?}\n"))
+                writeln!(output, "get → {value:?}")?;
             }
 
             // insert KEY=VALUE...: inserts the given key/value pairs, returning the old value.
@@ -172,7 +173,7 @@ impl goldenscript::Runner for BTreeMapRunner {
                 let mut args = command.consume_args();
                 for arg in args.rest_key() {
                     let old = self.map.insert(arg.key.clone().unwrap(), arg.value.clone());
-                    output.push_str(&format!("insert → {old:?}\n"));
+                    writeln!(output, "insert → {old:?}")?;
                 }
                 args.reject_rest()?;
             }
@@ -185,7 +186,7 @@ impl goldenscript::Runner for BTreeMapRunner {
                 let to = args.next_pos().map(|a| Excluded(a.value.clone())).unwrap_or(Unbounded);
                 args.reject_rest()?;
                 for (key, value) in self.map.range((from, to)) {
-                    output.push_str(&format!("{key}={value}\n"));
+                    writeln!(output, "{key}={value}")?;
                 }
             }
 
