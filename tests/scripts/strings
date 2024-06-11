@@ -40,13 +40,13 @@ command foo="" bar=''
 ---
 Command { name: "command", args: [Argument { key: Some("foo"), value: "" }, Argument { key: Some("bar"), value: "" }], prefix: None, silent: false, fail: false, line_number: 39 }
 
-# Escape sequences are respected both in single- and double-quotes, including
+# Escape sequences are respected both in single and double quotes, including
 # both quote types.
-'\\ \' \" \0 \n \r \t \\ \x00 \x7A \xff'
-"\\ \' \" \0 \n \r \t \\ \x00 \x7A \xff"
+'\\ \' \" \0 \n \r \t \\ \x00 \x7A \xff \u{1F44b}'
+"\\ \' \" \0 \n \r \t \\ \x00 \x7A \xff \u{1F44b}"
 ---
-Command { name: "\\ ' \" \0 \n \r \t \\ \0 z ÿ", args: [], prefix: None, silent: false, fail: false, line_number: 45 }
-Command { name: "\\ ' \" \0 \n \r \t \\ \0 z ÿ", args: [], prefix: None, silent: false, fail: false, line_number: 46 }
+Command { name: "\\ ' \" \0 \n \r \t \\ \0 z ÿ 👋", args: [], prefix: None, silent: false, fail: false, line_number: 45 }
+Command { name: "\\ ' \" \0 \n \r \t \\ \0 z ÿ 👋", args: [], prefix: None, silent: false, fail: false, line_number: 46 }
 
 # Quoted strings can contain the other, unescaped quote kind.
 '"'

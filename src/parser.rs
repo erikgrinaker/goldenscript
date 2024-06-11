@@ -1,7 +1,7 @@
 use crate::command::{Argument, Block, Command};
 
 use nom::branch::alt;
-use nom::bytes::complete::{escaped_transform, is_not, tag, take};
+use nom::bytes::complete::{escaped_transform, is_not, tag, take, take_while_m_n};
 use nom::character::complete::{
     alphanumeric1, anychar, char, line_ending, not_line_ending, space0, space1,
 };
@@ -199,6 +199,18 @@ fn quoted_string(quote: char) -> impl FnMut(Span) -> IResult<String> {
                         |input: Span| match u8::from_str_radix(input.fragment(), 16) {
                             Ok(byte) => Ok(char::from(byte)),
                             Err(_) => Err(Error::new(input, ErrorKind::HexDigit)),
+                        },
+                    ),
+                    map_res(
+                        delimited(
+                            tag("u{"),
+                            take_while_m_n(1, 6, |c: char| c.is_ascii_hexdigit()),
+                            tag("}"),
+                        ),
+                        |input: Span| {
+                            let codepoint = u32::from_str_radix(input.fragment(), 16)
+                                .or(Err(Error::new(input, ErrorKind::HexDigit)))?;
+                            char::from_u32(codepoint).ok_or(Error::new(input, ErrorKind::Char))
                         },
                     ),
                 )),

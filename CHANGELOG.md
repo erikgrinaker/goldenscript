@@ -3,6 +3,7 @@
 **Improvements**
 
 * Add `\x` escape sequence for hex bytes.
+* Add `\u{}` escape sequence for Unicode characters.
 * Allow empty commands, keys, and prefixes.
 
 # 0.5.0 (2024-05-31)
