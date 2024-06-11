@@ -1,11 +1,12 @@
 use crate::command::{Argument, Block, Command};
 
 use nom::branch::alt;
-use nom::bytes::complete::{escaped_transform, is_not, tag};
+use nom::bytes::complete::{escaped_transform, is_not, tag, take};
 use nom::character::complete::{
     alphanumeric1, anychar, char, line_ending, not_line_ending, space0, space1,
 };
-use nom::combinator::{consumed, eof, opt, peek, recognize, value, verify};
+use nom::combinator::{consumed, eof, map_res, opt, peek, recognize, value, verify};
+use nom::error::ErrorKind;
 use nom::multi::{many0, many0_count, many_till};
 use nom::sequence::{delimited, pair, preceded, separated_pair, terminated};
 use nom::Finish as _;
@@ -186,13 +187,20 @@ fn quoted_string(quote: char) -> impl FnMut(Span) -> IResult<String> {
                 is_not(format!("\\{q}").as_str()),
                 '\\',
                 alt((
-                    value("\'", tag("\'")),
-                    value("\"", tag("\"")),
-                    value("\\", tag("\\")),
-                    value("\0", tag("0")),
-                    value("\n", tag("n")),
-                    value("\r", tag("r")),
-                    value("\t", tag("t")),
+                    value('\'', tag("\'")),
+                    value('\"', tag("\"")),
+                    value('\\', tag("\\")),
+                    value('\0', tag("0")),
+                    value('\n', tag("n")),
+                    value('\r', tag("r")),
+                    value('\t', tag("t")),
+                    map_res(
+                        preceded(tag("x"), take(2usize)),
+                        |input: Span| match u8::from_str_radix(input.fragment(), 16) {
+                            Ok(byte) => Ok(char::from(byte)),
+                            Err(_) => Err(Error::new(input, ErrorKind::HexDigit)),
+                        },
+                    ),
                 )),
             ),
             tag(q),

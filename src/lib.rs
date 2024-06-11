@@ -295,7 +295,8 @@
 //! Strings can be quoted using `"` or `'`, in which case they can contain
 //! arbitrary Unicode characters. `\` is used as an escape character, both to
 //! escape quotes `\"` and `\'` as well as itself `\\`, and also `\0` (null),
-//! `\n` (newline), `\r` (carriage return), and `\t` (tab).
+//! `\n` (newline), `\r` (carriage return), and `\t` (tab). `\x` can be used
+//! to represent arbitrary hexadecimal characters, e.g. `\x7a`.
 //!
 //! ```text
 //! string
