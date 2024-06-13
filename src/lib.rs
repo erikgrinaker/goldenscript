@@ -46,17 +46,17 @@
 //!
 //! # Examples
 //!
-//! For comprehensive real-world examples, see e.g.:
+//! For real-world examples, see e.g.:
 //!
-//! * [toyDB Raft cluster](https://github.com/erikgrinaker/toydb/tree/master/src/raft/testscripts/node):
-//!   tests [toyDB](https://github.com/erikgrinaker/toydb)'s implementation of the
-//!   [Raft distributed consensus protocol](https://raft.github.io).
+//! * [toyDB Raft](https://github.com/erikgrinaker/toydb/tree/master/src/raft/testscripts/node):
+//!   distributed consensus cluster.
+//! * [toyDB MVCC](https://github.com/erikgrinaker/toydb/tree/master/src/storage/testscripts/mvcc):
+//!   ACID transactions.
 //! * [goldenscript parser](https://github.com/erikgrinaker/goldenscript/tree/main/tests/scripts):
 //!   Goldenscript uses itself to test its parser and runner.
 //!
 //! Below is a basic example, testing the Rust standard library's
 //! [`BTreeMap`](https://doc.rust-lang.org/std/collections/struct.BTreeMap.html).
-//!
 //!
 //! ```yaml
 //! # Tests the Rust standard library BTreeMap.
