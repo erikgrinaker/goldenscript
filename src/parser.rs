@@ -1,3 +1,5 @@
+use std::collections::HashSet;
+
 use crate::command::{Argument, Block, Command};
 
 use nom::branch::alt;
@@ -134,12 +136,12 @@ fn argument(input: Span) -> IResult<Argument> {
 }
 
 /// Parses a list of []-delimited command tags separated by comma or whitespace.
-fn tags(input: Span) -> IResult<Vec<String>> {
+fn tags(input: Span) -> IResult<HashSet<String>> {
     let (input, tags) = opt(preceded(
         space1,
         delimited(tag("["), separated_list1(one_of(", "), string), tag("]")),
     ))(input)?;
-    Ok((input, tags.unwrap_or_default()))
+    Ok((input, HashSet::from_iter(tags.unwrap_or_default())))
 }
 
 /// Parses a command/output separator: --- followed by a line ending.

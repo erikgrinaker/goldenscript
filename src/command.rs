@@ -1,4 +1,4 @@
-use std::collections::VecDeque;
+use std::collections::{HashSet, VecDeque};
 use std::error::Error;
 
 /// A block, consisting of multiple commands.
@@ -24,7 +24,7 @@ pub struct Command {
     /// The command prefix, if given.
     pub prefix: Option<String>,
     /// Any command tags, if given.
-    pub tags: Vec<String>,
+    pub tags: HashSet<String>,
     /// Silences the output of this command. This is handled automatically, the
     /// [`Runner`](crate::Runner) does not have to take this into account.
     pub silent: bool,
