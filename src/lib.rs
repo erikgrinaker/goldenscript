@@ -221,6 +221,15 @@
 //!     client1: put ok
 //!     client2: get key=value
 //!     ```
+//! * [**Tags:**](Command::tags) an optional comma- or space-separated list of
+//!   tags (strings) enclosed in [] after the command and argumentss. This can
+//!   be used by the runner e.g. to modify the execution of a command.
+//!
+//!     ```text
+//!     command [tag]
+//!     command arg key=value [a,b c]
+//!     ---
+//!     ```
 //!
 //! * [**Silencing:**](Command::silent) a command wrapped in `()` will have its
 //!   output suppressed. This can be useful e.g. for setup commands whose output

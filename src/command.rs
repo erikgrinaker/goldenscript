@@ -23,6 +23,8 @@ pub struct Command {
     pub args: Vec<Argument>,
     /// The command prefix, if given.
     pub prefix: Option<String>,
+    /// Any command tags, if given.
+    pub tags: Vec<String>,
     /// Silences the output of this command. This is handled automatically, the
     /// [`Runner`](crate::Runner) does not have to take this into account.
     pub silent: bool,

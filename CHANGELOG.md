@@ -2,6 +2,7 @@
 
 **Improvements**
 
+* Add `[]` syntax for command tags, exposed as `Command.tags`.
 * Add `\x` escape sequence for hex bytes.
 * Add `\u{}` escape sequence for Unicode characters.
 * Allow empty commands, keys, and prefixes.

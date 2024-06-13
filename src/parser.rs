@@ -3,11 +3,11 @@ use crate::command::{Argument, Block, Command};
 use nom::branch::alt;
 use nom::bytes::complete::{escaped_transform, is_not, tag, take, take_while_m_n};
 use nom::character::complete::{
-    alphanumeric1, anychar, char, line_ending, not_line_ending, space0, space1,
+    alphanumeric1, anychar, char, line_ending, not_line_ending, one_of, space0, space1,
 };
 use nom::combinator::{consumed, eof, map_res, opt, peek, recognize, value, verify};
 use nom::error::ErrorKind;
-use nom::multi::{many0, many0_count, many_till};
+use nom::multi::{many0, many0_count, many_till, separated_list1};
 use nom::sequence::{delimited, pair, preceded, separated_pair, terminated};
 use nom::Finish as _;
 
@@ -104,10 +104,11 @@ fn command(input: Span) -> IResult<Command> {
     let (input, maybe_fail) = opt(terminated(char('!'), space0))(input)?;
     let fail = maybe_fail.is_some();
 
-    // The command itself.
+    // The command itself, and any trailing tags.
     let line_number = input.location_line();
     let (input, name) = string(input)?;
-    let (mut input, args) = many0(preceded(space1, argument))(input)?;
+    let (input, args) = many0(preceded(space1, argument))(input)?;
+    let (mut input, tags) = tags(input)?;
 
     // If silenced, look for the closing brace.
     if silent {
@@ -119,7 +120,7 @@ fn command(input: Span) -> IResult<Command> {
     let (input, _) = opt(comment)(input)?;
     let (input, _) = line_ending(input)?;
 
-    Ok((input, Command { name, args, prefix, silent, fail, line_number }))
+    Ok((input, Command { name, args, tags, prefix, silent, fail, line_number }))
 }
 
 /// Parses a single command argument, consisting of an argument value and
@@ -130,6 +131,15 @@ fn argument(input: Span) -> IResult<Argument> {
     }
     let (input, value) = string(input)?;
     Ok((input, Argument { key: None, value }))
+}
+
+/// Parses a list of []-delimited command tags separated by comma or whitespace.
+fn tags(input: Span) -> IResult<Vec<String>> {
+    let (input, tags) = opt(preceded(
+        space1,
+        delimited(tag("["), separated_list1(one_of(", "), string), tag("]")),
+    ))(input)?;
+    Ok((input, tags.unwrap_or_default()))
 }
 
 /// Parses a command/output separator: --- followed by a line ending.
