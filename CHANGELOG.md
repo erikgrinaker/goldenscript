@@ -1,11 +1,16 @@
-# Unreleased
+# 0.6.0 (2024-06-13)
 
 **Improvements**
 
-* Add `[]` syntax for command tags, exposed as `Command.tags`.
-* Add `\x` escape sequence for hex bytes.
-* Add `\u{}` escape sequence for Unicode characters.
-* Allow empty commands, keys, and prefixes.
+* [`2bd0058`] Add `[]` syntax for command tags, exposed as `Command.tags`.
+* [`686e261`] Add `\x` escape sequence for hex bytes.
+* [`0b62d19`] Add `\u{}` escape sequence for Unicode characters.
+* [`a096929`] Allow empty commands, keys, and prefixes.
+
+[`2bd0058`]: https://github.com/erikgrinaker/goldenscript/commit/2bd0058886111487472012d249184ce9663f1299
+[`686e261`]: https://github.com/erikgrinaker/goldenscript/commit/686e26168e901995f1311dad2a51345cee9ac9b2
+[`0b62d19`]: https://github.com/erikgrinaker/goldenscript/commit/0b62d19e48b14046d18c3796e6cd3c253ba53bb4
+[`a096929`]: https://github.com/erikgrinaker/goldenscript/commit/a096929774d44cbb979add9853b7eb45493ce2f0
 
 # 0.5.0 (2024-05-31)
 
