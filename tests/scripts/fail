@@ -2,7 +2,7 @@
 # the runner expects an error.
 ! command arg
 ---
-Error: Command { name: "command", args: [Argument { key: None, value: "arg" }], prefix: None, tags: [], silent: false, fail: true, line_number: 3 }
+Error: Command { name: "command", args: [Argument { key: None, value: "arg" }], prefix: None, tags: {}, silent: false, fail: true, line_number: 3 }
 
 # Errors and panics are handled when ! is given.
 ! _error foo

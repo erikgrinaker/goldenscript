@@ -2,13 +2,13 @@
 _set start_block="start" end_block="end"
 command
 ---
-Command { name: "command", args: [], prefix: None, tags: [], silent: false, fail: false, line_number: 3 }
+Command { name: "command", args: [], prefix: None, tags: {}, silent: false, fail: false, line_number: 3 }
 end
 
 command
 ---
 start
-Command { name: "command", args: [], prefix: None, tags: [], silent: false, fail: false, line_number: 8 }
+Command { name: "command", args: [], prefix: None, tags: {}, silent: false, fail: false, line_number: 8 }
 end
 
 # Newlines in block hooks should be handled appropriately.
@@ -16,13 +16,13 @@ _set start_block="start\n" end_block="end\n"
 command
 ---
 start
-Command { name: "command", args: [], prefix: None, tags: [], silent: false, fail: false, line_number: 16 }
+Command { name: "command", args: [], prefix: None, tags: {}, silent: false, fail: false, line_number: 16 }
 end
 
 command
 ---
 start
-Command { name: "command", args: [], prefix: None, tags: [], silent: false, fail: false, line_number: 22 }
+Command { name: "command", args: [], prefix: None, tags: {}, silent: false, fail: false, line_number: 22 }
 end
 
 # As should empty lines.
@@ -30,7 +30,7 @@ _set start_block="start\n\n" end_block="end\n\n"
 command
 ---
 > start
-> Command { name: "command", args: [], prefix: None, tags: [], silent: false, fail: false, line_number: 30 }
+> Command { name: "command", args: [], prefix: None, tags: {}, silent: false, fail: false, line_number: 30 }
 > end
 > 
 
@@ -39,7 +39,7 @@ command
 ---
 > start
 > 
-> Command { name: "command", args: [], prefix: None, tags: [], silent: false, fail: false, line_number: 38 }
+> Command { name: "command", args: [], prefix: None, tags: {}, silent: false, fail: false, line_number: 38 }
 > end
 
 _set start_block="" end_block=""
@@ -55,10 +55,10 @@ prefix: command
 (command)
 ---
 start
-Command { name: "command", args: [], prefix: None, tags: [], silent: false, fail: false, line_number: 53 }
+Command { name: "command", args: [], prefix: None, tags: {}, silent: false, fail: false, line_number: 53 }
 end
 prefix: start
-prefix: Command { name: "command", args: [], prefix: Some("prefix"), tags: [], silent: false, fail: false, line_number: 54 }
+prefix: Command { name: "command", args: [], prefix: Some("prefix"), tags: {}, silent: false, fail: false, line_number: 54 }
 prefix: end
 
 # They should also be called after commands that were expected to fail.
@@ -73,7 +73,7 @@ end
 command
 ---
 start
-Command { name: "command", args: [], prefix: None, tags: [], silent: false, fail: false, line_number: 73 }
+Command { name: "command", args: [], prefix: None, tags: {}, silent: false, fail: false, line_number: 73 }
 end
 
 (_set start_command="start\n\n" end_command="end\n\n")
@@ -81,6 +81,6 @@ command
 ---
 > start
 > 
-> Command { name: "command", args: [], prefix: None, tags: [], silent: false, fail: false, line_number: 80 }
+> Command { name: "command", args: [], prefix: None, tags: {}, silent: false, fail: false, line_number: 80 }
 > end
 > 

@@ -1,4 +1,4 @@
-use std::collections::{HashSet, VecDeque};
+use std::collections::{BTreeSet, HashSet, VecDeque};
 use std::error::Error;
 
 /// A block, consisting of multiple commands.
@@ -14,7 +14,7 @@ pub(crate) struct Block {
 }
 
 /// A command.
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, PartialEq)]
 #[non_exhaustive]
 pub struct Command {
     /// The name of the command. Never empty.
@@ -33,6 +33,21 @@ pub struct Command {
     pub fail: bool,
     /// The command's line number position in the script.
     pub line_number: u32,
+}
+
+impl std::fmt::Debug for Command {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("Command")
+            .field("name", &self.name)
+            .field("args", &self.args)
+            .field("prefix", &self.prefix)
+            // Use a sorted BTreeSet for test determinism.
+            .field("tags", &BTreeSet::from_iter(&self.tags))
+            .field("silent", &self.silent)
+            .field("fail", &self.fail)
+            .field("line_number", &self.line_number)
+            .finish()
+    }
 }
 
 impl Command {
