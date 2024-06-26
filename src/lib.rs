@@ -257,6 +257,17 @@
 //!     prefix: Panic: bar
 //!     ```
 //!
+//!  * **Literal:** if `>` precedes the command, the entire rest of the line is
+//!    taken to be the command name (except leading whitespace). Arguments,
+//!    tags, comments, and any other special characters are ignored and used
+//!    as-is.
+//!
+//!    ```text
+//!    > a long command name including key=value, [tags], # a comment and exclamation!
+//!    prefix: ! > a long, failing command with a prefix
+//!    ---
+//!    ```
+//!
 //! ## Output
 //!
 //! The command output following a `---` separator can contain any arbitrary

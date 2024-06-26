@@ -1,3 +1,9 @@
+# Unreleased
+
+**Improvements**
+
+* Add `>` syntax to use the raw line as the command name.
+
 # 0.6.0 (2024-06-13)
 
 **Improvements**

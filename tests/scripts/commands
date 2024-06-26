@@ -49,3 +49,21 @@ command arg=
 Command { name: "command", args: [Argument { key: None, value: "" }], prefix: None, tags: {}, silent: false, fail: false, line_number: 45 }
 Command { name: "command", args: [Argument { key: Some("arg"), value: "" }], prefix: None, tags: {}, silent: false, fail: false, line_number: 46 }
 Command { name: "command", args: [Argument { key: Some("arg"), value: "" }], prefix: None, tags: {}, silent: false, fail: false, line_number: 47 }
+
+# > uses the rest of the line as the command name, regardless.
+> command arg "quoted" key=value [tag] # comment
+>
+>!
+> > >
+---
+Command { name: "command arg \"quoted\" key=value [tag] # comment", args: [], prefix: None, tags: {}, silent: false, fail: false, line_number: 54 }
+Command { name: "", args: [], prefix: None, tags: {}, silent: false, fail: false, line_number: 55 }
+Command { name: "!", args: [], prefix: None, tags: {}, silent: false, fail: false, line_number: 56 }
+Command { name: "> >", args: [], prefix: None, tags: {}, silent: false, fail: false, line_number: 57 }
+
+# > also works with prefix and error markers.
+prefix: > command arg
+!> command arg
+---
+prefix: Command { name: "command arg", args: [], prefix: Some("prefix"), tags: {}, silent: false, fail: false, line_number: 65 }
+Error: Command { name: "command arg", args: [], prefix: None, tags: {}, silent: false, fail: true, line_number: 66 }

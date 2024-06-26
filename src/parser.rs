@@ -106,6 +106,16 @@ fn command(input: Span) -> IResult<Command> {
     let (input, maybe_fail) = opt(terminated(char('!'), space0))(input)?;
     let fail = maybe_fail.is_some();
 
+    // A > takes the rest of the line as the literal command name.
+    let (input, maybe_literal) = opt(terminated(tag(">"), space0))(input)?;
+    if maybe_literal.is_some() {
+        let line_number = input.location_line();
+        let (input, name) = terminated(not_line_ending, line_ending)(input)?;
+        let name = name.to_string();
+        let (args, tags) = (Vec::new(), HashSet::new());
+        return Ok((input, Command { name, args, tags, prefix, silent, fail, line_number }));
+    }
+
     // The command itself, and any trailing tags.
     let line_number = input.location_line();
     let (input, name) = string(input)?;
