@@ -3,6 +3,7 @@
 **Improvements**
 
 * Add `>` syntax to use the raw line as the command name.
+* Allow tags before command.
 
 # 0.6.0 (2024-06-13)
 

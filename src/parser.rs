@@ -101,8 +101,11 @@ fn command(input: Span) -> IResult<Command> {
     let (input, maybe_silent) = opt(terminated(char('('), space0))(input)?;
     let silent = maybe_silent.is_some();
 
-    // The prefix and fail marker.
+    // The prefix, tags, and fail marker.
+    let mut tags = HashSet::new();
     let (input, prefix) = opt(terminated(string, pair(tag(":"), space0)))(input)?;
+    let (input, maybe_tags) = opt(delimited(space0, taglist, space0))(input)?;
+    tags.extend(maybe_tags.unwrap_or_default());
     let (input, maybe_fail) = opt(terminated(char('!'), space0))(input)?;
     let fail = maybe_fail.is_some();
 
@@ -112,7 +115,7 @@ fn command(input: Span) -> IResult<Command> {
         let line_number = input.location_line();
         let (input, name) = terminated(not_line_ending, line_ending)(input)?;
         let name = name.to_string();
-        let (args, tags) = (Vec::new(), HashSet::new());
+        let args = Vec::new();
         return Ok((input, Command { name, args, tags, prefix, silent, fail, line_number }));
     }
 
@@ -120,7 +123,8 @@ fn command(input: Span) -> IResult<Command> {
     let line_number = input.location_line();
     let (input, name) = string(input)?;
     let (input, args) = many0(preceded(space1, argument))(input)?;
-    let (mut input, tags) = tags(input)?;
+    let (mut input, maybe_tags) = opt(preceded(space1, taglist))(input)?;
+    tags.extend(maybe_tags.unwrap_or_default());
 
     // If silenced, look for the closing brace.
     if silent {
@@ -146,12 +150,10 @@ fn argument(input: Span) -> IResult<Argument> {
 }
 
 /// Parses a list of []-delimited command tags separated by comma or whitespace.
-fn tags(input: Span) -> IResult<HashSet<String>> {
-    let (input, tags) = opt(preceded(
-        space1,
-        delimited(tag("["), separated_list1(one_of(", "), string), tag("]")),
-    ))(input)?;
-    Ok((input, HashSet::from_iter(tags.unwrap_or_default())))
+fn taglist(input: Span) -> IResult<HashSet<String>> {
+    let (input, tags) =
+        delimited(tag("["), separated_list1(one_of(", "), string), tag("]"))(input)?;
+    Ok((input, HashSet::from_iter(tags)))
 }
 
 /// Parses a command/output separator: --- followed by a line ending.

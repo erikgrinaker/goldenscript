@@ -221,15 +221,6 @@
 //!     client1: put ok
 //!     client2: get key=value
 //!     ```
-//! * [**Tags:**](Command::tags) an optional comma- or space-separated list of
-//!   tags (strings) enclosed in [] after the command and argumentss. This can
-//!   be used by the runner e.g. to modify the execution of a command.
-//!
-//!     ```text
-//!     command [tag]
-//!     command arg key=value [a,b c]
-//!     ---
-//!     ```
 //!
 //! * [**Silencing:**](Command::silent) a command wrapped in `()` will have its
 //!   output suppressed. This can be useful e.g. for setup commands whose output
@@ -257,6 +248,18 @@
 //!     prefix: Panic: bar
 //!     ```
 //!
+//! * [**Tags:**](Command::tags) an optional comma- or space-separated list of
+//!   tags (strings) enclosed in [] before or after the command and arguments.
+//!   This can be used by the runner e.g. to modify the execution of a command.
+//!
+//!     ```text
+//!     command [tag]
+//!     command arg key=value [a,b c]
+//!     [tag] command
+//!     prefix:[tag]!> command arg
+//!     ---
+//!     ```
+//!
 //!  * **Literal:** if `>` precedes the command, the entire rest of the line is
 //!    taken to be the command name (except leading whitespace). Arguments,
 //!    tags, comments, and any other special characters are ignored and used
@@ -264,7 +267,7 @@
 //!
 //!    ```text
 //!    > a long command name including key=value, [tags], # a comment and exclamation!
-//!    prefix: ! > a long, failing command with a prefix
+//!    prefix: [tag] ! > a long, failing command with tags and a prefix
 //!    ---
 //!    ```
 //!
