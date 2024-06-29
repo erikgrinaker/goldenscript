@@ -5,7 +5,7 @@ use crate::command::{Argument, Block, Command};
 use nom::branch::alt;
 use nom::bytes::complete::{escaped_transform, is_not, tag, take, take_while_m_n};
 use nom::character::complete::{
-    alphanumeric1, anychar, char, line_ending, not_line_ending, one_of, space0, space1,
+    alphanumeric1, anychar, char, line_ending, none_of, not_line_ending, one_of, space0, space1,
 };
 use nom::combinator::{consumed, eof, map_res, opt, peek, recognize, value, verify};
 use nom::error::ErrorKind;
@@ -109,12 +109,13 @@ fn command(input: Span) -> IResult<Command> {
     let (input, maybe_fail) = opt(terminated(char('!'), space0))(input)?;
     let fail = maybe_fail.is_some();
 
-    // A > takes the rest of the line as the literal command name.
+    // A > takes the rest of the line as the literal command name. It allows
+    // line continuation with \ to escape the newline.
+    // TODO: generalize line continuation for all commands.
     let (input, maybe_literal) = opt(terminated(tag(">"), space0))(input)?;
     if maybe_literal.is_some() {
         let line_number = input.location_line();
-        let (input, name) = terminated(not_line_ending, line_ending)(input)?;
-        let name = name.to_string();
+        let (input, name) = line_continuation(input)?;
         let args = Vec::new();
         return Ok((input, Command { name, args, tags, prefix, silent, fail, line_number }));
     }
@@ -255,4 +256,22 @@ fn empty_or_comment_line(input: Span) -> IResult<Span> {
 /// Parses a # or // comment until the end of the line/file (not inclusive).
 fn comment(input: Span) -> IResult<Span> {
     recognize(preceded(alt((tag("//"), tag("#"))), not_line_ending))(input)
+}
+
+/// Parses a line with \ line continuation escapes.
+fn line_continuation(input: Span) -> IResult<String> {
+    // Special case a blank line.
+    let (input, maybe_newline) = opt(line_ending)(input)?;
+    if maybe_newline.is_some() {
+        return Ok((input, "".to_string()));
+    }
+
+    terminated(
+        escaped_transform(
+            none_of("\\\n"),
+            '\\',
+            alt((value("\\", tag("\\")), value("\n", line_ending))),
+        ),
+        line_ending,
+    )(input)
 }
