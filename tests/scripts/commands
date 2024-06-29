@@ -84,16 +84,15 @@ Error: Command { name: "command arg", args: [], prefix: None, tags: {}, silent: 
 Command { name: "command arg", args: [], prefix: None, tags: {"tag"}, silent: false, fail: false, line_number: 79 }
 prefix: Error: Command { name: "command arg", args: [], prefix: Some("prefix"), tags: {"tag"}, silent: false, fail: true, line_number: 80 }
 
-# > respects \ line continuation, unless escaped.
+# > respects \ line continuation, but it can't be escaped by \\.
 > a very \
 long line \
 with line \
 continuation
 ---
-Command { name: "a very \nlong line \nwith line \ncontinuation", args: [], prefix: None, tags: {}, silent: false, fail: false, line_number: 88 }
+Command { name: "a very long line with line continuation", args: [], prefix: None, tags: {}, silent: false, fail: false, line_number: 88 }
 
-> a line ending with \\
+> a line with \n ending with \\
 another line
 ---
-Command { name: "a line ending with \\", args: [], prefix: None, tags: {}, silent: false, fail: false, line_number: 95 }
-Command { name: "another", args: [Argument { key: None, value: "line" }], prefix: None, tags: {}, silent: false, fail: false, line_number: 96 }
+Command { name: "a line with \\n ending with \\another line", args: [], prefix: None, tags: {}, silent: false, fail: false, line_number: 95 }

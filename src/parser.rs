@@ -5,7 +5,7 @@ use crate::command::{Argument, Block, Command};
 use nom::branch::alt;
 use nom::bytes::complete::{escaped_transform, is_not, tag, take, take_while_m_n};
 use nom::character::complete::{
-    alphanumeric1, anychar, char, line_ending, none_of, not_line_ending, one_of, space0, space1,
+    alphanumeric1, anychar, char, line_ending, not_line_ending, one_of, space0, space1,
 };
 use nom::combinator::{consumed, eof, map_res, opt, peek, recognize, value, verify};
 use nom::error::ErrorKind;
@@ -258,20 +258,20 @@ fn comment(input: Span) -> IResult<Span> {
     recognize(preceded(alt((tag("//"), tag("#"))), not_line_ending))(input)
 }
 
-/// Parses a line with \ line continuation escapes.
-fn line_continuation(input: Span) -> IResult<String> {
-    // Special case a blank line.
-    let (input, maybe_newline) = opt(line_ending)(input)?;
-    if maybe_newline.is_some() {
-        return Ok((input, "".to_string()));
-    }
+/// Parses a raw line with optional \ line continuation escapes. Naïve but
+/// sufficient implementation that e.g. doesn't support \\ escapes.
+fn line_continuation(mut input: Span) -> IResult<String> {
+    let mut result = String::new();
+    loop {
+        let (i, line) = terminated(not_line_ending, line_ending)(input)?;
+        input = i;
+        result.push_str(line.as_ref());
 
-    terminated(
-        escaped_transform(
-            none_of("\\\n"),
-            '\\',
-            alt((value("\\", tag("\\")), value("\n", line_ending))),
-        ),
-        line_ending,
-    )(input)
+        if line.ends_with('\\') {
+            // Remove \ and continue.
+            result.pop();
+            continue;
+        }
+        return Ok((input, result));
+    }
 }
