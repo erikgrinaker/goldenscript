@@ -1,9 +1,12 @@
-# Unreleased
+# 0.7.0 (2024-07-01)
 
 **Improvements**
 
-* Add `>` syntax to use the raw line as the command name.
-* Allow tags before command.
+* [`29903fa`]: Add `>` syntax to use the raw line as the command name.
+* [`5d2519c`]: Allow tags before command.
+
+[`29903fa`]: https://github.com/erikgrinaker/goldenscript/commit/29903faed2813329a89b5d79080ec6843c1bac2d
+[`5d2519c`]: https://github.com/erikgrinaker/goldenscript/commit/5d2519c2623765bb72b6648334763eba09a0f9e7
 
 # 0.6.0 (2024-06-13)
 
