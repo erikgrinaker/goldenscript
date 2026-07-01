@@ -23,13 +23,13 @@ type IResult<'a, O> = nom::IResult<Span<'a>, O>;
 type Error<'a> = nom::error::Error<Span<'a>>;
 
 /// Parses the given goldenscript string into a list of command blocks.
-pub(crate) fn parse(input: &str) -> Result<Vec<Block>, Error> {
+pub(crate) fn parse(input: &str) -> Result<Vec<Block>, Error<'_>> {
     blocks(Span::new(input)).finish().map(|(_, blocks)| blocks)
 }
 
 /// Parses a command, for use in tests.
 #[cfg(test)]
-pub(crate) fn parse_command(input: &str) -> Result<Command, Error> {
+pub(crate) fn parse_command(input: &str) -> Result<Command, Error<'_>> {
     command(Span::new(input)).finish().map(|(_, cmd)| cmd)
 }
 

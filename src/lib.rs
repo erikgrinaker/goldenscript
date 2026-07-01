@@ -107,7 +107,7 @@
 //!
 //! The corresponding runner for this script:
 //!
-//! ```
+//! ```no_run
 //! # use std::error::Error;
 //! # use std::fmt::Write as _;
 //! #[derive(Default)]

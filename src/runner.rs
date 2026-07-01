@@ -111,9 +111,9 @@ pub fn generate<R: Runner>(runner: &mut R, input: &str) -> std::io::Result<Strin
     })?;
 
     // Call the start_script() hook.
-    runner.start_script().map_err(|e| {
-        std::io::Error::new(std::io::ErrorKind::Other, format!("start_script failed: {e}"))
-    })?;
+    runner
+        .start_script()
+        .map_err(|e| std::io::Error::other(format!("start_script failed: {e}")))?;
 
     for (i, block) in blocks.iter().enumerate() {
         // There may be a trailing block with no commands if the script has bare
@@ -129,10 +129,10 @@ pub fn generate<R: Runner>(runner: &mut R, input: &str) -> std::io::Result<Strin
         // Call the start_block() hook.
         block_output.push_str(&ensure_eol(
             runner.start_block().map_err(|e| {
-                std::io::Error::new(
-                    std::io::ErrorKind::Other,
-                    format!("start_block failed at line {}: {e}", block.line_number),
-                )
+                std::io::Error::other(format!(
+                    "start_block failed at line {}: {e}",
+                    block.line_number
+                ))
             })?,
             eol,
         ));
@@ -143,10 +143,10 @@ pub fn generate<R: Runner>(runner: &mut R, input: &str) -> std::io::Result<Strin
             // Call the start_command() hook.
             command_output.push_str(&ensure_eol(
                 runner.start_command(command).map_err(|e| {
-                    std::io::Error::new(
-                        std::io::ErrorKind::Other,
-                        format!("start_command failed at line {}: {e}", command.line_number),
-                    )
+                    std::io::Error::other(format!(
+                        "start_command failed at line {}: {e}",
+                        command.line_number
+                    ))
                 })?,
                 eol,
             ));
@@ -158,13 +158,10 @@ pub fn generate<R: Runner>(runner: &mut R, input: &str) -> std::io::Result<Strin
             command_output.push_str(&match std::panic::catch_unwind(run) {
                 // Unexpected success, error out.
                 Ok(Ok(output)) if command.fail => {
-                    return Err(std::io::Error::new(
-                        std::io::ErrorKind::Other,
-                        format!(
-                            "expected command '{}' to fail at line {}, succeeded with: {output}",
-                            command.name, command.line_number
-                        ),
-                    ))
+                    return Err(std::io::Error::other(format!(
+                        "expected command '{}' to fail at line {}, succeeded with: {output}",
+                        command.name, command.line_number
+                    )))
                 }
 
                 // Expected success, output the result.
@@ -175,13 +172,10 @@ pub fn generate<R: Runner>(runner: &mut R, input: &str) -> std::io::Result<Strin
 
                 // Unexpected error, return it.
                 Ok(Err(e)) => {
-                    return Err(std::io::Error::new(
-                        std::io::ErrorKind::Other,
-                        format!(
-                            "command '{}' failed at line {}: {e}",
-                            command.name, command.line_number
-                        ),
-                    ))
+                    return Err(std::io::Error::other(format!(
+                        "command '{}' failed at line {}: {e}",
+                        command.name, command.line_number
+                    )))
                 }
 
                 // Expected panic, output it.
@@ -204,10 +198,10 @@ pub fn generate<R: Runner>(runner: &mut R, input: &str) -> std::io::Result<Strin
             // Call the end_command() hook.
             command_output.push_str(&ensure_eol(
                 runner.end_command(command).map_err(|e| {
-                    std::io::Error::new(
-                        std::io::ErrorKind::Other,
-                        format!("end_command failed at line {}: {e}", command.line_number),
-                    )
+                    std::io::Error::other(format!(
+                        "end_command failed at line {}: {e}",
+                        command.line_number
+                    ))
                 })?,
                 eol,
             ));
@@ -236,10 +230,10 @@ pub fn generate<R: Runner>(runner: &mut R, input: &str) -> std::io::Result<Strin
         // Call the end_block() hook.
         block_output.push_str(&ensure_eol(
             runner.end_block().map_err(|e| {
-                std::io::Error::new(
-                    std::io::ErrorKind::Other,
-                    format!("end_block failed at line {}: {e}", block.line_number),
-                )
+                std::io::Error::other(format!(
+                    "end_block failed at line {}: {e}",
+                    block.line_number
+                ))
             })?,
             eol,
         ));
@@ -274,9 +268,7 @@ pub fn generate<R: Runner>(runner: &mut R, input: &str) -> std::io::Result<Strin
     }
 
     // Call the end_script() hook.
-    runner.end_script().map_err(|e| {
-        std::io::Error::new(std::io::ErrorKind::Other, format!("end_script failed: {e}"))
-    })?;
+    runner.end_script().map_err(|e| std::io::Error::other(format!("end_script failed: {e}")))?;
 
     Ok(output)
 }
