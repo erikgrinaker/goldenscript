@@ -1,4 +1,4 @@
-use std::collections::HashSet;
+use std::collections::BTreeSet;
 
 use crate::command::{Argument, Block, Command};
 
@@ -102,7 +102,7 @@ fn command(input: Span) -> IResult<Command> {
     let silent = maybe_silent.is_some();
 
     // The prefix, tags, and fail marker.
-    let mut tags = HashSet::new();
+    let mut tags = BTreeSet::new();
     let (input, prefix) = opt(terminated(string, pair(tag(":"), space0))).parse(input)?;
     let (input, maybe_tags) = opt(delimited(space0, taglist, space0)).parse(input)?;
     tags.extend(maybe_tags.unwrap_or_default());
@@ -151,10 +151,10 @@ fn argument(input: Span) -> IResult<Argument> {
 }
 
 /// Parses a list of []-delimited command tags separated by comma or whitespace.
-fn taglist(input: Span) -> IResult<HashSet<String>> {
+fn taglist(input: Span) -> IResult<BTreeSet<String>> {
     let (input, tags) =
         delimited(tag("["), separated_list1(one_of(", "), string), tag("]")).parse(input)?;
-    Ok((input, HashSet::from_iter(tags)))
+    Ok((input, BTreeSet::from_iter(tags)))
 }
 
 /// Parses a command/output separator: --- followed by a line ending.
