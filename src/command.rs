@@ -15,7 +15,6 @@ pub struct Block {
 
 /// A command.
 #[derive(Clone, Debug, PartialEq)]
-#[non_exhaustive]
 pub struct Command {
     /// The name of the command. Never empty.
     pub name: String,
@@ -31,8 +30,9 @@ pub struct Command {
     /// If true, the command is expected to fail with a panic or error. If the
     /// command does not fail, the test fails.
     pub fail: bool,
+
     /// The command's line number position in the script.
-    pub line_number: u32,
+    pub(crate) line_number: u32,
 }
 
 impl Command {
