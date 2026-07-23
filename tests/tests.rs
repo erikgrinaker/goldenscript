@@ -124,9 +124,9 @@ impl goldenscript::Runner for DebugRunner {
                 return Ok(String::new());
             }
 
-            _ if command.fail => return Err(format!("{command:?}").into()),
+            _ if command.fail => return Err(format!("{command:#?}").into()),
 
-            _ => format!("{command:?}"),
+            _ => format!("{command:#?}"),
         };
 
         Ok(format!("{}{output}{}", self.prefix, self.suffix))
