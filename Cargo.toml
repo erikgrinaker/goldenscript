@@ -10,9 +10,9 @@ repository = "https://github.com/erikgrinaker/goldenscript"
 edition = "2021"
 
 [dependencies]
-goldenfile = "1.5"
-nom = "7.0"
-nom_locate = "4.0"
+goldenfile = "1.11"
+nom = "8.0"
+nom_locate = "5.0"
 
 [dev-dependencies]
-test_each_file = "0.3.2"
+test_each_file = "0.3"

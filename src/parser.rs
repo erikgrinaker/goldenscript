@@ -11,7 +11,7 @@ use nom::combinator::{consumed, eof, map_res, opt, peek, recognize, value, verif
 use nom::error::ErrorKind;
 use nom::multi::{many0, many0_count, many_till, separated_list1};
 use nom::sequence::{delimited, pair, preceded, separated_pair, terminated};
-use nom::Finish as _;
+use nom::{Finish as _, Parser as _};
 
 /// A string input span, annotated with location information.
 type Span<'a> = nom_locate::LocatedSpan<&'a str>;
@@ -35,7 +35,7 @@ pub(crate) fn parse_command(input: &str) -> Result<Command, Error<'_>> {
 
 /// Parses a list of blocks until EOF.
 fn blocks(input: Span) -> IResult<Vec<Block>> {
-    let (input, (blocks, _)) = many_till(block, eof)(input)?;
+    let (input, (blocks, _)) = many_till(block, eof).parse(input)?;
     Ok((input, blocks))
 }
 
@@ -44,7 +44,7 @@ fn blocks(input: Span) -> IResult<Vec<Block>> {
 fn block(input: Span) -> IResult<Block> {
     // Parse the command section, preserving the literal for output.
     let line_number = input.location_line();
-    let (input, (literal, commands)) = consumed(commands)(input)?;
+    let (input, (literal, commands)) = consumed(commands).parse(input)?;
     let block = Block { literal: literal.to_string(), commands, line_number };
 
     // If there were no commands, and we're at the end of the input, preserve
@@ -68,7 +68,7 @@ fn commands(mut input: Span) -> IResult<Vec<Command>> {
     let mut commands = Vec::new();
     loop {
         // Skip empty/comment lines.
-        if let (i, Some(_)) = opt(empty_or_comment_line)(input)? {
+        if let (i, Some(_)) = opt(empty_or_comment_line).parse(input)? {
             input = i;
             continue;
         }
@@ -80,7 +80,7 @@ fn commands(mut input: Span) -> IResult<Vec<Command>> {
 
         // If we hit a separator and we've seen at least 1 command, we're done.
         // Otherwise, we want to error while attempting to parse the command.
-        if let (_, Some(_)) = peek(opt(separator))(input)? {
+        if let (_, Some(_)) = peek(opt(separator)).parse(input)? {
             if !commands.is_empty() {
                 return Ok((input, commands));
             }
@@ -98,21 +98,21 @@ fn commands(mut input: Span) -> IResult<Vec<Command>> {
 /// Consumes the entire line, including any whitespace and comments at the end.
 fn command(input: Span) -> IResult<Command> {
     // Look for a silencing (.
-    let (input, maybe_silent) = opt(terminated(char('('), space0))(input)?;
+    let (input, maybe_silent) = opt(terminated(char('('), space0)).parse(input)?;
     let silent = maybe_silent.is_some();
 
     // The prefix, tags, and fail marker.
     let mut tags = HashSet::new();
-    let (input, prefix) = opt(terminated(string, pair(tag(":"), space0)))(input)?;
-    let (input, maybe_tags) = opt(delimited(space0, taglist, space0))(input)?;
+    let (input, prefix) = opt(terminated(string, pair(tag(":"), space0))).parse(input)?;
+    let (input, maybe_tags) = opt(delimited(space0, taglist, space0)).parse(input)?;
     tags.extend(maybe_tags.unwrap_or_default());
-    let (input, maybe_fail) = opt(terminated(char('!'), space0))(input)?;
+    let (input, maybe_fail) = opt(terminated(char('!'), space0)).parse(input)?;
     let fail = maybe_fail.is_some();
 
     // A > takes the rest of the line as the literal command name. It allows
     // line continuation with \ to escape the newline.
     // TODO: generalize line continuation for all commands.
-    let (input, maybe_literal) = opt(terminated(tag(">"), space0))(input)?;
+    let (input, maybe_literal) = opt(terminated(tag(">"), space0)).parse(input)?;
     if maybe_literal.is_some() {
         let line_number = input.location_line();
         let (input, name) = line_continuation(input)?;
@@ -123,18 +123,18 @@ fn command(input: Span) -> IResult<Command> {
     // The command itself, and any trailing tags.
     let line_number = input.location_line();
     let (input, name) = string(input)?;
-    let (input, args) = many0(preceded(space1, argument))(input)?;
-    let (mut input, maybe_tags) = opt(preceded(space1, taglist))(input)?;
+    let (input, args) = many0(preceded(space1, argument)).parse(input)?;
+    let (mut input, maybe_tags) = opt(preceded(space1, taglist)).parse(input)?;
     tags.extend(maybe_tags.unwrap_or_default());
 
     // If silenced, look for the closing brace.
     if silent {
-        (input, _) = preceded(space0, char(')'))(input)?;
+        (input, _) = preceded(space0, char(')')).parse(input)?;
     }
 
     // Ignore trailing whitespace and comments on this line.
     let (input, _) = space0(input)?;
-    let (input, _) = opt(comment)(input)?;
+    let (input, _) = opt(comment).parse(input)?;
     let (input, _) = line_ending(input)?;
 
     Ok((input, Command { name, args, tags, prefix, silent, fail, line_number }))
@@ -143,7 +143,7 @@ fn command(input: Span) -> IResult<Command> {
 /// Parses a single command argument, consisting of an argument value and
 /// optionally a key separated by =.
 fn argument(input: Span) -> IResult<Argument> {
-    if let Ok((input, (key, value))) = separated_pair(string, tag("="), opt(string))(input) {
+    if let Ok((input, (key, value))) = separated_pair(string, tag("="), opt(string)).parse(input) {
         return Ok((input, Argument { key: Some(key), value: value.unwrap_or_default() }));
     }
     let (input, value) = string(input)?;
@@ -153,13 +153,13 @@ fn argument(input: Span) -> IResult<Argument> {
 /// Parses a list of []-delimited command tags separated by comma or whitespace.
 fn taglist(input: Span) -> IResult<HashSet<String>> {
     let (input, tags) =
-        delimited(tag("["), separated_list1(one_of(", "), string), tag("]"))(input)?;
+        delimited(tag("["), separated_list1(one_of(", "), string), tag("]")).parse(input)?;
     Ok((input, HashSet::from_iter(tags)))
 }
 
 /// Parses a command/output separator: --- followed by a line ending.
 fn separator(input: Span) -> IResult<()> {
-    value((), terminated(tag("---"), alt((line_ending, eof))))(input)
+    value((), terminated(tag("---"), alt((line_ending, eof)))).parse(input)
 }
 
 /// Parses the command output following a --- separator, up to the first blank
@@ -167,16 +167,17 @@ fn separator(input: Span) -> IResult<()> {
 /// special case where there is no output, i.e. the first character is a line
 /// ending or EOF.
 fn output(input: Span) -> IResult<Span> {
-    if let (input, Some(output)) = opt(alt((line_ending, eof)))(input)? {
+    if let (input, Some(output)) = opt(alt((line_ending, eof))).parse(input)? {
         return Ok((input, output));
     }
     // TODO: many_till(anychar) is probably too expensive.
-    recognize(many_till(anychar, pair(alt((line_ending, eof)), alt((line_ending, eof)))))(input)
+    recognize(many_till(anychar, pair(alt((line_ending, eof)), alt((line_ending, eof)))))
+        .parse(input)
 }
 
 /// Parses a string, both quoted (' or ") and unquoted.
 fn string(input: Span) -> IResult<String> {
-    alt((unquoted_string, quoted_string('\''), quoted_string('"')))(input)
+    alt((unquoted_string, quoted_string('\''), quoted_string('"'))).parse(input)
 }
 
 /// An unquoted string can't contain whitespace, and can only contain
@@ -185,7 +186,8 @@ fn unquoted_string(input: Span) -> IResult<String> {
     let (input, string) = recognize(pair(
         alt((alphanumeric1, tag("_"))),
         many0_count(alt((alphanumeric1, tag("_"), tag("-"), tag("."), tag("/"), tag("@")))),
-    ))(input)?;
+    ))
+    .parse(input)?;
     Ok((input, string.to_string()))
 }
 
@@ -201,7 +203,7 @@ fn quoted_string(quote: char) -> impl FnMut(Span) -> IResult<String> {
 
         // Because is_not in escaped_transform requires at least one matching
         // character, special-case the empty quoted string.
-        let (input, maybe_empty) = opt(tag(format!("{q}{q}").as_str()))(input)?;
+        let (input, maybe_empty) = opt(tag(format!("{q}{q}").as_str())).parse(input)?;
         if maybe_empty.is_some() {
             return Ok((input, String::new()));
         }
@@ -241,7 +243,8 @@ fn quoted_string(quote: char) -> impl FnMut(Span) -> IResult<String> {
                 )),
             ),
             tag(q),
-        )(input);
+        )
+        .parse(input);
         result
     }
 }
@@ -250,12 +253,13 @@ fn quoted_string(quote: char) -> impl FnMut(Span) -> IResult<String> {
 fn empty_or_comment_line(input: Span) -> IResult<Span> {
     verify(recognize(delimited(space0, opt(comment), alt((line_ending, eof)))), |line: &Span| {
         !line.is_empty()
-    })(input)
+    })
+    .parse(input)
 }
 
 /// Parses a # or // comment until the end of the line/file (not inclusive).
 fn comment(input: Span) -> IResult<Span> {
-    recognize(preceded(alt((tag("//"), tag("#"))), not_line_ending))(input)
+    recognize(preceded(alt((tag("//"), tag("#"))), not_line_ending)).parse(input)
 }
 
 /// Parses a raw line with optional \ line continuation escapes. Naïve but
@@ -263,7 +267,7 @@ fn comment(input: Span) -> IResult<Span> {
 fn line_continuation(mut input: Span) -> IResult<String> {
     let mut result = String::new();
     loop {
-        let (i, line) = terminated(not_line_ending, line_ending)(input)?;
+        let (i, line) = terminated(not_line_ending, line_ending).parse(input)?;
         input = i;
         result.push_str(line.as_ref());
 
