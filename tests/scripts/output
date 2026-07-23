@@ -69,7 +69,7 @@ Command {
     tags: {},
     silent: false,
     fail: false,
-    line_number: 61,
+    line_number: 62,
 }
 
 # Prefixes should handle empty output and output ending with a newline properly.
