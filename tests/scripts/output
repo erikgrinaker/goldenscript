@@ -29,129 +29,26 @@ Command {
 # Output that contains empty lines should automatically be prefixed with >.
 # This should be the case for empty lines at the start and end of the output,
 # as well as multiple empty lines.
-_set prefix="\n"
-command id=1
-command id=2
+_echo "foo\n\n"
 ---
-> 
-> Command {
->     name: "command",
->     args: [
->         Argument {
->             key: Some(
->                 "id",
->             ),
->             value: "1",
->         },
->     ],
->     prefix: None,
->     tags: {},
->     silent: false,
->     fail: false,
->     line_number: 33,
-> }
-> 
-> Command {
->     name: "command",
->     args: [
->         Argument {
->             key: Some(
->                 "id",
->             ),
->             value: "2",
->         },
->     ],
->     prefix: None,
->     tags: {},
->     silent: false,
->     fail: false,
->     line_number: 34,
-> }
-
-_set prefix="" suffix="\n\n"
-command id=1
-command id=2
----
-> Command {
->     name: "command",
->     args: [
->         Argument {
->             key: Some(
->                 "id",
->             ),
->             value: "1",
->         },
->     ],
->     prefix: None,
->     tags: {},
->     silent: false,
->     fail: false,
->     line_number: 72,
-> }
-> 
-> Command {
->     name: "command",
->     args: [
->         Argument {
->             key: Some(
->                 "id",
->             ),
->             value: "2",
->         },
->     ],
->     prefix: None,
->     tags: {},
->     silent: false,
->     fail: false,
->     line_number: 73,
-> }
+> foo
 > 
 
-_set prefix="\n" suffix="\n\n"
-command id=1
-command id=2
+_echo "\nfoo"
 ---
 > 
-> Command {
->     name: "command",
->     args: [
->         Argument {
->             key: Some(
->                 "id",
->             ),
->             value: "1",
->         },
->     ],
->     prefix: None,
->     tags: {},
->     silent: false,
->     fail: false,
->     line_number: 111,
-> }
+> foo
+
+_echo "foo\n\n\nbar"
+---
+> foo
 > 
 > 
-> Command {
->     name: "command",
->     args: [
->         Argument {
->             key: Some(
->                 "id",
->             ),
->             value: "2",
->         },
->     ],
->     prefix: None,
->     tags: {},
->     silent: false,
->     fail: false,
->     line_number: 112,
-> }
-> 
+> bar
 
 # Empty output blocks should default to "ok", but only once, and only if none of
-# the commands produce any output. This includes the start_block and end_block
-# handlers.
-_set prefix="" suffix=""
+# the commands produce any output.
+_echo ""
 ---
 ok
 
@@ -172,16 +69,8 @@ Command {
     tags: {},
     silent: false,
     fail: false,
-    line_number: 165,
+    line_number: 61,
 }
-
-_set start_block="" end_block="end"
----
-end
-
-_set start_block="" end_block=""
----
-ok
 
 # Prefixes should handle empty output and output ending with a newline properly.
 prefix: _echo ""
@@ -199,7 +88,6 @@ prefix:
 
 # Lines only containing whitespace are not considered empty, and not prefixed.
 # The output parser also handles them correctly when parsing this file.
-_set prefix= suffix=
 _echo " "
 _echo "  "
 _echo "\t"

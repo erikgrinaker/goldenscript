@@ -59,30 +59,14 @@ fn test_error([in_path, out_path]: [&std::path::Path; 2]) {
 /// _echo: prints back the arguments, space-separated
 /// _error: errors with the given string
 /// _panic: panics with the given string
-/// _set: sets various options
-///
-///   - prefix=<string>: printed immediately before the command output
-///   - suffix=<string>: printed immediately after the command output
-///   - start_block=<string>: printed at the start of a block
-///   - start_command=<string>: printed at the start of a command
-///   - end_block=<string>: printed at the end of a block
-///   - end_command=<string>: printed at the end of a command
 ///
 /// If a command is expected to fail via !, the parsed command string is
 /// returned as an error.
-#[derive(Default)]
-struct DebugRunner {
-    prefix: String,
-    suffix: String,
-    start_block: String,
-    end_block: String,
-    start_command: String,
-    end_command: String,
-}
+struct DebugRunner;
 
 impl DebugRunner {
     fn new() -> Self {
-        Self::default()
+        Self
     }
 }
 
@@ -109,36 +93,12 @@ impl goldenscript::Runner for DebugRunner {
                 panic!("{message}");
             }
 
-            "_set" => {
-                for arg in &command.args {
-                    match arg.key.as_deref() {
-                        Some("prefix") => self.prefix = arg.value.clone(),
-                        Some("suffix") => self.suffix = arg.value.clone(),
-                        Some("start_block") => self.start_block = arg.value.clone(),
-                        Some("end_block") => self.end_block = arg.value.clone(),
-                        Some("start_command") => self.start_command = arg.value.clone(),
-                        Some("end_command") => self.end_command = arg.value.clone(),
-                        Some(key) => return Err(format!("unknown argument key {key}").into()),
-                        None => return Err("argument must have a key".into()),
-                    }
-                }
-                return Ok(String::new());
-            }
-
             _ if command.fail => return Err(format!("{command:#?}").into()),
 
             _ => format!("{command:#?}"),
         };
 
-        Ok(format!("{}{output}{}", self.prefix, self.suffix))
-    }
-
-    fn start_block(&mut self, _: &goldenscript::Block) -> Result<String, Box<dyn Error>> {
-        Ok(self.start_block.clone())
-    }
-
-    fn end_block(&mut self, _: &goldenscript::Block) -> Result<String, Box<dyn Error>> {
-        Ok(self.end_block.clone())
+        Ok(output)
     }
 }
 
