@@ -1,15 +1,16 @@
+use std::borrow::Cow;
 use std::collections::BTreeSet;
 
 use crate::command::{Argument, Block, Command};
 
 use nom::branch::alt;
-use nom::bytes::complete::{escaped_transform, is_not, tag, take, take_while_m_n};
+use nom::bytes::complete::{escaped_transform, is_not, tag, take, take_while, take_while_m_n};
 use nom::character::complete::{
-    alphanumeric1, anychar, char, line_ending, not_line_ending, one_of, space0, space1,
+    anychar, char, line_ending, not_line_ending, one_of, satisfy, space0, space1,
 };
 use nom::combinator::{consumed, eof, map_res, opt, peek, recognize, value, verify};
 use nom::error::ErrorKind;
-use nom::multi::{many0, many0_count, many_till, separated_list1};
+use nom::multi::{many0, many_till, separated_list1};
 use nom::sequence::{delimited, pair, preceded, separated_pair, terminated};
 use nom::{Finish as _, Parser as _};
 
@@ -183,12 +184,18 @@ fn string(input: Span) -> IResult<String> {
 /// An unquoted string can't contain whitespace, and can only contain
 /// alphanumeric characters and some punctuation.
 fn unquoted_string(input: Span) -> IResult<String> {
-    let (input, string) = recognize(pair(
-        alt((alphanumeric1, tag("_"))),
-        many0_count(alt((alphanumeric1, tag("_"), tag("-"), tag("."), tag("/"), tag("@")))),
-    ))
-    .parse(input)?;
+    let (input, string) =
+        recognize(pair(satisfy(is_unquoted_string_start), take_while(is_unquoted_string_char)))
+            .parse(input)?;
     Ok((input, string.to_string()))
+}
+
+fn is_unquoted_string_start(c: char) -> bool {
+    c.is_ascii_alphanumeric() || c == '_'
+}
+
+fn is_unquoted_string_char(c: char) -> bool {
+    is_unquoted_string_start(c) || matches!(c, '-' | '.' | '/' | '@')
 }
 
 /// A quoted string can contain anything, and respects common escape sequences.
@@ -278,4 +285,13 @@ fn line_continuation(mut input: Span) -> IResult<String> {
         }
         return Ok((input, result));
     }
+}
+
+/// Adds quotes and escapes to a string when required by Goldenscript syntax.
+pub(crate) fn maybe_quote(value: &str) -> Cow<'_, str> {
+    let mut chars = value.chars();
+    if !chars.next().is_some_and(is_unquoted_string_start) || !chars.all(is_unquoted_string_char) {
+        return Cow::Owned(format!("{value:?}"));
+    }
+    Cow::Borrowed(value)
 }

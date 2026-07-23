@@ -1,6 +1,8 @@
 use std::collections::{BTreeSet, VecDeque};
 use std::error::Error;
 
+use crate::parser::maybe_quote;
+
 /// A block, consisting of multiple commands.
 #[derive(Clone, Debug, PartialEq)]
 pub struct Block {
@@ -46,6 +48,16 @@ impl Command {
     }
 }
 
+impl std::fmt::Display for Command {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(&maybe_quote(&self.name))?;
+        for arg in &self.args {
+            write!(f, " {arg}")?;
+        }
+        Ok(())
+    }
+}
+
 /// A command argument.
 #[derive(Clone, Debug, PartialEq)]
 #[non_exhaustive]
@@ -75,6 +87,16 @@ impl Argument {
         <T as std::str::FromStr>::Err: std::fmt::Display,
     {
         self.value.parse().map_err(|e| format!("invalid argument '{}': {e}", self.value).into())
+    }
+}
+
+impl std::fmt::Display for Argument {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        if let Some(key) = &self.key {
+            f.write_str(&maybe_quote(key))?;
+            f.write_str("=")?;
+        }
+        f.write_str(&maybe_quote(&self.value))
     }
 }
 
@@ -233,6 +255,24 @@ mod tests {
     fn command_consume_args() {
         let cmd = cmd!("cmd foo key=value bar");
         assert_eq!(cmd.consume_args().rest(), vec![&cmd.args[0], &cmd.args[1], &cmd.args[2]]);
+    }
+
+    /// Tests Command and Argument display formatting.
+    #[test]
+    fn display() {
+        assert_eq!(arg!("value").to_string(), "value");
+        assert_eq!(arg!("key" => "value").to_string(), "key=value");
+        assert_eq!(
+            arg!("key with spaces" => "line\nbreak").to_string(),
+            r#""key with spaces"="line\nbreak""#
+        );
+        assert_eq!(arg!(r#"value "quoted""#).to_string(), r#""value \"quoted\"""#);
+
+        assert_eq!(cmd!("command arg key=value").to_string(), "command arg key=value");
+        assert_eq!(
+            cmd!(r#""command with spaces" "arg with spaces" key="line\nbreak""#).to_string(),
+            r#""command with spaces" "arg with spaces" key="line\nbreak""#
+        );
     }
 
     /// Tests ArgumentConsumer.lookup().
