@@ -3,14 +3,14 @@ use std::error::Error;
 
 /// A block, consisting of multiple commands.
 #[derive(Clone, Debug, PartialEq)]
-#[non_exhaustive]
-pub(crate) struct Block {
+pub struct Block {
     /// The commands in the block.
     pub commands: Vec<Command>,
+
     /// The literal string of the input commands. Used to generate the output.
-    pub literal: String,
+    pub(crate) literal: String,
     /// The block's line number position in the script.
-    pub line_number: u32,
+    pub(crate) line_number: u32,
 }
 
 /// A command.

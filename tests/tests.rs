@@ -132,11 +132,11 @@ impl goldenscript::Runner for DebugRunner {
         Ok(format!("{}{output}{}", self.prefix, self.suffix))
     }
 
-    fn start_block(&mut self) -> Result<String, Box<dyn Error>> {
+    fn start_block(&mut self, _: &goldenscript::Block) -> Result<String, Box<dyn Error>> {
         Ok(self.start_block.clone())
     }
 
-    fn end_block(&mut self) -> Result<String, Box<dyn Error>> {
+    fn end_block(&mut self, _: &goldenscript::Block) -> Result<String, Box<dyn Error>> {
         Ok(self.end_block.clone())
     }
 

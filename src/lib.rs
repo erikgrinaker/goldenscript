@@ -460,5 +460,5 @@ mod command;
 mod parser;
 mod runner;
 
-pub use command::{Argument, ArgumentConsumer, Command};
+pub use command::{Argument, ArgumentConsumer, Block, Command};
 pub use runner::{generate, run, Runner};

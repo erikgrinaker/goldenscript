@@ -1,5 +1,5 @@
 use crate::parser::parse;
-use crate::Command;
+use crate::{Block, Command};
 
 use std::error::Error;
 use std::io::Write as _;
@@ -31,13 +31,15 @@ pub trait Runner {
 
     /// Called at the start of a block. Used e.g. to output initial state.
     /// Any output is prepended to the block's output.
-    fn start_block(&mut self) -> Result<String, Box<dyn Error>> {
+    #[allow(unused_variables)]
+    fn start_block(&mut self, block: &Block) -> Result<String, Box<dyn Error>> {
         Ok(String::new())
     }
 
     /// Called at the end of a block. Used e.g. to output final state.
     /// Any output is appended to the block's output.
-    fn end_block(&mut self) -> Result<String, Box<dyn Error>> {
+    #[allow(unused_variables)]
+    fn end_block(&mut self, block: &Block) -> Result<String, Box<dyn Error>> {
         Ok(String::new())
     }
 
@@ -128,7 +130,7 @@ pub fn generate<R: Runner>(runner: &mut R, input: &str) -> std::io::Result<Strin
 
         // Call the start_block() hook.
         block_output.push_str(&ensure_eol(
-            runner.start_block().map_err(|e| {
+            runner.start_block(block).map_err(|e| {
                 std::io::Error::other(format!(
                     "start_block failed at line {}: {e}",
                     block.line_number
@@ -229,7 +231,7 @@ pub fn generate<R: Runner>(runner: &mut R, input: &str) -> std::io::Result<Strin
 
         // Call the end_block() hook.
         block_output.push_str(&ensure_eol(
-            runner.end_block().map_err(|e| {
+            runner.end_block(block).map_err(|e| {
                 std::io::Error::other(format!(
                     "end_block failed at line {}: {e}",
                     block.line_number
@@ -314,12 +316,12 @@ mod tests {
             Ok(())
         }
 
-        fn start_block(&mut self) -> Result<String, Box<dyn Error>> {
+        fn start_block(&mut self, _: &Block) -> Result<String, Box<dyn Error>> {
             self.start_block_count += 1;
             Ok(String::new())
         }
 
-        fn end_block(&mut self) -> Result<String, Box<dyn Error>> {
+        fn end_block(&mut self, _: &Block) -> Result<String, Box<dyn Error>> {
             self.end_block_count += 1;
             Ok(String::new())
         }
