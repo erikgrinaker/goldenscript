@@ -1,0 +1,64 @@
+# Tests that hooks are called correctly. The runner will assert that hooks
+# are called in the expected order, including start_script and end_script
+# which doesn't emit any output.
+
+# Hooks should be called in order and receive the current block or command.
+echo one
+---
+start_block: echo one
+start_command: echo one
+one
+end_command: echo one
+end_block: echo one
+
+echo two
+echo three
+---
+start_block: echo two, echo three
+start_command: echo two
+two
+end_command: echo two
+start_command: echo three
+three
+end_command: echo three
+end_block: echo two, echo three
+
+# Blank lines should cause all block output, including hook output, to be
+# prefixed with >.
+echo "one\n\ntwo"
+---
+> start_block: echo "one\n\ntwo"
+> start_command: echo "one\n\ntwo"
+> one
+> 
+> two
+> end_command: echo "one\n\ntwo"
+> end_block: echo "one\n\ntwo"
+
+# Command hook output should be affected by prefixes.
+prefix: echo prefixed
+---
+start_block: echo prefixed
+prefix: start_command: echo prefixed
+prefix: prefixed
+prefix: end_command: echo prefixed
+end_block: echo prefixed
+
+# Command hook output should be silenced along with the command output.
+(echo silent)
+---
+start_block: echo silent
+end_block: echo silent
+
+# The end_command and end_block hooks should be called after expected errors and panics.
+! error
+! panic
+---
+start_block: error, panic
+start_command: error
+Error: error
+end_command: error
+start_command: panic
+Panic: panic
+end_command: panic
+end_block: error, panic
