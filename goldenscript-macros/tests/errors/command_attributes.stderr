@@ -1,0 +1,41 @@
+error: #[command] is not valid on enum
+ --> tests/errors/command_attributes.rs:3:5
+  |
+3 |     #[command]
+  |     ^^^^^^^^^^
+
+error: duplicate command name 'first'
+  --> tests/errors/command_attributes.rs:14:9
+   |
+14 |         Second,
+   |         ^^^^^^
+
+error: duplicate command name 'same'
+  --> tests/errors/command_attributes.rs:24:9
+   |
+24 |         Second(Option<String>, String),
+   |         ^^^^^^
+
+error: unknown command option
+  --> tests/errors/command_attributes.rs:31:19
+   |
+31 |         #[command(unknown)]
+   |                   ^^^^^^^
+
+error: expected attribute options
+  --> tests/errors/command_attributes.rs:39:9
+   |
+39 |         #[command = "variant"]
+   |         ^^^^^^^^^^^^^^^^^^^^^^
+
+error: attribute not valid on enum variant
+  --> tests/errors/command_attributes.rs:47:9
+   |
+47 |         #[arg]
+   |         ^^^^^^
+
+error: attribute not valid on enum variant
+  --> tests/errors/command_attributes.rs:55:9
+   |
+55 |         #[arg]
+   |         ^^^^^^

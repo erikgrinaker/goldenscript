@@ -191,7 +191,7 @@
 //!
 //! ## Commands
 //!
-//! A [`Command`] must have a command name, which can be any arbitrary
+//! A [`struct@Command`] must have a command name, which can be any arbitrary
 //! [string](#strings), e.g.:
 //!
 //! ```text
@@ -378,6 +378,128 @@
 //! }
 //! ```
 //!
+//! ## Deriving Commands
+//!
+//! `#[derive(goldenscript::Command)]` implements [`TryFrom<&Command>`](TryFrom) for an enum,
+//! allowing a parsed Goldenscript command to be converted into a typed Rust value:
+//!
+//! ```rust
+//! #[derive(goldenscript::Command)]
+//! enum Command {
+//!     /// Deletes a key. Example:
+//!     /// delete foo ignore_missing=true
+//!     Delete {
+//!         // By default, arguments are positional and required.
+//!         key: String,
+//!         // The #[arg] attribute can specify keyed and/or optional arguments.
+//!         #[arg(key, optional)]
+//!         ignore_missing: bool,
+//!     },
+//!     /// Fetches a key. Example:
+//!     /// get foo
+//!     Get {
+//!         key: String,
+//!     },
+//!     /// Fetches many keys. Can give 0 keys. Example:
+//!     /// get_many foo bar baz
+//!     GetMany(#[arg(optional)] Vec<String>),
+//!     /// Sets a key to a value. Example:
+//!     /// set foo bar replace=false
+//!     Set {
+//!         key: String,
+//!         value: String,
+//!         #[arg(key, optional)]
+//!         replace: bool,
+//!     },
+//!     /// Sets many key/value pairs. Example:
+//!     /// set_many foo=a bar=b baz=c
+//!     SetMany(Vec<(String, String)>),
+//!     /// Lists keys in the range [from, to). Example:
+//!     /// scan bar foo limit=3
+//!     Scan {
+//!         from: Option<String>,
+//!         to: Option<String>,
+//!         #[arg(key)]
+//!         limit: Option<usize>,
+//!         #[arg(key, optional)]
+//!         reverse: bool,
+//!     },
+//! }
+//! ```
+//!
+//! Helper attributes and their options are processed in source order.
+//!
+//! ### Commands: `#[command]`
+//!
+//! Each enum variant corresponds to a command. By default, its identifier is
+//! converted to `snake_case` for the command name (e.g. `HTTPRequest` becomes
+//! `http_request` and `GetURLValue` becomes `get_url_value`).
+//!
+//! The optional `#[command]` helper attribute accepts:
+//!
+//! * `name = "name"`: overrides the command name. The name can be empty, but
+//!   resolved command names must be unique within the enum.
+//!
+//! ### Fields: `#[arg]`
+//!
+//! Variants can be unit, tuple, or struct variants. Unit variants reject all
+//! arguments.
+//!
+//! Fields are processed in declaration order. A fixed positional field consumes
+//! the next remaining positional argument. A fixed keyed field looks up its key
+//! independently of input position, removes all matching arguments, and parses
+//! the last matching value. As a result, positional and keyed arguments can be
+//! interleaved in the input, and an optional keyed field can precede a required
+//! keyed field in the enum.
+//!
+//! Each parsed value type must implement [`FromStr`](std::str::FromStr), with
+//! an error that implements [`Display`](std::fmt::Display). A `many` field must
+//! implement [`FromIterator`], collecting `T` for positional arguments or
+//! `(String, T)` for keyed arguments. Missing or invalid values are reported for
+//! the first field that fails.
+//!
+//! By default, a field corresponds to a required positional argument, except for the following
+//! inferred outer type names:
+//!
+//! * `Option<T>`: makes the argument optional, i.e. `#[arg(optional)]`.
+//! * `Vec<T>`, `VecDeque<T>`, `HashSet<T>`, `BTreeSet<T>`: takes one or more positional
+//!   arguments, i.e. `#[arg(pos, many)]`, except for the key/value vector below.
+//! * `Vec<(String, T)>`, `HashMap<String, T>`, `BTreeMap<String, T>`: takes one or more
+//!   key/value arguments (equivalent to `#[arg(key, many)]`). A vector preserves input order and
+//!   duplicate keys.
+//!
+//! Inference uses the final type path segment as written, so fully qualified
+//! forms such as `std::vec::Vec<T>` are recognized but type aliases are not.
+//! Explicit `pos` or `key` options can change the inferred argument kind.
+//! Inferred `optional` and `many` behavior cannot be disabled.
+//!
+//! The `#[arg]` helper attribute accepts:
+//!
+//! * `pos`: specifies a positional argument. This is the default. Conflicts with `key`.
+//!
+//! * `key`: specifies a key/value argument instead of a positional argument. Uses the
+//!   field name as the key by default, but can be aliased as `key = "name"` (including an empty
+//!   name). A later bare `key` option restores the field-name default. Tuple fields require an
+//!   alias, while `many` fields reject a key name. Fixed key names must be unique within a variant.
+//!   Conflicts with `pos`.
+//!
+//! * `optional`: allows the argument to be omitted. A fixed `Option<T>` field becomes `None`;
+//!   other fixed fields use [`Default::default()`](Default::default). For a `many` field, this
+//!   allows an empty collection.
+//!
+//! * `many`: consumes all remaining arguments of its kind (pos or key) using `FromIterator`. At
+//!   least one argument must be provided, unless `optional` is set. Duplicate input keys collected
+//!   by a keyed `many` field use the collection's `FromIterator` behavior:
+//!   `Vec<(String, T)>` retains every pair in input order, while maps use their usual duplicate-key
+//!   behavior.
+//!
+//! A required positional field cannot be specified after an optional positional field. Fields with
+//! `many` must be the last field of the same argument kind, but can be followed by a field of the
+//! other kind.
+//!
+//! Unknown command names, missing or invalid values, and arguments left over
+//! after all fields are processed produce conversion errors.
+//!
 //! ## Argument Processing
 //!
 //! Arguments can be processed manually via [`Command::args`], or using the
@@ -488,4 +610,5 @@ mod parser;
 mod runner;
 
 pub use command::{Argument, ArgumentConsumer, Block, Command, Context};
+pub use goldenscript_macros::Command;
 pub use runner::{Runner, generate, run};

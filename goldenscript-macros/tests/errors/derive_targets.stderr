@@ -1,0 +1,23 @@
+error: Command can only be derived for enums
+ --> tests/errors/derive_targets.rs:3:12
+  |
+3 |     struct Command;
+  |            ^^^^^^^
+
+error: Command can only be derived for enums
+ --> tests/errors/derive_targets.rs:8:11
+  |
+8 |     union Command {
+  |           ^^^^^^^
+
+error: Command cannot be derived for generic enums
+  --> tests/errors/derive_targets.rs:15:17
+   |
+15 |     enum Command<T> {
+   |                 ^^^
+
+error: Command requires at least one command variant
+  --> tests/errors/derive_targets.rs:22:10
+   |
+22 |     enum Command {}
+   |          ^^^^^^^

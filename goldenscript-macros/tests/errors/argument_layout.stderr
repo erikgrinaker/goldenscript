@@ -1,0 +1,31 @@
+error: a required positional argument can't follow an optional one
+ --> tests/errors/argument_layout.rs:4:33
+  |
+4 |         Variant(Option<String>, String),
+  |                                 ^^^^^^
+
+error: a field can't follow a many field of the same kind
+  --> tests/errors/argument_layout.rs:11:30
+   |
+11 |         Variant(Vec<String>, String),
+   |                              ^^^^^^
+
+error: a field can't follow a many field of the same kind
+  --> tests/errors/argument_layout.rs:21:13
+   |
+21 | /             #[arg(key)]
+22 | |             required: String,
+   | |____________________________^
+
+error: tuple key fields require key name
+  --> tests/errors/argument_layout.rs:30:17
+   |
+30 |         Variant(#[arg(key)] String),
+   |                 ^^^^^^^^^^^^^^^^^^
+
+error: duplicate argument key 'value'
+  --> tests/errors/argument_layout.rs:40:13
+   |
+40 | /             #[arg(key = "value")]
+41 | |             second: Option<String>,
+   | |__________________________________^

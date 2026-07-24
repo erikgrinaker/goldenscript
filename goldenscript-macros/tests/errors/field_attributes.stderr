@@ -1,0 +1,29 @@
+error: attribute not valid on field
+ --> tests/errors/field_attributes.rs:5:13
+  |
+5 |             #[command]
+  |             ^^^^^^^^^^
+
+error: expected attribute options
+  --> tests/errors/field_attributes.rs:15:13
+   |
+15 |             #[arg = "pos"]
+   |             ^^^^^^^^^^^^^^
+
+error: pos and key are exclusive
+  --> tests/errors/field_attributes.rs:25:13
+   |
+25 |             #[arg(pos, key)]
+   |             ^^^^^^^^^^^^^^^^
+
+error: unknown argument option
+  --> tests/errors/field_attributes.rs:35:19
+   |
+35 |             #[arg(unknown)]
+   |                   ^^^^^^^
+
+error: unknown argument option
+  --> tests/errors/field_attributes.rs:45:19
+   |
+45 |             #[arg(unknown)]
+   |                   ^^^^^^^

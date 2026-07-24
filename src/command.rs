@@ -18,7 +18,7 @@ pub struct Block {
 /// A command.
 #[derive(Clone, Debug, PartialEq)]
 pub struct Command {
-    /// The name of the command. Never empty.
+    /// The name of the command. Can be empty.
     pub name: String,
     /// The command's arguments, in the given order.
     pub args: Vec<Argument>,
