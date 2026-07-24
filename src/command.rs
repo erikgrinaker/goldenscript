@@ -86,11 +86,6 @@ impl Argument {
         }
     }
 
-    /// Returns a name for the argument -- either the key, if given, or value.
-    pub fn name(&self) -> &str {
-        self.key().unwrap_or_else(|| self.value())
-    }
-
     /// Parses the argument value as a T using core::str::parse(). Convenience
     /// method that returns an improved error message as a boxed error to ease
     /// error handling in a [`Runner`](crate::Runner).
@@ -178,7 +173,7 @@ impl<'a> ArgumentConsumer<'a> {
     /// Rejects any remaining arguments with an error.
     pub fn reject_rest(&self) -> Result<(), Box<dyn Error>> {
         if let Some(arg) = self.args.front() {
-            return Err(format!("invalid argument '{}'", arg.name()).into());
+            return Err(format!("invalid argument '{arg}'").into());
         }
         Ok(())
     }
@@ -226,18 +221,6 @@ mod tests {
         ($input:expr) => {{
             crate::parser::parse_command(&format!("{}\n", $input)).expect("invalid command")
         }};
-    }
-
-    /// Tests Argument.name().
-    #[test]
-    fn argument_name() {
-        assert_eq!(arg!("value").key(), None);
-        assert_eq!(arg!("value").value(), "value");
-        assert_eq!(arg!("value").name(), "value");
-
-        assert_eq!(arg!("key" => "value").key(), Some("key"));
-        assert_eq!(arg!("key" => "value").value(), "value");
-        assert_eq!(arg!("key" => "value").name(), "key");
     }
 
     /// Basic tests of Argument.parse(). Not comprehensive, since it dispatches
@@ -395,7 +378,7 @@ mod tests {
         // Key/value argument fails.
         let cmd = cmd!("cmd key=value");
         let mut args = cmd.consume_args();
-        assert_eq!(args.reject_rest().unwrap_err().to_string(), "invalid argument 'key'");
+        assert_eq!(args.reject_rest().unwrap_err().to_string(), "invalid argument 'key=value'");
         assert!(!args.rest().is_empty());
     }
 
