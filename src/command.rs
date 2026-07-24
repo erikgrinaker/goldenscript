@@ -61,21 +61,34 @@ impl std::fmt::Display for Command {
 /// A command argument.
 #[derive(Clone, Debug, PartialEq)]
 #[non_exhaustive]
-pub struct Argument {
-    /// The argument key, for `key=value` style arguments. Not guaranteed to be
-    /// unique, the [`Runner`](crate::Runner) can handle this as desired.
-    pub key: Option<String>,
-    /// The argument value. Can be empty.
-    pub value: String,
+pub enum Argument {
+    /// A positional argument value. Can be empty.
+    Positional(String),
+    /// A `key=value` style argument, with the key followed by the value. Keys
+    /// are not guaranteed to be unique; the [`Runner`](crate::Runner) can
+    /// handle this as desired. Both the key and value can be empty.
+    KeyValue(String, String),
 }
 
 impl Argument {
+    /// Returns the argument key, if this is a `key=value` style argument.
+    pub fn key(&self) -> Option<&str> {
+        match self {
+            Self::Positional(_) => None,
+            Self::KeyValue(key, _) => Some(key),
+        }
+    }
+
+    /// Returns the argument value.
+    pub fn value(&self) -> &str {
+        match self {
+            Self::Positional(value) | Self::KeyValue(_, value) => value,
+        }
+    }
+
     /// Returns a name for the argument -- either the key, if given, or value.
     pub fn name(&self) -> &str {
-        match self.key.as_deref() {
-            Some(key) => key,
-            None => &self.value,
-        }
+        self.key().unwrap_or_else(|| self.value())
     }
 
     /// Parses the argument value as a T using core::str::parse(). Convenience
@@ -86,17 +99,20 @@ impl Argument {
         T: std::str::FromStr,
         <T as std::str::FromStr>::Err: std::fmt::Display,
     {
-        self.value.parse().map_err(|e| format!("invalid argument '{}': {e}", self.value).into())
+        self.value().parse().map_err(|e| format!("invalid argument '{}': {e}", self.value()).into())
     }
 }
 
 impl std::fmt::Display for Argument {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if let Some(key) = &self.key {
-            f.write_str(&maybe_quote(key))?;
-            f.write_str("=")?;
+        match self {
+            Self::Positional(value) => f.write_str(&maybe_quote(value)),
+            Self::KeyValue(key, value) => {
+                f.write_str(&maybe_quote(key))?;
+                f.write_str("=")?;
+                f.write_str(&maybe_quote(value))
+            }
         }
-        f.write_str(&maybe_quote(&self.value))
     }
 }
 
@@ -127,9 +143,9 @@ impl<'a> ArgumentConsumer<'a> {
     /// Looks up and removes a key/value argument by key. If multiple arguments
     /// use the same key, the last one is returned (but all are removed).
     pub fn lookup(&mut self, key: &str) -> Option<&'a Argument> {
-        let arg = self.args.iter().rev().find(|a| a.key.as_deref() == Some(key)).copied();
+        let arg = self.args.iter().rev().find(|a| a.key() == Some(key)).copied();
         if arg.is_some() {
-            self.args.retain(|a| a.key.as_deref() != Some(key))
+            self.args.retain(|a| a.key() != Some(key))
         }
         arg
     }
@@ -141,27 +157,22 @@ impl<'a> ArgumentConsumer<'a> {
         T: std::str::FromStr,
         <T as std::str::FromStr>::Err: std::fmt::Display,
     {
-        let value = self
-            .args
-            .iter()
-            .rev()
-            .find(|a| a.key.as_deref() == Some(key))
-            .map(|a| a.parse())
-            .transpose()?;
+        let value =
+            self.args.iter().rev().find(|a| a.key() == Some(key)).map(|a| a.parse()).transpose()?;
         if value.is_some() {
-            self.args.retain(|a| a.key.as_deref() != Some(key))
+            self.args.retain(|a| a.key() != Some(key))
         }
         Ok(value)
     }
 
     /// Returns and removes the next key/value argument, if any.
     pub fn next_key(&mut self) -> Option<&'a Argument> {
-        self.args.iter().position(|a| a.key.is_some()).map(|i| self.args.remove(i).unwrap())
+        self.args.iter().position(|a| a.key().is_some()).map(|i| self.args.remove(i).unwrap())
     }
 
     /// Returns and removes the next positional argument, if any.
     pub fn next_pos(&mut self) -> Option<&'a Argument> {
-        self.args.iter().position(|a| a.key.is_none()).map(|i| self.args.remove(i).unwrap())
+        self.args.iter().position(|a| a.key().is_none()).map(|i| self.args.remove(i).unwrap())
     }
 
     /// Rejects any remaining arguments with an error.
@@ -179,18 +190,18 @@ impl<'a> ArgumentConsumer<'a> {
 
     /// Returns and removes all remaining key/value arguments.
     pub fn rest_key(&mut self) -> Vec<&'a Argument> {
-        let keyed: Vec<_> = self.args.iter().filter(|a| a.key.is_some()).copied().collect();
+        let keyed: Vec<_> = self.args.iter().filter(|a| a.key().is_some()).copied().collect();
         if !keyed.is_empty() {
-            self.args.retain(|a| a.key.is_none());
+            self.args.retain(|a| a.key().is_none());
         }
         keyed
     }
 
     /// Returns and removes all remaining positional arguments.
     pub fn rest_pos(&mut self) -> Vec<&'a Argument> {
-        let pos: Vec<_> = self.args.iter().filter(|a| a.key.is_none()).copied().collect();
+        let pos: Vec<_> = self.args.iter().filter(|a| a.key().is_none()).copied().collect();
         if !pos.is_empty() {
-            self.args.retain(|a| a.key.is_some());
+            self.args.retain(|a| a.key().is_some());
         }
         pos
     }
@@ -203,10 +214,10 @@ mod tests {
     /// Constructs an Argument from a string value or key => value.
     macro_rules! arg {
         ($value:expr) => {
-            Argument { key: None, value: $value.to_string() }
+            Argument::Positional($value.to_string())
         };
         ($key:expr => $value:expr) => {
-            Argument { key: Some($key.to_string()), value: $value.to_string() }
+            Argument::KeyValue($key.to_string(), $value.to_string())
         };
     }
 
@@ -220,7 +231,12 @@ mod tests {
     /// Tests Argument.name().
     #[test]
     fn argument_name() {
+        assert_eq!(arg!("value").key(), None);
+        assert_eq!(arg!("value").value(), "value");
         assert_eq!(arg!("value").name(), "value");
+
+        assert_eq!(arg!("key" => "value").key(), Some("key"));
+        assert_eq!(arg!("key" => "value").value(), "value");
         assert_eq!(arg!("key" => "value").name(), "key");
     }
 

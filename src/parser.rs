@@ -145,10 +145,10 @@ fn command(input: Span) -> IResult<Command> {
 /// optionally a key separated by =.
 fn argument(input: Span) -> IResult<Argument> {
     if let Ok((input, (key, value))) = separated_pair(string, tag("="), opt(string)).parse(input) {
-        return Ok((input, Argument { key: Some(key), value: value.unwrap_or_default() }));
+        return Ok((input, Argument::KeyValue(key, value.unwrap_or_default())));
     }
     let (input, value) = string(input)?;
-    Ok((input, Argument { key: None, value }))
+    Ok((input, Argument::Positional(value)))
 }
 
 /// Parses a list of []-delimited command tags separated by comma or whitespace.

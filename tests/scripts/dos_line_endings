@@ -21,10 +21,9 @@ baz arg key=value
 Command {
     name: "foo",
     args: [
-        Argument {
-            key: None,
-            value: "arg",
-        },
+        Positional(
+            "arg",
+        ),
     ],
     prefix: None,
     tags: {},
@@ -35,12 +34,10 @@ Command {
 Command {
     name: "bar",
     args: [
-        Argument {
-            key: Some(
-                "key",
-            ),
-            value: "value",
-        },
+        KeyValue(
+            "key",
+            "value",
+        ),
     ],
     prefix: None,
     tags: {},
@@ -51,16 +48,13 @@ Command {
 Command {
     name: "baz",
     args: [
-        Argument {
-            key: None,
-            value: "arg",
-        },
-        Argument {
-            key: Some(
-                "key",
-            ),
-            value: "value",
-        },
+        Positional(
+            "arg",
+        ),
+        KeyValue(
+            "key",
+            "value",
+        ),
     ],
     prefix: None,
     tags: {},
@@ -78,10 +72,9 @@ b: bar key=value
 a: Command {
 a:     name: "foo",
 a:     args: [
-a:         Argument {
-a:             key: None,
-a:             value: "arg",
-a:         },
+a:         Positional(
+a:             "arg",
+a:         ),
 a:     ],
 a:     prefix: Some(
 a:         "a",
@@ -89,17 +82,15 @@ a:     ),
 a:     tags: {},
 a:     silent: false,
 a:     fail: false,
-a:     line_number: 73,
+a:     line_number: 67,
 a: }
 b: Command {
 b:     name: "bar",
 b:     args: [
-b:         Argument {
-b:             key: Some(
-b:                 "key",
-b:             ),
-b:             value: "value",
-b:         },
+b:         KeyValue(
+b:             "key",
+b:             "value",
+b:         ),
 b:     ],
 b:     prefix: Some(
 b:         "b",
@@ -107,7 +98,7 @@ b:     ),
 b:     tags: {},
 b:     silent: false,
 b:     fail: false,
-b:     line_number: 75,
+b:     line_number: 69,
 b: }
 
 # Comment.

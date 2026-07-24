@@ -19,10 +19,9 @@ baz arg key=value
 Command {
     name: "foo",
     args: [
-        Argument {
-            key: None,
-            value: "arg",
-        },
+        Positional(
+            "arg",
+        ),
     ],
     prefix: None,
     tags: {},
@@ -33,12 +32,10 @@ Command {
 Command {
     name: "bar",
     args: [
-        Argument {
-            key: Some(
-                "key",
-            ),
-            value: "value",
-        },
+        KeyValue(
+            "key",
+            "value",
+        ),
     ],
     prefix: None,
     tags: {},
@@ -49,16 +46,13 @@ Command {
 Command {
     name: "baz",
     args: [
-        Argument {
-            key: None,
-            value: "arg",
-        },
-        Argument {
-            key: Some(
-                "key",
-            ),
-            value: "value",
-        },
+        Positional(
+            "arg",
+        ),
+        KeyValue(
+            "key",
+            "value",
+        ),
     ],
     prefix: None,
     tags: {},
@@ -80,21 +74,18 @@ Command {
     },
     silent: false,
     fail: false,
-    line_number: 71,
+    line_number: 65,
 }
 Command {
     name: "foo",
     args: [
-        Argument {
-            key: None,
-            value: "arg",
-        },
-        Argument {
-            key: Some(
-                "key",
-            ),
-            value: "value",
-        },
+        Positional(
+            "arg",
+        ),
+        KeyValue(
+            "key",
+            "value",
+        ),
     ],
     prefix: None,
     tags: {
@@ -104,7 +95,7 @@ Command {
     },
     silent: false,
     fail: false,
-    line_number: 72,
+    line_number: 66,
 }
 
 # Command with tags before the command.
@@ -120,15 +111,14 @@ Command {
     },
     silent: false,
     fail: false,
-    line_number: 111,
+    line_number: 102,
 }
 Command {
     name: "foo",
     args: [
-        Argument {
-            key: None,
-            value: "arg",
-        },
+        Positional(
+            "arg",
+        ),
     ],
     prefix: None,
     tags: {
@@ -138,7 +128,7 @@ Command {
     },
     silent: false,
     fail: false,
-    line_number: 112,
+    line_number: 103,
 }
 
 # Commands with prefixes.
@@ -148,10 +138,9 @@ b: bar key=value
 a: Command {
 a:     name: "foo",
 a:     args: [
-a:         Argument {
-a:             key: None,
-a:             value: "arg",
-a:         },
+a:         Positional(
+a:             "arg",
+a:         ),
 a:     ],
 a:     prefix: Some(
 a:         "a",
@@ -159,17 +148,15 @@ a:     ),
 a:     tags: {},
 a:     silent: false,
 a:     fail: false,
-a:     line_number: 145,
+a:     line_number: 135,
 a: }
 b: Command {
 b:     name: "bar",
 b:     args: [
-b:         Argument {
-b:             key: Some(
-b:                 "key",
-b:             ),
-b:             value: "value",
-b:         },
+b:         KeyValue(
+b:             "key",
+b:             "value",
+b:         ),
 b:     ],
 b:     prefix: Some(
 b:         "b",
@@ -177,7 +164,7 @@ b:     ),
 b:     tags: {},
 b:     silent: false,
 b:     fail: false,
-b:     line_number: 146,
+b:     line_number: 136,
 b: }
 
 # Failing commands.
@@ -186,16 +173,15 @@ b: }
 Error: Command {
     name: "foo",
     args: [
-        Argument {
-            key: None,
-            value: "bar",
-        },
+        Positional(
+            "bar",
+        ),
     ],
     prefix: None,
     tags: {},
     silent: false,
     fail: true,
-    line_number: 184,
+    line_number: 171,
 }
 
 # Command with tags, prefixes, and failures.
@@ -204,10 +190,9 @@ prefix:[tag]! foo bar
 prefix: Error: Command {
 prefix:     name: "foo",
 prefix:     args: [
-prefix:         Argument {
-prefix:             key: None,
-prefix:             value: "bar",
-prefix:         },
+prefix:         Positional(
+prefix:             "bar",
+prefix:         ),
 prefix:     ],
 prefix:     prefix: Some(
 prefix:         "prefix",
@@ -217,7 +202,7 @@ prefix:         "tag",
 prefix:     },
 prefix:     silent: false,
 prefix:     fail: true,
-prefix:     line_number: 202,
+prefix:     line_number: 188,
 prefix: }
 
 # Prefixes, commands, and keys can be empty.
@@ -226,12 +211,10 @@ prefix: }
 : Command {
 :     name: "",
 :     args: [
-:         Argument {
-:             key: Some(
-:                 "",
-:             ),
-:             value: "",
-:         },
+:         KeyValue(
+:             "",
+:             "",
+:         ),
 :     ],
 :     prefix: Some(
 :         "",
@@ -239,7 +222,7 @@ prefix: }
 :     tags: {},
 :     silent: false,
 :     fail: false,
-:     line_number: 224,
+:     line_number: 209,
 : }
 
 # Prefixes, commands, and keys can be whitespace.
@@ -248,12 +231,10 @@ prefix: }
  : Command {
  :     name: " ",
  :     args: [
- :         Argument {
- :             key: Some(
- :                 " ",
- :             ),
- :             value: " ",
- :         },
+ :         KeyValue(
+ :             " ",
+ :             " ",
+ :         ),
  :     ],
  :     prefix: Some(
  :         " ",
@@ -261,7 +242,7 @@ prefix: }
  :     tags: {},
  :     silent: false,
  :     fail: false,
- :     line_number: 246,
+ :     line_number: 229,
  : }
 
 # Empty argument keys and values are fine.
@@ -272,48 +253,43 @@ command arg=
 Command {
     name: "command",
     args: [
-        Argument {
-            key: None,
-            value: "",
-        },
+        Positional(
+            "",
+        ),
     ],
     prefix: None,
     tags: {},
     silent: false,
     fail: false,
-    line_number: 268,
+    line_number: 249,
 }
 Command {
     name: "command",
     args: [
-        Argument {
-            key: Some(
-                "arg",
-            ),
-            value: "",
-        },
+        KeyValue(
+            "arg",
+            "",
+        ),
     ],
     prefix: None,
     tags: {},
     silent: false,
     fail: false,
-    line_number: 269,
+    line_number: 250,
 }
 Command {
     name: "command",
     args: [
-        Argument {
-            key: Some(
-                "arg",
-            ),
-            value: "",
-        },
+        KeyValue(
+            "arg",
+            "",
+        ),
     ],
     prefix: None,
     tags: {},
     silent: false,
     fail: false,
-    line_number: 270,
+    line_number: 251,
 }
 
 # > uses the rest of the line as the command name, regardless.
@@ -329,7 +305,7 @@ Command {
     tags: {},
     silent: false,
     fail: false,
-    line_number: 320,
+    line_number: 296,
 }
 Command {
     name: "",
@@ -338,7 +314,7 @@ Command {
     tags: {},
     silent: false,
     fail: false,
-    line_number: 321,
+    line_number: 297,
 }
 Command {
     name: "!",
@@ -347,7 +323,7 @@ Command {
     tags: {},
     silent: false,
     fail: false,
-    line_number: 322,
+    line_number: 298,
 }
 Command {
     name: "> >",
@@ -356,7 +332,7 @@ Command {
     tags: {},
     silent: false,
     fail: false,
-    line_number: 323,
+    line_number: 299,
 }
 
 # > also works with prefix, tags, and error markers.
@@ -374,7 +350,7 @@ prefix:     ),
 prefix:     tags: {},
 prefix:     silent: false,
 prefix:     fail: false,
-prefix:     line_number: 363,
+prefix:     line_number: 339,
 prefix: }
 Error: Command {
     name: "command arg",
@@ -383,7 +359,7 @@ Error: Command {
     tags: {},
     silent: false,
     fail: true,
-    line_number: 364,
+    line_number: 340,
 }
 Command {
     name: "command arg",
@@ -394,7 +370,7 @@ Command {
     },
     silent: false,
     fail: false,
-    line_number: 365,
+    line_number: 341,
 }
 prefix: Error: Command {
 prefix:     name: "command arg",
@@ -407,7 +383,7 @@ prefix:         "tag",
 prefix:     },
 prefix:     silent: false,
 prefix:     fail: true,
-prefix:     line_number: 366,
+prefix:     line_number: 342,
 prefix: }
 
 # > respects \ line continuation, but it can't be escaped by \\.
@@ -423,7 +399,7 @@ Command {
     tags: {},
     silent: false,
     fail: false,
-    line_number: 414,
+    line_number: 390,
 }
 
 > a line with \n ending with \\
@@ -436,5 +412,5 @@ Command {
     tags: {},
     silent: false,
     fail: false,
-    line_number: 429,
+    line_number: 405,
 }

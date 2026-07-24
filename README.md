@@ -130,7 +130,7 @@ impl goldenscript::Runner for BTreeMapRunner {
             // get KEY: fetches the value of the given key, or None if it does not exist.
             "get" => {
                 let mut args = command.consume_args();
-                let key = &args.next_pos().ok_or("key not given")?.value;
+                let key = args.next_pos().ok_or("key not given")?.value();
                 args.reject_rest()?;
                 let value = self.map.get(key);
                 writeln!(output, "get → {value:?}")?;
@@ -140,7 +140,8 @@ impl goldenscript::Runner for BTreeMapRunner {
             "insert" => {
                 let mut args = command.consume_args();
                 for arg in args.rest_key() {
-                    let old = self.map.insert(arg.key.clone().unwrap(), arg.value.clone());
+                    let old =
+                        self.map.insert(arg.key().unwrap().to_owned(), arg.value().to_owned());
                     writeln!(output, "insert → {old:?}")?;
                 }
                 args.reject_rest()?;
@@ -150,8 +151,10 @@ impl goldenscript::Runner for BTreeMapRunner {
             "range" => {
                 use std::ops::Bound::*;
                 let mut args = command.consume_args();
-                let from = args.next_pos().map(|a| Included(a.value.clone())).unwrap_or(Unbounded);
-                let to = args.next_pos().map(|a| Excluded(a.value.clone())).unwrap_or(Unbounded);
+                let from =
+                    args.next_pos().map(|a| Included(a.value().to_owned())).unwrap_or(Unbounded);
+                let to =
+                    args.next_pos().map(|a| Excluded(a.value().to_owned())).unwrap_or(Unbounded);
                 args.reject_rest()?;
                 for (key, value) in self.map.range((from, to)) {
                     writeln!(output, "{key}={value}")?;

@@ -75,20 +75,20 @@ impl goldenscript::Runner for DebugRunner {
         let output = match command.name.as_str() {
             "_echo" => {
                 for arg in &command.args {
-                    if arg.key.is_some() {
+                    if arg.key().is_some() {
                         return Err("echo args can't have keys".into());
                     }
                 }
-                command.args.iter().map(|a| a.value.clone()).collect::<Vec<String>>().join(" ")
+                command.args.iter().map(|a| a.value().to_owned()).collect::<Vec<String>>().join(" ")
             }
 
             "_error" => {
-                let message = command.args.first().map(|a| a.value.as_str()).unwrap_or("error");
+                let message = command.args.first().map(|a| a.value()).unwrap_or("error");
                 return Err(message.to_string().into());
             }
 
             "_panic" => {
-                let message = command.args.first().map(|a| a.value.as_str()).unwrap_or("panic");
+                let message = command.args.first().map(|a| a.value()).unwrap_or("panic");
                 panic!("{message}");
             }
 

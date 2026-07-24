@@ -5,10 +5,9 @@
 Error: Command {
     name: "command",
     args: [
-        Argument {
-            key: None,
-            value: "arg",
-        },
+        Positional(
+            "arg",
+        ),
     ],
     prefix: None,
     tags: {},

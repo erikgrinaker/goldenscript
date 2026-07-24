@@ -34,11 +34,11 @@ impl goldenscript::Runner for HookRunner {
         match command.name.as_str() {
             "echo" => {
                 for arg in &command.args {
-                    if arg.key.is_some() {
+                    if arg.key().is_some() {
                         return Err("echo args can't have keys".into());
                     }
                 }
-                Ok(command.args.iter().map(|arg| arg.value.as_str()).collect::<Vec<_>>().join(" "))
+                Ok(command.args.iter().map(|arg| arg.value()).collect::<Vec<_>>().join(" "))
             }
             "error" => Err("error".into()),
             "panic" => panic!("panic"),

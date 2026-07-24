@@ -11,12 +11,10 @@ command id=3
 Command {
     name: "command",
     args: [
-        Argument {
-            key: Some(
-                "id",
-            ),
-            value: "1",
-        },
+        KeyValue(
+            "id",
+            "1",
+        ),
     ],
     prefix: None,
     tags: {},
@@ -27,12 +25,10 @@ Command {
 Command {
     name: "command",
     args: [
-        Argument {
-            key: Some(
-                "id",
-            ),
-            value: "3",
-        },
+        KeyValue(
+            "id",
+            "3",
+        ),
     ],
     prefix: None,
     tags: {},

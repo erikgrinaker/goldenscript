@@ -122,7 +122,7 @@
 //!             // get KEY: fetches the value of the given key, or None if it does not exist.
 //!             "get" => {
 //!                 let mut args = command.consume_args();
-//!                 let key = &args.next_pos().ok_or("key not given")?.value;
+//!                 let key = args.next_pos().ok_or("key not given")?.value();
 //!                 args.reject_rest()?;
 //!                 let value = self.map.get(key);
 //!                 writeln!(output, "get → {value:?}")?;
@@ -132,7 +132,8 @@
 //!             "insert" => {
 //!                 let mut args = command.consume_args();
 //!                 for arg in args.rest_key() {
-//!                     let old = self.map.insert(arg.key.clone().unwrap(), arg.value.clone());
+//!                     let old =
+//!                         self.map.insert(arg.key().unwrap().to_owned(), arg.value().to_owned());
 //!                     writeln!(output, "insert → {old:?}")?;
 //!                 }
 //!                 args.reject_rest()?;
@@ -142,8 +143,10 @@
 //!             "range" => {
 //!                 use std::ops::Bound::*;
 //!                 let mut args = command.consume_args();
-//!                 let from = args.next_pos().map(|a| Included(a.value.clone())).unwrap_or(Unbounded);
-//!                 let to = args.next_pos().map(|a| Excluded(a.value.clone())).unwrap_or(Unbounded);
+//!                 let from =
+//!                     args.next_pos().map(|a| Included(a.value().to_owned())).unwrap_or(Unbounded);
+//!                 let to =
+//!                     args.next_pos().map(|a| Excluded(a.value().to_owned())).unwrap_or(Unbounded);
 //!                 args.reject_rest()?;
 //!                 for (key, value) in self.map.range((from, to)) {
 //!                     writeln!(output, "{key}={value}")?;
@@ -348,7 +351,7 @@
 //!     fn run(&mut self, command: &goldenscript::Command) -> Result<String, Box<dyn Error>> {
 //!         match command.name.as_str() {
 //!             "echo" => {
-//!                 let lines: Vec<&str> = command.args.iter().map(|a| a.value.as_str()).collect();
+//!                 let lines: Vec<&str> = command.args.iter().map(|a| a.value()).collect();
 //!                 Ok(lines.join("\n"))
 //!             }
 //!             name => return Err(format!("invalid command {name}").into())
@@ -392,7 +395,7 @@
 //!         let mut args = command.consume_args();
 //!
 //!         // The first positional argument is a required string message.
-//!         let message = &args.next_pos().ok_or("message not given")?.value;
+//!         let message = args.next_pos().ok_or("message not given")?.value();
 //!
 //!         // The remaining positional arguments are numeric node IDs.
 //!         let ids: Vec<u32> = args.rest_pos().iter().map(|a| a.parse()).collect::<Result<_, _>>()?;

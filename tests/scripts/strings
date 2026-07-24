@@ -5,16 +5,13 @@
 0: Command {
 0:     name: "1",
 0:     args: [
-0:         Argument {
-0:             key: None,
-0:             value: "2",
-0:         },
-0:         Argument {
-0:             key: Some(
-0:                 "3",
-0:             ),
-0:             value: "4",
-0:         },
+0:         Positional(
+0:             "2",
+0:         ),
+0:         KeyValue(
+0:             "3",
+0:             "4",
+0:         ),
 0:     ],
 0:     prefix: Some(
 0:         "0",
@@ -27,16 +24,13 @@
 01: Command {
 01:     name: "23",
 01:     args: [
-01:         Argument {
-01:             key: None,
-01:             value: "45",
-01:         },
-01:         Argument {
-01:             key: Some(
-01:                 "67",
-01:             ),
-01:             value: "89",
-01:         },
+01:         Positional(
+01:             "45",
+01:         ),
+01:         KeyValue(
+01:             "67",
+01:             "89",
+01:         ),
 01:     ],
 01:     prefix: Some(
 01:         "01",
@@ -53,16 +47,13 @@ _prefix: _command _arg _key=_value
 _prefix: Command {
 _prefix:     name: "_command",
 _prefix:     args: [
-_prefix:         Argument {
-_prefix:             key: None,
-_prefix:             value: "_arg",
-_prefix:         },
-_prefix:         Argument {
-_prefix:             key: Some(
-_prefix:                 "_key",
-_prefix:             ),
-_prefix:             value: "_value",
-_prefix:         },
+_prefix:         Positional(
+_prefix:             "_arg",
+_prefix:         ),
+_prefix:         KeyValue(
+_prefix:             "_key",
+_prefix:             "_value",
+_prefix:         ),
 _prefix:     ],
 _prefix:     prefix: Some(
 _prefix:         "_prefix",
@@ -70,7 +61,7 @@ _prefix:     ),
 _prefix:     tags: {},
 _prefix:     silent: false,
 _prefix:     fail: false,
-_prefix:     line_number: 51,
+_prefix:     line_number: 45,
 _prefix: }
 
 # Unquoted strings can contain -_./@
@@ -79,16 +70,13 @@ prefix-_.: command-_./@ arg-_./@ key-_./@=value-_./@
 prefix-_.: Command {
 prefix-_.:     name: "command-_./@",
 prefix-_.:     args: [
-prefix-_.:         Argument {
-prefix-_.:             key: None,
-prefix-_.:             value: "arg-_./@",
-prefix-_.:         },
-prefix-_.:         Argument {
-prefix-_.:             key: Some(
-prefix-_.:                 "key-_./@",
-prefix-_.:             ),
-prefix-_.:             value: "value-_./@",
-prefix-_.:         },
+prefix-_.:         Positional(
+prefix-_.:             "arg-_./@",
+prefix-_.:         ),
+prefix-_.:         KeyValue(
+prefix-_.:             "key-_./@",
+prefix-_.:             "value-_./@",
+prefix-_.:         ),
 prefix-_.:     ],
 prefix-_.:     prefix: Some(
 prefix-_.:         "prefix-_.",
@@ -96,7 +84,7 @@ prefix-_.:     ),
 prefix-_.:     tags: {},
 prefix-_.:     silent: false,
 prefix-_.:     fail: false,
-prefix-_.:     line_number: 77,
+prefix-_.:     line_number: 68,
 prefix-_.: }
 
 # Single-quoted strings can contain any character, including newlines.
@@ -109,20 +97,16 @@ prefix-_.: }
 ➡️: Command {
 ➡️:     name: "😀",
 ➡️:     args: [
-➡️:         Argument {
-➡️:             key: None,
-➡️:             value: "\"👋\"",
-➡️:         },
-➡️:         Argument {
-➡️:             key: Some(
-➡️:                 "\t",
-➡️:             ),
-➡️:             value: "\0",
-➡️:         },
-➡️:         Argument {
-➡️:             key: None,
-➡️:             value: "\n\n  🚀\n\n",
-➡️:         },
+➡️:         Positional(
+➡️:             "\"👋\"",
+➡️:         ),
+➡️:         KeyValue(
+➡️:             "\t",
+➡️:             "\0",
+➡️:         ),
+➡️:         Positional(
+➡️:             "\n\n  🚀\n\n",
+➡️:         ),
 ➡️:     ],
 ➡️:     prefix: Some(
 ➡️:         "➡\u{fe0f}",
@@ -130,7 +114,7 @@ prefix-_.: }
 ➡️:     tags: {},
 ➡️:     silent: false,
 ➡️:     fail: false,
-➡️:     line_number: 103,
+➡️:     line_number: 91,
 ➡️: }
 
 # Double-quoted strings can too.
@@ -143,20 +127,16 @@ prefix-_.: }
 ➡️: Command {
 ➡️:     name: "😀",
 ➡️:     args: [
-➡️:         Argument {
-➡️:             key: None,
-➡️:             value: "'👋'",
-➡️:         },
-➡️:         Argument {
-➡️:             key: Some(
-➡️:                 "\t",
-➡️:             ),
-➡️:             value: "\0",
-➡️:         },
-➡️:         Argument {
-➡️:             key: None,
-➡️:             value: "\n\n  🚀\n\n",
-➡️:         },
+➡️:         Positional(
+➡️:             "'👋'",
+➡️:         ),
+➡️:         KeyValue(
+➡️:             "\t",
+➡️:             "\0",
+➡️:         ),
+➡️:         Positional(
+➡️:             "\n\n  🚀\n\n",
+➡️:         ),
 ➡️:     ],
 ➡️:     prefix: Some(
 ➡️:         "➡\u{fe0f}",
@@ -164,7 +144,7 @@ prefix-_.: }
 ➡️:     tags: {},
 ➡️:     silent: false,
 ➡️:     fail: false,
-➡️:     line_number: 137,
+➡️:     line_number: 121,
 ➡️: }
 
 # Single- and double-quoted strings can also be empty, but is not allowed in
@@ -175,24 +155,20 @@ command foo="" bar=''
 Command {
     name: "command",
     args: [
-        Argument {
-            key: Some(
-                "foo",
-            ),
-            value: "",
-        },
-        Argument {
-            key: Some(
-                "bar",
-            ),
-            value: "",
-        },
+        KeyValue(
+            "foo",
+            "",
+        ),
+        KeyValue(
+            "bar",
+            "",
+        ),
     ],
     prefix: None,
     tags: {},
     silent: false,
     fail: false,
-    line_number: 173,
+    line_number: 153,
 }
 
 # Escape sequences are respected both in single and double quotes, including
@@ -207,7 +183,7 @@ Command {
     tags: {},
     silent: false,
     fail: false,
-    line_number: 200,
+    line_number: 176,
 }
 Command {
     name: "\\ ' \" \0 \n \r \t \\ \0 z ÿ 👋",
@@ -216,7 +192,7 @@ Command {
     tags: {},
     silent: false,
     fail: false,
-    line_number: 201,
+    line_number: 177,
 }
 
 # Quoted strings can contain the other, unescaped quote kind.
@@ -230,7 +206,7 @@ Command {
     tags: {},
     silent: false,
     fail: false,
-    line_number: 223,
+    line_number: 199,
 }
 Command {
     name: "'",
@@ -239,7 +215,7 @@ Command {
     tags: {},
     silent: false,
     fail: false,
-    line_number: 224,
+    line_number: 200,
 }
 
 # Quoted strings can also contain special characters like silencing ( and prefix
@@ -249,16 +225,15 @@ Command {
 Command {
     name: "(command:",
     args: [
-        Argument {
-            key: None,
-            value: "arg",
-        },
+        Positional(
+            "arg",
+        ),
     ],
     prefix: None,
     tags: {},
     silent: false,
     fail: false,
-    line_number: 247,
+    line_number: 223,
 }
 
 # They can also contain comments.
@@ -271,5 +246,5 @@ Command {
     tags: {},
     silent: false,
     fail: false,
-    line_number: 265,
+    line_number: 240,
 }

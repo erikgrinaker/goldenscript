@@ -8,12 +8,10 @@ command id=1
 Command {
     name: "command",
     args: [
-        Argument {
-            key: Some(
-                "id",
-            ),
-            value: "1",
-        },
+        KeyValue(
+            "id",
+            "1",
+        ),
     ],
     prefix: None,
     tags: {},
@@ -27,18 +25,16 @@ command id=2 # Comment beside command.
 Command {
     name: "command",
     args: [
-        Argument {
-            key: Some(
-                "id",
-            ),
-            value: "2",
-        },
+        KeyValue(
+            "id",
+            "2",
+        ),
     ],
     prefix: None,
     tags: {},
     silent: false,
     fail: false,
-    line_number: 25,
+    line_number: 23,
 }
 
 command id=3
@@ -47,18 +43,16 @@ command id=3
 Command {
     name: "command",
     args: [
-        Argument {
-            key: Some(
-                "id",
-            ),
-            value: "3",
-        },
+        KeyValue(
+            "id",
+            "3",
+        ),
     ],
     prefix: None,
     tags: {},
     silent: false,
     fail: false,
-    line_number: 44,
+    line_number: 40,
 }
 
 # Comment between blocks.
@@ -68,18 +62,16 @@ command id=4
 Command {
     name: "command",
     args: [
-        Argument {
-            key: Some(
-                "id",
-            ),
-            value: "4",
-        },
+        KeyValue(
+            "id",
+            "4",
+        ),
     ],
     prefix: None,
     tags: {},
     silent: false,
     fail: false,
-    line_number: 66,
+    line_number: 60,
 }
 
 command id=5 // Comment using //.
@@ -87,18 +79,16 @@ command id=5 // Comment using //.
 Command {
     name: "command",
     args: [
-        Argument {
-            key: Some(
-                "id",
-            ),
-            value: "5",
-        },
+        KeyValue(
+            "id",
+            "5",
+        ),
     ],
     prefix: None,
     tags: {},
     silent: false,
     fail: false,
-    line_number: 85,
+    line_number: 77,
 }
 
 # Comment at end.

@@ -14,10 +14,9 @@ Command {
 Command {
     name: "command",
     args: [
-        Argument {
-            key: None,
-            value: "arg",
-        },
+        Positional(
+            "arg",
+        ),
     ],
     prefix: None,
     tags: {},
@@ -69,7 +68,7 @@ Command {
     tags: {},
     silent: false,
     fail: false,
-    line_number: 62,
+    line_number: 61,
 }
 
 # Prefixes should handle empty output and output ending with a newline properly.
