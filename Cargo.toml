@@ -8,6 +8,7 @@ license = "Apache-2.0"
 homepage = "https://github.com/erikgrinaker/goldenscript"
 repository = "https://github.com/erikgrinaker/goldenscript"
 edition = "2021"
+rust-version = "1.88.0"
 
 [dependencies]
 goldenfile = "1.11"
