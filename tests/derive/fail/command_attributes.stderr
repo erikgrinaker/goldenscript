@@ -1,0 +1,41 @@
+error: #[command] is not valid on enum
+ --> tests/derive/fail/command_attributes.rs:5:5
+  |
+5 |     #[command]
+  |     ^^^^^^^^^^
+
+error: duplicate command name 'first'
+  --> tests/derive/fail/command_attributes.rs:18:9
+   |
+18 |         Second,
+   |         ^^^^^^
+
+error: command name cannot be empty
+  --> tests/derive/fail/command_attributes.rs:27:26
+   |
+27 |         #[command(name = "")]
+   |                          ^^
+
+error: unknown command option
+  --> tests/derive/fail/command_attributes.rs:29:19
+   |
+29 |         #[command(unknown)]
+   |                   ^^^^^^^
+
+error: duplicate command name option
+  --> tests/derive/fail/command_attributes.rs:31:33
+   |
+31 |         #[command(name = "one", name = "two")]
+   |                                 ^^^^
+
+error: duplicate #[command] attribute
+  --> tests/derive/fail/command_attributes.rs:34:9
+   |
+34 |         #[command]
+   |         ^^^^^^^^^^
+
+error: unexpected enum variant attribute
+  --> tests/derive/fail/command_attributes.rs:36:9
+   |
+36 |         #[arg]
+   |         ^^^^^^

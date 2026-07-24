@@ -1,0 +1,48 @@
+error: nested option and collection types are not supported
+ --> tests/derive/fail/field_types.rs:7:25
+  |
+7 |     NestedOption(Option<Vec<String>>),
+  |                         ^^^^^^^^^^^
+
+error: nested option and collection types are not supported
+ --> tests/derive/fail/field_types.rs:8:24
+  |
+8 |     NestedSequence(Vec<Option<String>>),
+  |                        ^^^^^^^^^^^^^^
+
+error: nested option and collection types are not supported
+  --> tests/derive/fail/field_types.rs:11:33
+   |
+11 |         values: HashMap<String, Vec<String>>,
+   |                                 ^^^^^^^^^^^
+
+error: map argument keys must be String
+  --> tests/derive/fail/field_types.rs:15:26
+   |
+15 |         values: BTreeMap<u64, String>,
+   |                          ^^^
+
+error: prefix fields must be a scalar or Option<T>
+  --> tests/derive/fail/field_types.rs:19:17
+   |
+19 |         prefix: Vec<String>,
+   |                 ^^^^^^^^^^^
+
+error: tag fields must be bool or a supported String collection
+  --> tests/derive/fail/field_types.rs:23:16
+   |
+23 |         value: String,
+   |                ^^^^^^
+
+error: tag collections must contain String
+  --> tests/derive/fail/field_types.rs:27:26
+   |
+27 |         values: BTreeSet<u64>,
+   |                          ^^^
+
+error: map fields cannot have a key name
+  --> tests/derive/fail/field_types.rs:30:9
+   |
+30 | /         #[arg(key = "name")]
+31 | |         values: BTreeMap<String, String>,
+   | |________________________________________^

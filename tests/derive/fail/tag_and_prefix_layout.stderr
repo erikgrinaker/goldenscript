@@ -1,0 +1,33 @@
+error: only one prefix field is allowed
+  --> tests/derive/fail/tag_and_prefix_layout.rs:10:9
+   |
+10 | /         #[prefix]
+11 | |         second: String,
+   | |______________________^
+
+error: duplicate tag name 'same'
+  --> tests/derive/fail/tag_and_prefix_layout.rs:16:9
+   |
+16 | /         #[tag(name = "same")]
+17 | |         second: bool,
+   | |____________________^
+
+error: only one tag collection field is allowed
+  --> tests/derive/fail/tag_and_prefix_layout.rs:22:9
+   |
+22 | /         #[tag]
+23 | |         second: HashSet<String>,
+   | |_______________________________^
+
+error: tag collection fields cannot have a name
+  --> tests/derive/fail/tag_and_prefix_layout.rs:26:9
+   |
+26 | /         #[tag(name = "invalid")]
+27 | |         values: Vec<String>,
+   | |___________________________^
+
+error: tuple boolean tag fields require #[tag(name = "...")]
+  --> tests/derive/fail/tag_and_prefix_layout.rs:29:15
+   |
+29 |     TupleBool(#[tag] bool),
+   |               ^^^^^^^^^^^

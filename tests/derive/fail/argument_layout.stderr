@@ -1,0 +1,50 @@
+error: a required field cannot follow an optional field of the same argument kind
+ --> tests/derive/fail/argument_layout.rs:7:43
+  |
+7 |     RequiredAfterOptional(Option<String>, String),
+  |                                           ^^^^^^
+
+error: a required field cannot follow an optional field of the same argument kind
+  --> tests/derive/fail/argument_layout.rs:11:9
+   |
+11 | /         #[arg(key)]
+12 | |         required: String,
+   | |________________________^
+
+error: a variadic field must be the last field of its argument kind
+  --> tests/derive/fail/argument_layout.rs:14:32
+   |
+14 |     AfterVariadic(Vec<String>, String),
+   |                                ^^^^^^
+
+error: a variadic field must be the last field of its argument kind
+  --> tests/derive/fail/argument_layout.rs:18:9
+   |
+18 | /         #[arg(key)]
+19 | |         required: String,
+   | |________________________^
+
+error: sequence fields can only consume positional arguments
+  --> tests/derive/fail/argument_layout.rs:23:17
+   |
+23 |         values: BTreeSet<String>,
+   |                 ^^^^^^^^^^^^^^^^
+
+error: map fields can only consume key/value arguments
+  --> tests/derive/fail/argument_layout.rs:25:31
+   |
+25 |     PositionalMap(#[arg(pos)] BTreeMap<String, String>),
+   |                               ^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: tuple key fields require key = "..."
+  --> tests/derive/fail/argument_layout.rs:26:14
+   |
+26 |     TupleKey(#[arg(key)] String),
+   |              ^^^^^^^^^^^^^^^^^^
+
+error: duplicate argument key 'value'
+  --> tests/derive/fail/argument_layout.rs:30:9
+   |
+30 | /         #[arg(key = "value")]
+31 | |         second: Option<String>,
+   | |______________________________^

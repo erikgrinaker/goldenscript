@@ -1,0 +1,48 @@
+error: a field can only have one of #[arg], #[prefix], or #[tag]
+ --> tests/derive/fail/field_attributes.rs:7:9
+  |
+7 |         #[tag]
+  |         ^^^^^^
+
+error: #[command] is only valid on enum variants
+  --> tests/derive/fail/field_attributes.rs:11:9
+   |
+11 | /         #[command]
+12 | |         value: String,
+   | |_____________________^
+
+error: #[prefix] does not accept options
+  --> tests/derive/fail/field_attributes.rs:15:9
+   |
+15 |         #[prefix(optional)]
+   |         ^^^^^^^^^^^^^^^^^^^
+
+error: pos and key cannot be used together
+  --> tests/derive/fail/field_attributes.rs:19:9
+   |
+19 |         #[arg(pos, key)]
+   |         ^^^^^^^^^^^^^^^^
+
+error: unknown argument option
+  --> tests/derive/fail/field_attributes.rs:23:15
+   |
+23 |         #[arg(unknown)]
+   |               ^^^^^^^
+
+error: duplicate key option
+  --> tests/derive/fail/field_attributes.rs:27:28
+   |
+27 |         #[arg(key = "one", key = "two")]
+   |                            ^^^
+
+error: argument key cannot be empty
+  --> tests/derive/fail/field_attributes.rs:31:21
+   |
+31 |         #[arg(key = "")]
+   |                     ^^
+
+error: tag name cannot be empty
+  --> tests/derive/fail/field_attributes.rs:35:22
+   |
+35 |         #[tag(name = "")]
+   |                      ^^

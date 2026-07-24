@@ -1,0 +1,19 @@
+[package]
+name = "goldenscript-macros"
+description = "Derive macros for goldenscript"
+version.workspace = true
+authors.workspace = true
+license.workspace = true
+homepage.workspace = true
+repository.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+
+[lib]
+proc-macro = true
+
+[dependencies]
+heck = "0.5"
+proc-macro2 = "1.0"
+quote = "1.0"
+syn = "3.0"

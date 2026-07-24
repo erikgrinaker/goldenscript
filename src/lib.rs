@@ -370,6 +370,90 @@
 //! }
 //! ```
 //!
+//! ## Command Macro
+//!
+//! The derive helper `#[derive(goldenscript::Command)]` can be used on an enum to automatically
+//! parse commands into Rust types by implementing [`TryFrom<&Command>`](TryFrom).
+//!
+//! ### Commands: `#[command]`
+//!
+//! Each enum variant corresponds to a command. By default, the command name is given by the variant
+//! name, converting the CamelCase variant name to a snake_case command name.
+//!
+//! The optional `#[command]` macro can be used on an enum variant to specify options for the
+//! command, if necessary. It takes the following arguments:
+//!
+//! * `name`: specifies the Goldenscript command name for this command. Defaults to the snake_case
+//!   representation of the variant name. Multiple commands can't use the same name.
+//!
+//! ### Fields
+//!
+//! Enum variants can be both unit, tuple, and struct types. Unit types will reject all arguments.
+//! Fields are processed in the given order.
+//!
+//! By default, each enum field corresponds to a required positional argument, but this behavior can
+//! be adjusted by helper attributes.
+//!
+//! #### `#[arg]`
+//!
+//! Specifies that the field is a command argument, defaulting to a positional argument. Fields are
+//! required unless otherwise specified. Fields can have the following types:
+//!
+//! * `String`: contains the literal argument.
+//! * `char`: contains the literal input character. Errors if the argument has length != 1.
+//! * `bool`, integer and floating-point types, or any other type implementing `FromStr`: parses the
+//!   input string using `FromStr`, or errors if invalid.
+//! * `Option<T>`: makes the argument optional.
+//! * `Vec<T>`, `HashSet<T>`, `BTreeSet<T>`: makes the field optional, and consumes all remaining
+//!   positional arguments.
+//! * `HashMap<String, T>`, `BTreeMap<String, T>`: makes the field optional, and consumes all
+//!   remaining key/value arguments. The key/value argument kind is inferred from the map type, and
+//!   duplicate keys will use the last value.
+//!
+//! `T` must be a scalar type implementing `FromStr`; nested options and collections are not
+//! supported.
+//!
+//! A required field cannot be specified after optional fields of the same kind (positional or
+//! key/value argument). Variadic fields such as `Vec<T>` or `HashMap<T>` must be the last field for
+//! the argument kind (positional or key/value).
+//!
+//! The macro takes the following optional parameters:
+//!
+//! * `key`: specifies the field as a key/value argument instead of a positional argument. Uses the
+//!   field name as the key by default, but can be aliased as `key = "name"`. For tuple scalar
+//!   fields, a name is required. Map fields infer the key/value argument kind and do not accept a
+//!   key name.
+//!
+//! * `pos`: specifies the field as a positional argument. This is the default. Errors if both `pos`
+//!   and `key` are given.
+//!
+//! Arguments that don't correspond to an `#[arg]` field will error.
+//!
+//! #### `#[prefix]`
+//!
+//! Specifies a command prefix. The field can have the following types:
+//!
+//! * `String`: contains the literal prefix.
+//! * `char`: contains the literal prefix character. Errors if it has length != 1.
+//! * `bool`, integer and floating-point types, or any other type implementing `FromStr`: parses the
+//!   input string using `FromStr`, or errors if invalid.
+//! * `Option<T>`: makes the prefix optional. Otherwise, a prefix is always required.
+//!
+//! Prefixes are ignored for command variants without a `#[prefix]` field.
+//!
+//! #### `#[tag]`
+//!
+//! Specifies a command tag. The field can have the following types:
+//!
+//! * `bool`: set to `true` if the tag is set for the command.
+//! * `Vec<String>`, `HashSet<String>`, `BTreeSet<String>`: contains all command tags.
+//!
+//! The macro takes the following optional parameters:
+//!
+//! * `name`: the tag name, to alias a tag to a different field name.
+//!
+//! Tags that don't correspond to a `#[tag]` field will error.
+//!
 //! ## Argument Processing
 //!
 //! Arguments can be processed manually via [`Command::args`], or using the
@@ -472,4 +556,5 @@ mod parser;
 mod runner;
 
 pub use command::{Argument, ArgumentConsumer, Block, Command};
+pub use goldenscript_macros::Command;
 pub use runner::{Runner, generate, run};

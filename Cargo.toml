@@ -1,8 +1,21 @@
 [package]
 name = "goldenscript"
-version = "0.7.0"
 description = "A scriptable, data-driven test framework using golden masters"
 categories = ["development-tools::testing"]
+version.workspace = true
+authors.workspace = true
+license.workspace = true
+homepage.workspace = true
+repository.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+
+[workspace]
+members = ["goldenscript-macros"]
+resolver = "2"
+
+[workspace.package]
+version = "0.7.0"
 authors = ["Erik Grinaker <erik@grinaker.me>"]
 license = "Apache-2.0"
 homepage = "https://github.com/erikgrinaker/goldenscript"
@@ -12,8 +25,10 @@ rust-version = "1.88.0"
 
 [dependencies]
 goldenfile = "1.11"
+goldenscript-macros = { version = "=0.7.0", path = "goldenscript-macros" }
 nom = "8.0"
 nom_locate = "5.0"
 
 [dev-dependencies]
 test_each_file = "0.3"
+trybuild = "1.0"
