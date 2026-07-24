@@ -19,13 +19,13 @@ jobs:
     - uses: actions/cache@v6
       with:
         path: target
-        key: ${{runner.os}}-target-${{steps.toolchain.outputs.cachekey}}-${{hashFiles('Cargo.lock')}}
+        key: ${{runner.os}}-target-${{steps.toolchain.outputs.cachekey}}-${{hashFiles('Cargo.toml', 'Cargo.lock')}}
     - run: cargo build --tests
     - run: cargo test
     - run: cargo clippy --tests --no-deps -- -D warnings
     - run: cargo fmt --check
 
-  # Verify that minimal dependency versions also pass tests.
+  # Verify the MSRV and that minimal dependency versions pass tests.
   versions:
     name: Minimal Dependency Versions
     runs-on: ubuntu-latest
@@ -38,9 +38,11 @@ jobs:
     - uses: actions/cache@v6
       with:
         path: target
-        key: ${{runner.os}}-target-${{steps.toolchain.outputs.cachekey}}-${{hashFiles('Cargo.lock')}}
-    - run: cargo +stable install cargo-hack --locked
-    - run: cargo +stable install cargo-minimal-versions --locked
+        key: ${{runner.os}}-target-${{steps.toolchain.outputs.cachekey}}-${{hashFiles('Cargo.toml', 'Cargo.lock')}}
+    - uses: taiki-e/install-action@v2
+      with:
+        tool: cargo-hack,cargo-minimal-versions
+    - run: cargo hack check --rust-version --workspace --all-targets --ignore-private
     - run: cargo minimal-versions check --direct
     - run: cargo minimal-versions build --tests --direct
     - run: cargo minimal-versions test --direct
