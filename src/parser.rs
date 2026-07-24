@@ -10,7 +10,7 @@ use nom::character::complete::{
 };
 use nom::combinator::{consumed, eof, map_res, opt, peek, recognize, value, verify};
 use nom::error::ErrorKind;
-use nom::multi::{many0, many_till, separated_list1};
+use nom::multi::{many_till, many0, separated_list1};
 use nom::sequence::{delimited, pair, preceded, separated_pair, terminated};
 use nom::{Finish as _, Parser as _};
 
@@ -81,10 +81,10 @@ fn commands(mut input: Span) -> IResult<Vec<Command>> {
 
         // If we hit a separator and we've seen at least 1 command, we're done.
         // Otherwise, we want to error while attempting to parse the command.
-        if let (_, Some(_)) = peek(opt(separator)).parse(input)? {
-            if !commands.is_empty() {
-                return Ok((input, commands));
-            }
+        if let (_, Some(_)) = peek(opt(separator)).parse(input)?
+            && !commands.is_empty()
+        {
+            return Ok((input, commands));
         }
 
         // Parse a command.
@@ -215,7 +215,7 @@ fn quoted_string(quote: char) -> impl FnMut(Span) -> IResult<String> {
             return Ok((input, String::new()));
         }
 
-        let result = delimited(
+        delimited(
             tag(q),
             escaped_transform(
                 is_not(format!("\\{q}").as_str()),
@@ -251,8 +251,7 @@ fn quoted_string(quote: char) -> impl FnMut(Span) -> IResult<String> {
             ),
             tag(q),
         )
-        .parse(input);
-        result
+        .parse(input)
     }
 }
 

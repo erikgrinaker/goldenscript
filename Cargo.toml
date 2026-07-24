@@ -7,7 +7,7 @@ authors = ["Erik Grinaker <erik@grinaker.me>"]
 license = "Apache-2.0"
 homepage = "https://github.com/erikgrinaker/goldenscript"
 repository = "https://github.com/erikgrinaker/goldenscript"
-edition = "2021"
+edition = "2024"
 rust-version = "1.88.0"
 
 [dependencies]

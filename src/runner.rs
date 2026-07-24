@@ -163,7 +163,7 @@ pub fn generate<R: Runner>(runner: &mut R, input: &str) -> std::io::Result<Strin
                     return Err(std::io::Error::other(format!(
                         "expected command '{}' to fail at line {}, succeeded with: {output}",
                         command.name, command.line_number
-                    )))
+                    )));
                 }
 
                 // Expected success, output the result.
@@ -177,7 +177,7 @@ pub fn generate<R: Runner>(runner: &mut R, input: &str) -> std::io::Result<Strin
                     return Err(std::io::Error::other(format!(
                         "command '{}' failed at line {}: {e}",
                         command.name, command.line_number
-                    )))
+                    )));
                 }
 
                 // Expected panic, output it.
@@ -214,16 +214,16 @@ pub fn generate<R: Runner>(runner: &mut R, input: &str) -> std::io::Result<Strin
             }
 
             // Prefix output lines if requested.
-            if let Some(prefix) = &command.prefix {
-                if !command_output.is_empty() {
-                    command_output = format!(
-                        "{prefix}: {}{eol}",
-                        command_output
-                            .strip_suffix(eol)
-                            .unwrap_or(command_output.as_str())
-                            .replace('\n', &format!("\n{prefix}: "))
-                    );
-                }
+            if let Some(prefix) = &command.prefix
+                && !command_output.is_empty()
+            {
+                command_output = format!(
+                    "{prefix}: {}{eol}",
+                    command_output
+                        .strip_suffix(eol)
+                        .unwrap_or(command_output.as_str())
+                        .replace('\n', &format!("\n{prefix}: "))
+                );
             }
 
             block_output.push_str(&command_output);
@@ -277,10 +277,10 @@ pub fn generate<R: Runner>(runner: &mut R, input: &str) -> std::io::Result<Strin
 
 /// Appends a newline if the string is not empty and doesn't already have one.
 fn ensure_eol(mut s: String, eol: &str) -> String {
-    if let Some(c) = s.chars().next_back() {
-        if c != '\n' {
-            s.push_str(eol)
-        }
+    if let Some(c) = s.chars().next_back()
+        && c != '\n'
+    {
+        s.push_str(eol)
     }
     s
 }

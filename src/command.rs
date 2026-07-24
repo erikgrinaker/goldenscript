@@ -157,9 +157,7 @@ mod tests {
 
     /// Constructs a Command by parsing the given input string.
     macro_rules! cmd {
-        ($input:expr) => {{
-            crate::parser::parse_command(&format!("{}\n", $input)).expect("invalid command")
-        }};
+        ($input:expr) => {{ crate::parser::parse_command(&format!("{}\n", $input)).expect("invalid command") }};
     }
 
     /// Tests Command.consume_args(). ArgumentConsumer is tested separately.
