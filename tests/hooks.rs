@@ -33,12 +33,14 @@ impl goldenscript::Runner for HookRunner {
         assert_eq!(self.state, HookState::Command);
         match command.name.as_str() {
             "echo" => {
+                let mut values = Vec::with_capacity(command.args.len());
                 for arg in &command.args {
-                    if arg.key().is_some() {
-                        return Err("echo args can't have keys".into());
+                    match arg {
+                        goldenscript::Argument::Positional(value) => values.push(value.as_str()),
+                        _ => return Err(format!("invalid echo arg: {arg}").into()),
                     }
                 }
-                Ok(command.args.iter().map(|arg| arg.value()).collect::<Vec<_>>().join(" "))
+                Ok(values.join(" "))
             }
             "error" => Err("error".into()),
             "panic" => panic!("panic"),

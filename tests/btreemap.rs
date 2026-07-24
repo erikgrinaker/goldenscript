@@ -16,8 +16,8 @@ impl goldenscript::Runner for BTreeMapRunner {
             // get KEY: fetches the value of the given key, or None if it does not exist.
             "get" => {
                 let mut args = command.consume_args();
-                let key = args.next_pos().ok_or("key not given")?.value();
-                args.reject_rest()?;
+                let key = args.next_pos().ok_or("key not given")?;
+                args.reject_next()?;
                 let value = self.map.get(key);
                 writeln!(output, "get → {value:?}")?;
             }
@@ -25,12 +25,11 @@ impl goldenscript::Runner for BTreeMapRunner {
             // insert KEY=VALUE...: inserts the given key/value pairs, returning the old value.
             "insert" => {
                 let mut args = command.consume_args();
-                for arg in args.rest_key() {
-                    let old =
-                        self.map.insert(arg.key().unwrap().to_owned(), arg.value().to_owned());
+                while let Some((key, value)) = args.next_key() {
+                    let old = self.map.insert(key.to_owned(), value.to_owned());
                     writeln!(output, "insert → {old:?}")?;
                 }
-                args.reject_rest()?;
+                args.reject_next()?;
             }
 
             // range [FROM] [TO]: iterates over the key/value pairs in the range from..to.
@@ -38,10 +37,10 @@ impl goldenscript::Runner for BTreeMapRunner {
                 use std::ops::Bound::*;
                 let mut args = command.consume_args();
                 let from =
-                    args.next_pos().map(|a| Included(a.value().to_owned())).unwrap_or(Unbounded);
+                    args.next_pos().map(|value| Included(value.to_owned())).unwrap_or(Unbounded);
                 let to =
-                    args.next_pos().map(|a| Excluded(a.value().to_owned())).unwrap_or(Unbounded);
-                args.reject_rest()?;
+                    args.next_pos().map(|value| Excluded(value.to_owned())).unwrap_or(Unbounded);
+                args.reject_next()?;
                 for (key, value) in self.map.range((from, to)) {
                     writeln!(output, "{key}={value}")?;
                 }

@@ -122,8 +122,8 @@
 //!             // get KEY: fetches the value of the given key, or None if it does not exist.
 //!             "get" => {
 //!                 let mut args = command.consume_args();
-//!                 let key = args.next_pos().ok_or("key not given")?.value();
-//!                 args.reject_rest()?;
+//!                 let key = args.next_pos().ok_or("key not given")?;
+//!                 args.reject_next()?;
 //!                 let value = self.map.get(key);
 //!                 writeln!(output, "get → {value:?}")?;
 //!             }
@@ -131,12 +131,11 @@
 //!             // insert KEY=VALUE...: inserts the given key/value pairs, returning the old value.
 //!             "insert" => {
 //!                 let mut args = command.consume_args();
-//!                 for arg in args.rest_key() {
-//!                     let old =
-//!                         self.map.insert(arg.key().unwrap().to_owned(), arg.value().to_owned());
+//!                 while let Some((key, value)) = args.next_key() {
+//!                     let old = self.map.insert(key.to_owned(), value.to_owned());
 //!                     writeln!(output, "insert → {old:?}")?;
 //!                 }
-//!                 args.reject_rest()?;
+//!                 args.reject_next()?;
 //!             }
 //!
 //!             // range [FROM] [TO]: iterates over the key/value pairs in the range from..to.
@@ -144,10 +143,10 @@
 //!                 use std::ops::Bound::*;
 //!                 let mut args = command.consume_args();
 //!                 let from =
-//!                     args.next_pos().map(|a| Included(a.value().to_owned())).unwrap_or(Unbounded);
+//!                     args.next_pos().map(|value| Included(value.to_owned())).unwrap_or(Unbounded);
 //!                 let to =
-//!                     args.next_pos().map(|a| Excluded(a.value().to_owned())).unwrap_or(Unbounded);
-//!                 args.reject_rest()?;
+//!                     args.next_pos().map(|value| Excluded(value.to_owned())).unwrap_or(Unbounded);
+//!                 args.reject_next()?;
 //!                 for (key, value) in self.map.range((from, to)) {
 //!                     writeln!(output, "{key}={value}")?;
 //!                 }
@@ -200,10 +199,10 @@
 //! It may additionally have:
 //!
 //! * [**Arguments:**](Argument) any number of space-separated arguments.
-//!   These have a string [value](Argument::value), and optionally also a string
-//!   [key](Argument::key) as `key=value`. Keys and values can be empty, and
-//!   duplicate keys are allowed by the parser (the runner can handle this as
-//!   desired).
+//!   [`Argument::Positional`] arguments contain a value, while
+//!   [`Argument::KeyValue`] arguments contain a key and value written as
+//!   `key=value`. Keys and values can be empty, and duplicate keys are allowed
+//!   by the parser (the runner can handle this as desired).
 //!
 //!     ```text
 //!     command argument key=value
@@ -351,8 +350,14 @@
 //!     fn run(&mut self, command: &goldenscript::Command) -> Result<String, Box<dyn Error>> {
 //!         match command.name.as_str() {
 //!             "echo" => {
-//!                 let lines: Vec<&str> = command.args.iter().map(|a| a.value()).collect();
-//!                 Ok(lines.join("\n"))
+//!                 let mut values = Vec::with_capacity(command.args.len());
+//!                 for arg in &command.args {
+//!                     match arg {
+//!                         goldenscript::Argument::Positional(value) => values.push(value.as_str()),
+//!                         _ => return Err(format!("invalid echo arg: {arg}").into()),
+//!                     }
+//!                 }
+//!                 Ok(values.join("\n"))
 //!             }
 //!             name => return Err(format!("invalid command {name}").into())
 //!         }
@@ -395,19 +400,22 @@
 //!         let mut args = command.consume_args();
 //!
 //!         // The first positional argument is a required string message.
-//!         let message = args.next_pos().ok_or("message not given")?.value();
+//!         let message = args.next_pos().ok_or("message not given")?;
 //!
 //!         // The remaining positional arguments are numeric node IDs.
-//!         let ids: Vec<u32> = args.rest_pos().iter().map(|a| a.parse()).collect::<Result<_, _>>()?;
+//!         let ids: Vec<u32> = std::iter::from_fn(|| args.next_pos())
+//!             .map(|value| value.parse())
+//!             .collect::<Result<_, _>>()?;
 //!         if ids.is_empty() {
 //!             return Err("no node IDs given".into())
 //!         }
 //!
 //!         // An optional retry=bool key/value argument can also be given.
-//!         let retry: bool = args.lookup_parse("retry")?.unwrap_or(false);
+//!         let retry: bool =
+//!             args.take_key("retry").map(|value| value.parse()).transpose()?.unwrap_or(false);
 //!
 //!         // Any other arguments that haven't been processed above should error.
-//!         args.reject_rest()?;
+//!         args.reject_next()?;
 //!
 //!         // Execute the send.
 //!         self.send(&ids, message, retry)

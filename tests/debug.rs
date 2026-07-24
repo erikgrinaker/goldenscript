@@ -74,21 +74,27 @@ impl goldenscript::Runner for DebugRunner {
         // Process commands.
         let output = match command.name.as_str() {
             "_echo" => {
+                let mut values = Vec::with_capacity(command.args.len());
                 for arg in &command.args {
-                    if arg.key().is_some() {
-                        return Err("echo args can't have keys".into());
+                    match arg {
+                        goldenscript::Argument::Positional(value) => values.push(value.as_str()),
+                        _ => return Err(format!("invalid echo arg: {arg}").into()),
                     }
                 }
-                command.args.iter().map(|a| a.value().to_owned()).collect::<Vec<String>>().join(" ")
+                values.join(" ")
             }
 
             "_error" => {
-                let message = command.args.first().map(|a| a.value()).unwrap_or("error");
+                let mut args = command.consume_args();
+                let message = args.next_pos().unwrap_or("error");
+                args.reject_next()?;
                 return Err(message.to_string().into());
             }
 
             "_panic" => {
-                let message = command.args.first().map(|a| a.value()).unwrap_or("panic");
+                let mut args = command.consume_args();
+                let message = args.next_pos().unwrap_or("panic");
+                args.reject_next()?;
                 panic!("{message}");
             }
 
