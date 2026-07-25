@@ -147,25 +147,30 @@ prefix-_.: }
 ➡️:     line_number: 121,
 ➡️: }
 
-# Single- and double-quoted strings can also be empty, but is not allowed in
-# identifiers (prefixes, commands, and argument names). It is allowed as
-# argument values.
-command foo="" bar=''
+# Single- and double-quoted strings can also be empty. This includes prefixes,
+# command names, argument keys, tags, and argument values. Empty unquoted
+# strings are ambiguous and therefore not supported.
+"" '' ""='' ''="" ['']
 ---
 Command {
-    name: "command",
+    name: "",
     args: [
-        KeyValue(
-            "foo",
+        Positional(
             "",
         ),
         KeyValue(
-            "bar",
+            "",
+            "",
+        ),
+        KeyValue(
+            "",
             "",
         ),
     ],
     prefix: None,
-    tags: {},
+    tags: {
+        "",
+    },
     silent: false,
     fail: false,
     line_number: 153,
@@ -183,7 +188,7 @@ Command {
     tags: {},
     silent: false,
     fail: false,
-    line_number: 176,
+    line_number: 181,
 }
 Command {
     name: "\\ ' \" \0 \n \r \t \\ \0 z ÿ 👋",
@@ -192,7 +197,7 @@ Command {
     tags: {},
     silent: false,
     fail: false,
-    line_number: 177,
+    line_number: 182,
 }
 
 # Quoted strings can contain the other, unescaped quote kind.
@@ -206,7 +211,7 @@ Command {
     tags: {},
     silent: false,
     fail: false,
-    line_number: 199,
+    line_number: 204,
 }
 Command {
     name: "'",
@@ -215,7 +220,7 @@ Command {
     tags: {},
     silent: false,
     fail: false,
-    line_number: 200,
+    line_number: 205,
 }
 
 # Quoted strings can also contain special characters like silencing ( and prefix
@@ -233,7 +238,7 @@ Command {
     tags: {},
     silent: false,
     fail: false,
-    line_number: 223,
+    line_number: 228,
 }
 
 # They can also contain comments.
@@ -246,5 +251,5 @@ Command {
     tags: {},
     silent: false,
     fail: false,
-    line_number: 240,
+    line_number: 245,
 }

@@ -205,8 +205,8 @@ prefix:     fail: true,
 prefix:     line_number: 188,
 prefix: }
 
-# Prefixes, commands, and keys can be empty.
-"": "" ""=""
+# Prefixes, commands, keys, and tags can be empty.
+"": "" ""="" [""]
 ---
 : Command {
 :     name: "",
@@ -219,7 +219,9 @@ prefix: }
 :     prefix: Some(
 :         "",
 :     ),
-:     tags: {},
+:     tags: {
+:         "",
+:     },
 :     silent: false,
 :     fail: false,
 :     line_number: 209,
@@ -242,7 +244,7 @@ prefix: }
  :     tags: {},
  :     silent: false,
  :     fail: false,
- :     line_number: 229,
+ :     line_number: 231,
  : }
 
 # Empty argument keys and values are fine.
@@ -261,35 +263,35 @@ Command {
     tags: {},
     silent: false,
     fail: false,
-    line_number: 249,
-}
-Command {
-    name: "command",
-    args: [
-        KeyValue(
-            "arg",
-            "",
-        ),
-    ],
-    prefix: None,
-    tags: {},
-    silent: false,
-    fail: false,
-    line_number: 250,
-}
-Command {
-    name: "command",
-    args: [
-        KeyValue(
-            "arg",
-            "",
-        ),
-    ],
-    prefix: None,
-    tags: {},
-    silent: false,
-    fail: false,
     line_number: 251,
+}
+Command {
+    name: "command",
+    args: [
+        KeyValue(
+            "arg",
+            "",
+        ),
+    ],
+    prefix: None,
+    tags: {},
+    silent: false,
+    fail: false,
+    line_number: 252,
+}
+Command {
+    name: "command",
+    args: [
+        KeyValue(
+            "arg",
+            "",
+        ),
+    ],
+    prefix: None,
+    tags: {},
+    silent: false,
+    fail: false,
+    line_number: 253,
 }
 
 # > uses the rest of the line as the command name, regardless.
@@ -305,7 +307,7 @@ Command {
     tags: {},
     silent: false,
     fail: false,
-    line_number: 296,
+    line_number: 298,
 }
 Command {
     name: "",
@@ -314,7 +316,7 @@ Command {
     tags: {},
     silent: false,
     fail: false,
-    line_number: 297,
+    line_number: 299,
 }
 Command {
     name: "!",
@@ -323,7 +325,7 @@ Command {
     tags: {},
     silent: false,
     fail: false,
-    line_number: 298,
+    line_number: 300,
 }
 Command {
     name: "> >",
@@ -332,7 +334,7 @@ Command {
     tags: {},
     silent: false,
     fail: false,
-    line_number: 299,
+    line_number: 301,
 }
 
 # > also works with prefix, tags, and error markers.
@@ -350,7 +352,7 @@ prefix:     ),
 prefix:     tags: {},
 prefix:     silent: false,
 prefix:     fail: false,
-prefix:     line_number: 339,
+prefix:     line_number: 341,
 prefix: }
 Error: Command {
     name: "command arg",
@@ -359,7 +361,7 @@ Error: Command {
     tags: {},
     silent: false,
     fail: true,
-    line_number: 340,
+    line_number: 342,
 }
 Command {
     name: "command arg",
@@ -370,7 +372,7 @@ Command {
     },
     silent: false,
     fail: false,
-    line_number: 341,
+    line_number: 343,
 }
 prefix: Error: Command {
 prefix:     name: "command arg",
@@ -383,7 +385,7 @@ prefix:         "tag",
 prefix:     },
 prefix:     silent: false,
 prefix:     fail: true,
-prefix:     line_number: 342,
+prefix:     line_number: 344,
 prefix: }
 
 # > respects \ line continuation, but it can't be escaped by \\.
@@ -399,7 +401,7 @@ Command {
     tags: {},
     silent: false,
     fail: false,
-    line_number: 390,
+    line_number: 392,
 }
 
 > a line with \n ending with \\
@@ -412,5 +414,5 @@ Command {
     tags: {},
     silent: false,
     fail: false,
-    line_number: 405,
+    line_number: 407,
 }
