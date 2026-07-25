@@ -124,7 +124,11 @@ struct BTreeMapRunner {
 }
 
 impl goldenscript::Runner for BTreeMapRunner {
-    fn run(&mut self, command: &goldenscript::Command) -> Result<String, Box<dyn Error>> {
+    fn run(
+        &mut self,
+        command: &goldenscript::Command,
+        _context: &goldenscript::Context,
+    ) -> Result<String, Box<dyn Error>> {
         let mut output = String::new();
         match command.name.as_str() {
             // get KEY: fetches the value of the given key, or None if it does not exist.

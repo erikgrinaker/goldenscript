@@ -11,11 +11,13 @@ command
 Command {
     name: "command",
     args: [],
-    prefix: None,
-    tags: {},
-    silent: false,
-    fail: false,
-    line_number: 9,
+    context: Context {
+        prefix: None,
+        tags: {},
+        silent: false,
+        fail: false,
+        line_number: 9,
+    },
 }
 
 
@@ -33,11 +35,13 @@ Command {
             "arg",
         ),
     ],
-    prefix: None,
-    tags: {},
-    silent: false,
-    fail: false,
-    line_number: 27,
+    context: Context {
+        prefix: None,
+        tags: {},
+        silent: false,
+        fail: false,
+        line_number: 29,
+    },
 }
 
 

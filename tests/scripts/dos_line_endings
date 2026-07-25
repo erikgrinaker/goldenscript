@@ -5,11 +5,13 @@ command
 Command {
     name: "command",
     args: [],
-    prefix: None,
-    tags: {},
-    silent: false,
-    fail: false,
-    line_number: 3,
+    context: Context {
+        prefix: None,
+        tags: {},
+        silent: false,
+        fail: false,
+        line_number: 3,
+    },
 }
 
 // Comment.
@@ -25,11 +27,13 @@ Command {
             "arg",
         ),
     ],
-    prefix: None,
-    tags: {},
-    silent: false,
-    fail: false,
-    line_number: 17,
+    context: Context {
+        prefix: None,
+        tags: {},
+        silent: false,
+        fail: false,
+        line_number: 19,
+    },
 }
 Command {
     name: "bar",
@@ -39,11 +43,13 @@ Command {
             "value",
         ),
     ],
-    prefix: None,
-    tags: {},
-    silent: false,
-    fail: false,
-    line_number: 18,
+    context: Context {
+        prefix: None,
+        tags: {},
+        silent: false,
+        fail: false,
+        line_number: 20,
+    },
 }
 Command {
     name: "baz",
@@ -56,11 +62,13 @@ Command {
             "value",
         ),
     ],
-    prefix: None,
-    tags: {},
-    silent: false,
-    fail: false,
-    line_number: 19,
+    context: Context {
+        prefix: None,
+        tags: {},
+        silent: false,
+        fail: false,
+        line_number: 21,
+    },
 }
 
 # Comment.
@@ -76,13 +84,15 @@ a:         Positional(
 a:             "arg",
 a:         ),
 a:     ],
-a:     prefix: Some(
-a:         "a",
-a:     ),
-a:     tags: {},
-a:     silent: false,
-a:     fail: false,
-a:     line_number: 67,
+a:     context: Context {
+a:         prefix: Some(
+a:             "a",
+a:         ),
+a:         tags: {},
+a:         silent: false,
+a:         fail: false,
+a:         line_number: 75,
+a:     },
 a: }
 b: Command {
 b:     name: "bar",
@@ -92,13 +102,15 @@ b:             "key",
 b:             "value",
 b:         ),
 b:     ],
-b:     prefix: Some(
-b:         "b",
-b:     ),
-b:     tags: {},
-b:     silent: false,
-b:     fail: false,
-b:     line_number: 69,
+b:     context: Context {
+b:         prefix: Some(
+b:             "b",
+b:         ),
+b:         tags: {},
+b:         silent: false,
+b:         fail: false,
+b:         line_number: 77,
+b:     },
 b: }
 
 # Comment.

@@ -6,7 +6,7 @@ use crate::parser::maybe_quote;
 /// A block, consisting of multiple commands.
 #[derive(Clone, Debug, PartialEq)]
 pub struct Block {
-    /// The commands in the block.
+    /// The commands in the block, and their context.
     pub commands: Vec<Command>,
 
     /// The literal string of the input commands. Used to generate the output.
@@ -22,6 +22,16 @@ pub struct Command {
     pub name: String,
     /// The command's arguments, in the given order.
     pub args: Vec<Argument>,
+
+    /// The command's context. This is private, and will be passed to the runner as a separate
+    /// parameter, in preparation for making the runner generic over a command type and supporting
+    /// command enums.
+    pub(crate) context: Context,
+}
+
+/// A command context.
+#[derive(Clone, Debug, PartialEq)]
+pub struct Context {
     /// The command prefix, if given.
     pub prefix: Option<String>,
     /// Any command tags, if given.

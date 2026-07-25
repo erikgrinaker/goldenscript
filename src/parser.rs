@@ -1,7 +1,7 @@
 use std::borrow::Cow;
 use std::collections::BTreeSet;
 
-use crate::command::{Argument, Block, Command};
+use crate::command::{Argument, Block, Command, Context};
 
 use nom::branch::alt;
 use nom::bytes::complete::{escaped_transform, is_not, tag, take, take_while, take_while_m_n};
@@ -118,7 +118,8 @@ fn command(input: Span) -> IResult<Command> {
         let line_number = input.location_line();
         let (input, name) = line_continuation(input)?;
         let args = Vec::new();
-        return Ok((input, Command { name, args, tags, prefix, silent, fail, line_number }));
+        let context = Context { prefix, tags, silent, fail, line_number };
+        return Ok((input, Command { name, args, context }));
     }
 
     // The command itself, and any trailing tags.
@@ -138,7 +139,8 @@ fn command(input: Span) -> IResult<Command> {
     let (input, _) = opt(comment).parse(input)?;
     let (input, _) = line_ending(input)?;
 
-    Ok((input, Command { name, args, tags, prefix, silent, fail, line_number }))
+    let context = Context { prefix, tags, silent, fail, line_number };
+    Ok((input, Command { name, args, context }))
 }
 
 /// Parses a single command argument, consisting of an argument value and

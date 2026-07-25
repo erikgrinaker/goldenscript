@@ -70,7 +70,11 @@ impl DebugRunner {
 }
 
 impl goldenscript::Runner for DebugRunner {
-    fn run(&mut self, command: &goldenscript::Command) -> Result<String, Box<dyn Error>> {
+    fn run(
+        &mut self,
+        command: &goldenscript::Command,
+        context: &goldenscript::Context,
+    ) -> Result<String, Box<dyn Error>> {
         // Process commands.
         let output = match command.name.as_str() {
             "_echo" => {
@@ -98,7 +102,7 @@ impl goldenscript::Runner for DebugRunner {
                 panic!("{message}");
             }
 
-            _ if command.fail => return Err(format!("{command:#?}").into()),
+            _ if context.fail => return Err(format!("{command:#?}").into()),
 
             _ => format!("{command:#?}"),
         };

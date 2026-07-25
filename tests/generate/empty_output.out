@@ -5,11 +5,13 @@ command
 Command {
     name: "command",
     args: [],
-    prefix: None,
-    tags: {},
-    silent: false,
-    fail: false,
-    line_number: 3,
+    context: Context {
+        prefix: None,
+        tags: {},
+        silent: false,
+        fail: false,
+        line_number: 3,
+    },
 }
 
 command
@@ -17,11 +19,13 @@ command
 Command {
     name: "command",
     args: [],
-    prefix: None,
-    tags: {},
-    silent: false,
-    fail: false,
-    line_number: 6,
+    context: Context {
+        prefix: None,
+        tags: {},
+        silent: false,
+        fail: false,
+        line_number: 6,
+    },
 }
 
 command
@@ -29,9 +33,11 @@ command
 Command {
     name: "command",
     args: [],
-    prefix: None,
-    tags: {},
-    silent: false,
-    fail: false,
-    line_number: 9,
+    context: Context {
+        prefix: None,
+        tags: {},
+        silent: false,
+        fail: false,
+        line_number: 9,
+    },
 }

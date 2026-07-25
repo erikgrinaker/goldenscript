@@ -116,7 +116,11 @@
 //! }
 //!
 //! impl goldenscript::Runner for BTreeMapRunner {
-//!     fn run(&mut self, command: &goldenscript::Command) -> Result<String, Box<dyn Error>> {
+//!     fn run(
+//!         &mut self,
+//!         command: &goldenscript::Command,
+//!         _context: &goldenscript::Context,
+//!     ) -> Result<String, Box<dyn Error>> {
 //!         let mut output = String::new();
 //!         match command.name.as_str() {
 //!             // get KEY: fetches the value of the given key, or None if it does not exist.
@@ -211,7 +215,7 @@
 //!     ---
 //!     ```
 //!
-//! * [**Prefix:**](Command::prefix) an optional :-terminated string prefix
+//! * [**Prefix:**](Context::prefix) an optional :-terminated string prefix
 //!   before the command. The command's output will be given the same prefix.
 //!   The prefix can be used by the test runner, e.g. to signify two different
 //!   clients.
@@ -224,7 +228,7 @@
 //!     client2: get key=value
 //!     ```
 //!
-//! * [**Silencing:**](Command::silent) a command wrapped in `()` will have its
+//! * [**Silencing:**](Context::silent) a command wrapped in `()` will have its
 //!   output suppressed. This can be useful e.g. for setup commands whose output
 //!   are not of interest in the current test case and would only add noise.
 //!
@@ -235,7 +239,7 @@
 //!     foo
 //!     ```
 //!
-//! * [**Failure:**](Command::fail) if `!` precedes the command, it is expected
+//! * [**Failure:**](Context::fail) if `!` precedes the command, it is expected
 //!   to fail with an error or panic, and the failure message is used as output.
 //!   If the command unexpectedly succeeds, the test fails. If the line contains
 //!   other symbols before the command name (e.g. a prefix or silencing), the
@@ -250,7 +254,7 @@
 //!     prefix: Panic: bar
 //!     ```
 //!
-//! * [**Tags:**](Command::tags) an optional comma- or space-separated list of
+//! * [**Tags:**](Context::tags) an optional comma- or space-separated list of
 //!   tags (strings) enclosed in [] before or after the command and arguments.
 //!   This can be used by the runner e.g. to modify the execution of a command.
 //!
@@ -347,7 +351,11 @@
 //! struct Runner;
 //!
 //! impl goldenscript::Runner for Runner {
-//!     fn run(&mut self, command: &goldenscript::Command) -> Result<String, Box<dyn Error>> {
+//!     fn run(
+//!         &mut self,
+//!         command: &goldenscript::Command,
+//!         _context: &goldenscript::Context,
+//!     ) -> Result<String, Box<dyn Error>> {
 //!         match command.name.as_str() {
 //!             "echo" => {
 //!                 let mut values = Vec::with_capacity(command.args.len());
@@ -392,7 +400,11 @@
 //!     /// send [retry=BOOL] MESSAGE ID...
 //!     ///
 //!     /// Example: send foo 1 2 3
-//!     fn run(&mut self, command: &goldenscript::Command) -> Result<String, Box<dyn Error>> {
+//!     fn run(
+//!         &mut self,
+//!         command: &goldenscript::Command,
+//!         _context: &goldenscript::Context,
+//!     ) -> Result<String, Box<dyn Error>> {
 //!         if command.name != "send" {
 //!             return Err(format!("invalid command {}", command.name).into())
 //!         }
@@ -446,7 +458,11 @@
 //! # struct Runner;
 //! #
 //! # impl goldenscript::Runner for Runner {
-//! #     fn run(&mut self, command: &goldenscript::Command) -> Result<String, Box<dyn Error>> { todo!() }
+//! #     fn run(
+//! #         &mut self,
+//! #         _command: &goldenscript::Command,
+//! #         _context: &goldenscript::Context,
+//! #     ) -> Result<String, Box<dyn Error>> { todo!() }
 //! # }
 //! use test_each_file::test_each_path;
 //!
@@ -471,5 +487,5 @@ mod command;
 mod parser;
 mod runner;
 
-pub use command::{Argument, ArgumentConsumer, Block, Command};
+pub use command::{Argument, ArgumentConsumer, Block, Command, Context};
 pub use runner::{Runner, generate, run};

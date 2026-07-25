@@ -13,13 +13,15 @@
 0:             "4",
 0:         ),
 0:     ],
-0:     prefix: Some(
-0:         "0",
-0:     ),
-0:     tags: {},
-0:     silent: false,
-0:     fail: false,
-0:     line_number: 2,
+0:     context: Context {
+0:         prefix: Some(
+0:             "0",
+0:         ),
+0:         tags: {},
+0:         silent: false,
+0:         fail: false,
+0:         line_number: 2,
+0:     },
 0: }
 01: Command {
 01:     name: "23",
@@ -32,13 +34,15 @@
 01:             "89",
 01:         ),
 01:     ],
-01:     prefix: Some(
-01:         "01",
-01:     ),
-01:     tags: {},
-01:     silent: false,
-01:     fail: false,
-01:     line_number: 3,
+01:     context: Context {
+01:         prefix: Some(
+01:             "01",
+01:         ),
+01:         tags: {},
+01:         silent: false,
+01:         fail: false,
+01:         line_number: 3,
+01:     },
 01: }
 
 # Unquoted strings can start with _.
@@ -55,13 +59,15 @@ _prefix:             "_key",
 _prefix:             "_value",
 _prefix:         ),
 _prefix:     ],
-_prefix:     prefix: Some(
-_prefix:         "_prefix",
-_prefix:     ),
-_prefix:     tags: {},
-_prefix:     silent: false,
-_prefix:     fail: false,
-_prefix:     line_number: 45,
+_prefix:     context: Context {
+_prefix:         prefix: Some(
+_prefix:             "_prefix",
+_prefix:         ),
+_prefix:         tags: {},
+_prefix:         silent: false,
+_prefix:         fail: false,
+_prefix:         line_number: 49,
+_prefix:     },
 _prefix: }
 
 # Unquoted strings can contain -_./@
@@ -78,13 +84,15 @@ prefix-_.:             "key-_./@",
 prefix-_.:             "value-_./@",
 prefix-_.:         ),
 prefix-_.:     ],
-prefix-_.:     prefix: Some(
-prefix-_.:         "prefix-_.",
-prefix-_.:     ),
-prefix-_.:     tags: {},
-prefix-_.:     silent: false,
-prefix-_.:     fail: false,
-prefix-_.:     line_number: 68,
+prefix-_.:     context: Context {
+prefix-_.:         prefix: Some(
+prefix-_.:             "prefix-_.",
+prefix-_.:         ),
+prefix-_.:         tags: {},
+prefix-_.:         silent: false,
+prefix-_.:         fail: false,
+prefix-_.:         line_number: 74,
+prefix-_.:     },
 prefix-_.: }
 
 # Single-quoted strings can contain any character, including newlines.
@@ -108,13 +116,15 @@ prefix-_.: }
 ➡️:             "\n\n  🚀\n\n",
 ➡️:         ),
 ➡️:     ],
-➡️:     prefix: Some(
-➡️:         "➡\u{fe0f}",
-➡️:     ),
-➡️:     tags: {},
-➡️:     silent: false,
-➡️:     fail: false,
-➡️:     line_number: 91,
+➡️:     context: Context {
+➡️:         prefix: Some(
+➡️:             "➡\u{fe0f}",
+➡️:         ),
+➡️:         tags: {},
+➡️:         silent: false,
+➡️:         fail: false,
+➡️:         line_number: 99,
+➡️:     },
 ➡️: }
 
 # Double-quoted strings can too.
@@ -138,13 +148,15 @@ prefix-_.: }
 ➡️:             "\n\n  🚀\n\n",
 ➡️:         ),
 ➡️:     ],
-➡️:     prefix: Some(
-➡️:         "➡\u{fe0f}",
-➡️:     ),
-➡️:     tags: {},
-➡️:     silent: false,
-➡️:     fail: false,
-➡️:     line_number: 121,
+➡️:     context: Context {
+➡️:         prefix: Some(
+➡️:             "➡\u{fe0f}",
+➡️:         ),
+➡️:         tags: {},
+➡️:         silent: false,
+➡️:         fail: false,
+➡️:         line_number: 131,
+➡️:     },
 ➡️: }
 
 # Single- and double-quoted strings can also be empty. This includes prefixes,
@@ -167,13 +179,15 @@ Command {
             "",
         ),
     ],
-    prefix: None,
-    tags: {
-        "",
+    context: Context {
+        prefix: None,
+        tags: {
+            "",
+        },
+        silent: false,
+        fail: false,
+        line_number: 165,
     },
-    silent: false,
-    fail: false,
-    line_number: 153,
 }
 
 # Escape sequences are respected both in single and double quotes, including
@@ -184,20 +198,24 @@ Command {
 Command {
     name: "\\ ' \" \0 \n \r \t \\ \0 z ÿ 👋",
     args: [],
-    prefix: None,
-    tags: {},
-    silent: false,
-    fail: false,
-    line_number: 181,
+    context: Context {
+        prefix: None,
+        tags: {},
+        silent: false,
+        fail: false,
+        line_number: 195,
+    },
 }
 Command {
     name: "\\ ' \" \0 \n \r \t \\ \0 z ÿ 👋",
     args: [],
-    prefix: None,
-    tags: {},
-    silent: false,
-    fail: false,
-    line_number: 182,
+    context: Context {
+        prefix: None,
+        tags: {},
+        silent: false,
+        fail: false,
+        line_number: 196,
+    },
 }
 
 # Quoted strings can contain the other, unescaped quote kind.
@@ -207,20 +225,24 @@ Command {
 Command {
     name: "\"",
     args: [],
-    prefix: None,
-    tags: {},
-    silent: false,
-    fail: false,
-    line_number: 204,
+    context: Context {
+        prefix: None,
+        tags: {},
+        silent: false,
+        fail: false,
+        line_number: 222,
+    },
 }
 Command {
     name: "'",
     args: [],
-    prefix: None,
-    tags: {},
-    silent: false,
-    fail: false,
-    line_number: 205,
+    context: Context {
+        prefix: None,
+        tags: {},
+        silent: false,
+        fail: false,
+        line_number: 223,
+    },
 }
 
 # Quoted strings can also contain special characters like silencing ( and prefix
@@ -234,11 +256,13 @@ Command {
             "arg",
         ),
     ],
-    prefix: None,
-    tags: {},
-    silent: false,
-    fail: false,
-    line_number: 228,
+    context: Context {
+        prefix: None,
+        tags: {},
+        silent: false,
+        fail: false,
+        line_number: 250,
+    },
 }
 
 # They can also contain comments.
@@ -247,9 +271,11 @@ Command {
 Command {
     name: "command # with comment",
     args: [],
-    prefix: None,
-    tags: {},
-    silent: false,
-    fail: false,
-    line_number: 245,
+    context: Context {
+        prefix: None,
+        tags: {},
+        silent: false,
+        fail: false,
+        line_number: 269,
+    },
 }

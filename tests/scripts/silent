@@ -16,11 +16,13 @@ Command {
             "1",
         ),
     ],
-    prefix: None,
-    tags: {},
-    silent: false,
-    fail: false,
-    line_number: 7,
+    context: Context {
+        prefix: None,
+        tags: {},
+        silent: false,
+        fail: false,
+        line_number: 7,
+    },
 }
 Command {
     name: "command",
@@ -30,11 +32,13 @@ Command {
             "3",
         ),
     ],
-    prefix: None,
-    tags: {},
-    silent: false,
-    fail: false,
-    line_number: 9,
+    context: Context {
+        prefix: None,
+        tags: {},
+        silent: false,
+        fail: false,
+        line_number: 9,
+    },
 }
 
 # Whitespace is allowed around the parentheses, except for the first.

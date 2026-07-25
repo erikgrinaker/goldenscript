@@ -5,11 +5,13 @@ command arg
 Command {
     name: "command",
     args: [],
-    prefix: None,
-    tags: {},
-    silent: false,
-    fail: false,
-    line_number: 2,
+    context: Context {
+        prefix: None,
+        tags: {},
+        silent: false,
+        fail: false,
+        line_number: 2,
+    },
 }
 Command {
     name: "command",
@@ -18,11 +20,13 @@ Command {
             "arg",
         ),
     ],
-    prefix: None,
-    tags: {},
-    silent: false,
-    fail: false,
-    line_number: 3,
+    context: Context {
+        prefix: None,
+        tags: {},
+        silent: false,
+        fail: false,
+        line_number: 3,
+    },
 }
 
 # Output that contains empty lines should automatically be prefixed with >.
@@ -64,11 +68,13 @@ command
 Command {
     name: "command",
     args: [],
-    prefix: None,
-    tags: {},
-    silent: false,
-    fail: false,
-    line_number: 61,
+    context: Context {
+        prefix: None,
+        tags: {},
+        silent: false,
+        fail: false,
+        line_number: 65,
+    },
 }
 
 # Prefixes should handle empty output and output ending with a newline properly.

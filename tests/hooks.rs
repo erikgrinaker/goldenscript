@@ -29,7 +29,11 @@ impl HookRunner {
 }
 
 impl goldenscript::Runner for HookRunner {
-    fn run(&mut self, command: &goldenscript::Command) -> Result<String, Box<dyn Error>> {
+    fn run(
+        &mut self,
+        command: &goldenscript::Command,
+        _context: &goldenscript::Context,
+    ) -> Result<String, Box<dyn Error>> {
         assert_eq!(self.state, HookState::Command);
         match command.name.as_str() {
             "echo" => {
@@ -74,12 +78,20 @@ impl goldenscript::Runner for HookRunner {
         ))
     }
 
-    fn start_command(&mut self, command: &goldenscript::Command) -> Result<String, Box<dyn Error>> {
+    fn start_command(
+        &mut self,
+        command: &goldenscript::Command,
+        _context: &goldenscript::Context,
+    ) -> Result<String, Box<dyn Error>> {
         self.transition(HookState::Block, HookState::Command);
         Ok(format!("start_command: {command}"))
     }
 
-    fn end_command(&mut self, command: &goldenscript::Command) -> Result<String, Box<dyn Error>> {
+    fn end_command(
+        &mut self,
+        command: &goldenscript::Command,
+        _context: &goldenscript::Context,
+    ) -> Result<String, Box<dyn Error>> {
         self.transition(HookState::Command, HookState::Block);
         Ok(format!("end_command: {command}"))
     }

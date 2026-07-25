@@ -9,11 +9,13 @@ Error: Command {
             "arg",
         ),
     ],
-    prefix: None,
-    tags: {},
-    silent: false,
-    fail: true,
-    line_number: 3,
+    context: Context {
+        prefix: None,
+        tags: {},
+        silent: false,
+        fail: true,
+        line_number: 3,
+    },
 }
 
 # Errors and panics are handled when ! is given.

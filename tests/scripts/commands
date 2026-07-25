@@ -4,11 +4,13 @@ command
 Command {
     name: "command",
     args: [],
-    prefix: None,
-    tags: {},
-    silent: false,
-    fail: false,
-    line_number: 2,
+    context: Context {
+        prefix: None,
+        tags: {},
+        silent: false,
+        fail: false,
+        line_number: 2,
+    },
 }
 
 # Commands with arguments.
@@ -23,11 +25,13 @@ Command {
             "arg",
         ),
     ],
-    prefix: None,
-    tags: {},
-    silent: false,
-    fail: false,
-    line_number: 15,
+    context: Context {
+        prefix: None,
+        tags: {},
+        silent: false,
+        fail: false,
+        line_number: 17,
+    },
 }
 Command {
     name: "bar",
@@ -37,11 +41,13 @@ Command {
             "value",
         ),
     ],
-    prefix: None,
-    tags: {},
-    silent: false,
-    fail: false,
-    line_number: 16,
+    context: Context {
+        prefix: None,
+        tags: {},
+        silent: false,
+        fail: false,
+        line_number: 18,
+    },
 }
 Command {
     name: "baz",
@@ -54,11 +60,13 @@ Command {
             "value",
         ),
     ],
-    prefix: None,
-    tags: {},
-    silent: false,
-    fail: false,
-    line_number: 17,
+    context: Context {
+        prefix: None,
+        tags: {},
+        silent: false,
+        fail: false,
+        line_number: 19,
+    },
 }
 
 # Commands with tags.
@@ -68,13 +76,15 @@ foo arg key=value [a,b c]
 Command {
     name: "foo",
     args: [],
-    prefix: None,
-    tags: {
-        "tag",
+    context: Context {
+        prefix: None,
+        tags: {
+            "tag",
+        },
+        silent: false,
+        fail: false,
+        line_number: 73,
     },
-    silent: false,
-    fail: false,
-    line_number: 65,
 }
 Command {
     name: "foo",
@@ -87,15 +97,17 @@ Command {
             "value",
         ),
     ],
-    prefix: None,
-    tags: {
-        "a",
-        "b",
-        "c",
+    context: Context {
+        prefix: None,
+        tags: {
+            "a",
+            "b",
+            "c",
+        },
+        silent: false,
+        fail: false,
+        line_number: 74,
     },
-    silent: false,
-    fail: false,
-    line_number: 66,
 }
 
 # Command with tags before the command.
@@ -105,13 +117,15 @@ Command {
 Command {
     name: "foo",
     args: [],
-    prefix: None,
-    tags: {
-        "tag",
+    context: Context {
+        prefix: None,
+        tags: {
+            "tag",
+        },
+        silent: false,
+        fail: false,
+        line_number: 114,
     },
-    silent: false,
-    fail: false,
-    line_number: 102,
 }
 Command {
     name: "foo",
@@ -120,15 +134,17 @@ Command {
             "arg",
         ),
     ],
-    prefix: None,
-    tags: {
-        "a",
-        "b",
-        "c",
+    context: Context {
+        prefix: None,
+        tags: {
+            "a",
+            "b",
+            "c",
+        },
+        silent: false,
+        fail: false,
+        line_number: 115,
     },
-    silent: false,
-    fail: false,
-    line_number: 103,
 }
 
 # Commands with prefixes.
@@ -142,13 +158,15 @@ a:         Positional(
 a:             "arg",
 a:         ),
 a:     ],
-a:     prefix: Some(
-a:         "a",
-a:     ),
-a:     tags: {},
-a:     silent: false,
-a:     fail: false,
-a:     line_number: 135,
+a:     context: Context {
+a:         prefix: Some(
+a:             "a",
+a:         ),
+a:         tags: {},
+a:         silent: false,
+a:         fail: false,
+a:         line_number: 151,
+a:     },
 a: }
 b: Command {
 b:     name: "bar",
@@ -158,13 +176,15 @@ b:             "key",
 b:             "value",
 b:         ),
 b:     ],
-b:     prefix: Some(
-b:         "b",
-b:     ),
-b:     tags: {},
-b:     silent: false,
-b:     fail: false,
-b:     line_number: 136,
+b:     context: Context {
+b:         prefix: Some(
+b:             "b",
+b:         ),
+b:         tags: {},
+b:         silent: false,
+b:         fail: false,
+b:         line_number: 152,
+b:     },
 b: }
 
 # Failing commands.
@@ -177,11 +197,13 @@ Error: Command {
             "bar",
         ),
     ],
-    prefix: None,
-    tags: {},
-    silent: false,
-    fail: true,
-    line_number: 171,
+    context: Context {
+        prefix: None,
+        tags: {},
+        silent: false,
+        fail: true,
+        line_number: 191,
+    },
 }
 
 # Command with tags, prefixes, and failures.
@@ -194,15 +216,17 @@ prefix:         Positional(
 prefix:             "bar",
 prefix:         ),
 prefix:     ],
-prefix:     prefix: Some(
-prefix:         "prefix",
-prefix:     ),
-prefix:     tags: {
-prefix:         "tag",
+prefix:     context: Context {
+prefix:         prefix: Some(
+prefix:             "prefix",
+prefix:         ),
+prefix:         tags: {
+prefix:             "tag",
+prefix:         },
+prefix:         silent: false,
+prefix:         fail: true,
+prefix:         line_number: 210,
 prefix:     },
-prefix:     silent: false,
-prefix:     fail: true,
-prefix:     line_number: 188,
 prefix: }
 
 # Prefixes, commands, keys, and tags can be empty.
@@ -216,15 +240,17 @@ prefix: }
 :             "",
 :         ),
 :     ],
-:     prefix: Some(
-:         "",
-:     ),
-:     tags: {
-:         "",
+:     context: Context {
+:         prefix: Some(
+:             "",
+:         ),
+:         tags: {
+:             "",
+:         },
+:         silent: false,
+:         fail: false,
+:         line_number: 233,
 :     },
-:     silent: false,
-:     fail: false,
-:     line_number: 209,
 : }
 
 # Prefixes, commands, and keys can be whitespace.
@@ -238,13 +264,15 @@ prefix: }
  :             " ",
  :         ),
  :     ],
- :     prefix: Some(
- :         " ",
- :     ),
- :     tags: {},
- :     silent: false,
- :     fail: false,
- :     line_number: 231,
+ :     context: Context {
+ :         prefix: Some(
+ :             " ",
+ :         ),
+ :         tags: {},
+ :         silent: false,
+ :         fail: false,
+ :         line_number: 257,
+ :     },
  : }
 
 # Empty argument keys and values are fine.
@@ -259,11 +287,13 @@ Command {
             "",
         ),
     ],
-    prefix: None,
-    tags: {},
-    silent: false,
-    fail: false,
-    line_number: 251,
+    context: Context {
+        prefix: None,
+        tags: {},
+        silent: false,
+        fail: false,
+        line_number: 279,
+    },
 }
 Command {
     name: "command",
@@ -273,11 +303,13 @@ Command {
             "",
         ),
     ],
-    prefix: None,
-    tags: {},
-    silent: false,
-    fail: false,
-    line_number: 252,
+    context: Context {
+        prefix: None,
+        tags: {},
+        silent: false,
+        fail: false,
+        line_number: 280,
+    },
 }
 Command {
     name: "command",
@@ -287,11 +319,13 @@ Command {
             "",
         ),
     ],
-    prefix: None,
-    tags: {},
-    silent: false,
-    fail: false,
-    line_number: 253,
+    context: Context {
+        prefix: None,
+        tags: {},
+        silent: false,
+        fail: false,
+        line_number: 281,
+    },
 }
 
 # > uses the rest of the line as the command name, regardless.
@@ -303,38 +337,46 @@ Command {
 Command {
     name: "command arg \"quoted\" key=value [tag] # comment",
     args: [],
-    prefix: None,
-    tags: {},
-    silent: false,
-    fail: false,
-    line_number: 298,
+    context: Context {
+        prefix: None,
+        tags: {},
+        silent: false,
+        fail: false,
+        line_number: 332,
+    },
 }
 Command {
     name: "",
     args: [],
-    prefix: None,
-    tags: {},
-    silent: false,
-    fail: false,
-    line_number: 299,
+    context: Context {
+        prefix: None,
+        tags: {},
+        silent: false,
+        fail: false,
+        line_number: 333,
+    },
 }
 Command {
     name: "!",
     args: [],
-    prefix: None,
-    tags: {},
-    silent: false,
-    fail: false,
-    line_number: 300,
+    context: Context {
+        prefix: None,
+        tags: {},
+        silent: false,
+        fail: false,
+        line_number: 334,
+    },
 }
 Command {
     name: "> >",
     args: [],
-    prefix: None,
-    tags: {},
-    silent: false,
-    fail: false,
-    line_number: 301,
+    context: Context {
+        prefix: None,
+        tags: {},
+        silent: false,
+        fail: false,
+        line_number: 335,
+    },
 }
 
 # > also works with prefix, tags, and error markers.
@@ -346,46 +388,54 @@ prefix:[tag]!> command arg
 prefix: Command {
 prefix:     name: "command arg",
 prefix:     args: [],
-prefix:     prefix: Some(
-prefix:         "prefix",
-prefix:     ),
-prefix:     tags: {},
-prefix:     silent: false,
-prefix:     fail: false,
-prefix:     line_number: 341,
+prefix:     context: Context {
+prefix:         prefix: Some(
+prefix:             "prefix",
+prefix:         ),
+prefix:         tags: {},
+prefix:         silent: false,
+prefix:         fail: false,
+prefix:         line_number: 383,
+prefix:     },
 prefix: }
 Error: Command {
     name: "command arg",
     args: [],
-    prefix: None,
-    tags: {},
-    silent: false,
-    fail: true,
-    line_number: 342,
+    context: Context {
+        prefix: None,
+        tags: {},
+        silent: false,
+        fail: true,
+        line_number: 384,
+    },
 }
 Command {
     name: "command arg",
     args: [],
-    prefix: None,
-    tags: {
-        "tag",
+    context: Context {
+        prefix: None,
+        tags: {
+            "tag",
+        },
+        silent: false,
+        fail: false,
+        line_number: 385,
     },
-    silent: false,
-    fail: false,
-    line_number: 343,
 }
 prefix: Error: Command {
 prefix:     name: "command arg",
 prefix:     args: [],
-prefix:     prefix: Some(
-prefix:         "prefix",
-prefix:     ),
-prefix:     tags: {
-prefix:         "tag",
+prefix:     context: Context {
+prefix:         prefix: Some(
+prefix:             "prefix",
+prefix:         ),
+prefix:         tags: {
+prefix:             "tag",
+prefix:         },
+prefix:         silent: false,
+prefix:         fail: true,
+prefix:         line_number: 386,
 prefix:     },
-prefix:     silent: false,
-prefix:     fail: true,
-prefix:     line_number: 344,
 prefix: }
 
 # > respects \ line continuation, but it can't be escaped by \\.
@@ -397,11 +447,13 @@ continuation
 Command {
     name: "a very long line with line continuation",
     args: [],
-    prefix: None,
-    tags: {},
-    silent: false,
-    fail: false,
-    line_number: 392,
+    context: Context {
+        prefix: None,
+        tags: {},
+        silent: false,
+        fail: false,
+        line_number: 442,
+    },
 }
 
 > a line with \n ending with \\
@@ -410,9 +462,11 @@ another line
 Command {
     name: "a line with \\n ending with \\another line",
     args: [],
-    prefix: None,
-    tags: {},
-    silent: false,
-    fail: false,
-    line_number: 407,
+    context: Context {
+        prefix: None,
+        tags: {},
+        silent: false,
+        fail: false,
+        line_number: 459,
+    },
 }
