@@ -35,6 +35,8 @@ jobs:
     - uses: actions/checkout@v7
     - uses: dtolnay/rust-toolchain@nightly
       id: toolchain
+      with:
+        components: rustfmt
     - uses: actions/cache@v6
       with:
         path: target
