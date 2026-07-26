@@ -2,6 +2,14 @@
 
 use std::error::Error;
 
+/// Commands accepted by HookRunner.
+#[derive(Debug, goldenscript::Command)]
+enum HookCommand {
+    Echo(Vec<String>),
+    Error,
+    Panic,
+}
+
 /// Exposes hook calls as goldenscript output.
 #[derive(Default)]
 struct HookRunner {
@@ -29,26 +37,18 @@ impl HookRunner {
 }
 
 impl goldenscript::Runner for HookRunner {
+    type Command = HookCommand;
+
     fn run(
         &mut self,
-        command: &goldenscript::Command,
+        command: &HookCommand,
         _context: &goldenscript::Context,
     ) -> Result<String, Box<dyn Error>> {
         assert_eq!(self.state, HookState::Command);
-        match command.name.as_str() {
-            "echo" => {
-                let mut values = Vec::with_capacity(command.args.len());
-                for arg in &command.args {
-                    match arg {
-                        goldenscript::Argument::Positional(value) => values.push(value.as_str()),
-                        _ => return Err(format!("invalid echo arg: {arg}").into()),
-                    }
-                }
-                Ok(values.join(" "))
-            }
-            "error" => Err("error".into()),
-            "panic" => panic!("panic"),
-            name => Err(format!("unknown command {name}").into()),
+        match command {
+            HookCommand::Echo(values) => Ok(values.join(" ")),
+            HookCommand::Error => Err("error".into()),
+            HookCommand::Panic => panic!("panic"),
         }
     }
 
@@ -80,20 +80,20 @@ impl goldenscript::Runner for HookRunner {
 
     fn start_command(
         &mut self,
-        command: &goldenscript::Command,
+        command: &HookCommand,
         _context: &goldenscript::Context,
     ) -> Result<String, Box<dyn Error>> {
         self.transition(HookState::Block, HookState::Command);
-        Ok(format!("start_command: {command}"))
+        Ok(format!("start_command: {command:?}"))
     }
 
     fn end_command(
         &mut self,
-        command: &goldenscript::Command,
+        command: &HookCommand,
         _context: &goldenscript::Context,
     ) -> Result<String, Box<dyn Error>> {
         self.transition(HookState::Command, HookState::Block);
-        Ok(format!("end_command: {command}"))
+        Ok(format!("end_command: {command:?}"))
     }
 }
 

@@ -1,23 +1,32 @@
 use crate::parser::parse;
-use crate::{Block, Command, Context};
+use crate::{Block, Context};
 
 use std::error::Error;
 use std::io::Write as _;
 
 /// Runs goldenscript commands, returning their output.
 pub trait Runner {
+    /// The command type accepted by this runner.
+    ///
+    /// Parsed Goldenscript [`Command`](crate::Command)s are converted to this
+    /// type before being passed to the command hooks and [`Runner::run`].
+    /// Custom command types can usually derive this conversion with
+    /// [`Command`](macro@crate::Command). To process arguments manually, use
+    /// [`Command`](crate::Command) itself; its conversion clones the parsed
+    /// command.
+    type Command: for<'a> TryFrom<&'a crate::Command, Error = Box<dyn Error>>;
+
     /// Runs a goldenscript command, returning its output, or an error if the
     /// command fails.
     ///
-    /// Arguments can be accessed directly via [`Command::args`], or by using
-    /// the [`Command::consume_args`] helper for more convenient processing.
     /// Prefixes, tags, silencing, and expected failures are provided separately
     /// through [`Context`].
     ///
     /// Error cases are typically tested by running the command with a `!`
     /// prefix (expecting a failure), but the runner can also handle these
     /// itself and return an `Ok` result with appropriate output.
-    fn run(&mut self, command: &Command, context: &Context) -> Result<String, Box<dyn Error>>;
+    fn run(&mut self, command: &Self::Command, context: &Context)
+    -> Result<String, Box<dyn Error>>;
 
     /// Called at the start of a goldenscript. Used e.g. for initial setup.
     /// Can't return output, since it's not called in the context of a block.
@@ -51,7 +60,7 @@ pub trait Runner {
     #[allow(unused_variables)]
     fn start_command(
         &mut self,
-        command: &Command,
+        command: &Self::Command,
         context: &Context,
     ) -> Result<String, Box<dyn Error>> {
         Ok(String::new())
@@ -63,7 +72,7 @@ pub trait Runner {
     #[allow(unused_variables)]
     fn end_command(
         &mut self,
-        command: &Command,
+        command: &Self::Command,
         context: &Context,
     ) -> Result<String, Box<dyn Error>> {
         Ok(String::new())
@@ -149,13 +158,24 @@ pub fn generate<R: Runner>(runner: &mut R, input: &str) -> std::io::Result<Strin
             eol,
         ));
 
-        for command in &block.commands {
-            let context = &command.context;
+        for raw_command in &block.commands {
             let mut command_output = String::new();
+            let context = &raw_command.context;
+
+            // Convert the command to the runner's command type.
+            let command = R::Command::try_from(raw_command).map_err(|e| {
+                std::io::Error::new(
+                    std::io::ErrorKind::InvalidInput,
+                    format!(
+                        "command '{}' failed at line {}: {e}",
+                        raw_command.name, context.line_number
+                    ),
+                )
+            })?;
 
             // Call the start_command() hook.
             command_output.push_str(&ensure_eol(
-                runner.start_command(command, context).map_err(|e| {
+                runner.start_command(&command, context).map_err(|e| {
                     std::io::Error::other(format!(
                         "start_command failed at line {}: {e}",
                         context.line_number
@@ -167,13 +187,13 @@ pub fn generate<R: Runner>(runner: &mut R, input: &str) -> std::io::Result<Strin
             // Execute the command. Handle panics and errors if requested. We
             // assume the command is unwind-safe when handling panics, it is up
             // to callers to manage this appropriately.
-            let run = std::panic::AssertUnwindSafe(|| runner.run(command, context));
+            let run = std::panic::AssertUnwindSafe(|| runner.run(&command, context));
             command_output.push_str(&match std::panic::catch_unwind(run) {
                 // Unexpected success, error out.
                 Ok(Ok(output)) if context.fail => {
                     return Err(std::io::Error::other(format!(
                         "expected command '{}' to fail at line {}, succeeded with: {output}",
-                        command.name, context.line_number
+                        raw_command.name, context.line_number
                     )));
                 }
 
@@ -187,7 +207,7 @@ pub fn generate<R: Runner>(runner: &mut R, input: &str) -> std::io::Result<Strin
                 Ok(Err(e)) => {
                     return Err(std::io::Error::other(format!(
                         "command '{}' failed at line {}: {e}",
-                        command.name, context.line_number
+                        raw_command.name, context.line_number
                     )));
                 }
 
@@ -210,7 +230,7 @@ pub fn generate<R: Runner>(runner: &mut R, input: &str) -> std::io::Result<Strin
 
             // Call the end_command() hook.
             command_output.push_str(&ensure_eol(
-                runner.end_command(command, context).map_err(|e| {
+                runner.end_command(&command, context).map_err(|e| {
                     std::io::Error::other(format!(
                         "end_command failed at line {}: {e}",
                         context.line_number

@@ -23,9 +23,8 @@ pub struct Command {
     /// The command's arguments, in the given order.
     pub args: Vec<Argument>,
 
-    /// The command's context. This is private, and will be passed to the runner as a separate
-    /// parameter, in preparation for making the runner generic over a command type and supporting
-    /// command enums.
+    /// The command's context. This is private and passed to the runner as a
+    /// separate parameter.
     pub(crate) context: Context,
 }
 
@@ -55,6 +54,14 @@ impl Command {
     /// examples.
     pub fn consume_args(&self) -> ArgumentConsumer<'_> {
         ArgumentConsumer::new(&self.args)
+    }
+}
+
+impl TryFrom<&Command> for Command {
+    type Error = Box<dyn Error>;
+
+    fn try_from(command: &Command) -> Result<Self, Self::Error> {
+        Ok(command.clone())
     }
 }
 
@@ -175,6 +182,13 @@ mod tests {
     fn command_consume_args() {
         let cmd = cmd!("cmd foo key=value bar");
         assert!(cmd.consume_args().eq(&cmd.args));
+    }
+
+    /// Tests Command's cloning TryFrom conversion.
+    #[test]
+    fn command_try_from() {
+        let command = cmd!("cmd foo key=value");
+        assert_eq!(Command::try_from(&command).unwrap(), command);
     }
 
     /// Tests Command and Argument display formatting.

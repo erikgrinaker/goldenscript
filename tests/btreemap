@@ -1,38 +1,47 @@
 # Tests the Rust standard library BTreeMap.
 
-# Get and range returns nothing for an empty map.
-get foo
+# Range returns nothing for an empty map.
 range
 ---
-get → None
+range Unbounded → Unbounded
 
-# Inserting keys out of order will return them in order. Silence the insert
-# output with ().
-(insert b=2 a=1 c=3)
+# Insert a few keys out of order.
+insert b=2 a=1 c=3
+---
+insert "b" = "2" (was None)
+insert "a" = "1" (was None)
+insert "c" = "3" (was None)
+
+# Range emits them in order.
 range
 ---
-a=1
-b=2
-c=3
+range Unbounded → Unbounded
+"a" = "1"
+"b" = "2"
+"c" = "3"
 
-# Getting a key returns its value.
+# Getting a key returns its value, or None for missing keys.
 get b
+get foo
 ---
-get → Some("2")
+get "b" → Some("2")
+get "foo" → None
 
 # Bounded scans, where the end is exclusive.
-range b
+range from=b
 ---
-b=2
-c=3
+range Included("b") → Unbounded
+"b" = "2"
+"c" = "3"
 
-range a c
+range to=c
 ---
-a=1
-b=2
+range Unbounded → Excluded("c")
+"a" = "1"
+"b" = "2"
 
 # An end bound less than the start bound panics. Expect the failure with !.
-!range b a
+!range from=b to=a
 ---
 Panic: range start is greater than range end in BTreeMap
 
@@ -40,5 +49,5 @@ Panic: range start is greater than range end in BTreeMap
 insert b=foo
 get b
 ---
-insert → Some("2")
-get → Some("foo")
+insert "b" = "foo" (was Some("2"))
+get "b" → Some("foo")

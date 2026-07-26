@@ -77,6 +77,8 @@ enum Containers {
 struct Capture(Option<Command>);
 
 impl goldenscript::Runner for Capture {
+    type Command = Command;
+
     fn run(
         &mut self,
         command: &Command,

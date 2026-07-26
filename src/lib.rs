@@ -61,39 +61,48 @@
 //! ```yaml
 //! # Tests the Rust standard library BTreeMap.
 //!
-//! # Get and range returns nothing for an empty map.
-//! get foo
+//! # Range returns nothing for an empty map.
 //! range
 //! ---
-//! get → None
+//! range Unbounded → Unbounded
 //!
-//! # Inserting keys out of order will return them in order. Silence the insert
-//! # output with ().
-//! (insert b=2 a=1 c=3)
+//! # Insert a few keys out of order.
+//! insert b=2 a=1 c=3
+//! ---
+//! insert "b" = "2" (was None)
+//! insert "a" = "1" (was None)
+//! insert "c" = "3" (was None)
+//!
+//! # Range emits them in order.
 //! range
 //! ---
-//! a=1
-//! b=2
-//! c=3
+//! range Unbounded → Unbounded
+//! "a" = "1"
+//! "b" = "2"
+//! "c" = "3"
 //!
-//! # Getting a key returns its value.
+//! # Getting a key returns its value, or None for missing keys.
 //! get b
+//! get foo
 //! ---
-//! get → Some("2")
+//! get "b" → Some("2")
+//! get "foo" → None
 //!
 //! # Bounded scans, where the end is exclusive.
-//! range b
+//! range from=b
 //! ---
-//! b=2
-//! c=3
+//! range Included("b") → Unbounded
+//! "b" = "2"
+//! "c" = "3"
 //!
-//! range a c
+//! range to=c
 //! ---
-//! a=1
-//! b=2
+//! range Unbounded → Excluded("c")
+//! "a" = "1"
+//! "b" = "2"
 //!
 //! # An end bound less than the start bound panics. Expect the failure with !.
-//! !range b a
+//! !range from=b to=a
 //! ---
 //! Panic: range start is greater than range end in BTreeMap
 //!
@@ -101,62 +110,71 @@
 //! insert b=foo
 //! get b
 //! ---
-//! insert → Some("2")
-//! get → Some("foo")
+//! insert "b" = "foo" (was Some("2"))
+//! get "b" → Some("foo")
 //! ```
 //!
 //! The corresponding runner for this script:
 //!
 //! ```no_run
+//! use std::collections::BTreeMap;
 //! # use std::error::Error;
 //! # use std::fmt::Write as _;
+//! /// Commands accepted by BTreeMapRunner.
+//! #[derive(goldenscript::Command)]
+//! enum BTreeMapCommand {
+//!     /// Fetches the given keys.
+//!     Get(Vec<String>),
+//!     /// Inserts the given key/value pairs.
+//!     Insert(Vec<(String, String)>),
+//!     /// Scans the given [from, to) range.
+//!     Range {
+//!         #[arg(key)]
+//!         from: Option<String>,
+//!         #[arg(key)]
+//!         to: Option<String>,
+//!     },
+//! }
+//!
+//! /// A runner for BTreeMap tests. This is used as a documentation example.
 //! #[derive(Default)]
 //! struct BTreeMapRunner {
-//!     map: std::collections::BTreeMap<String, String>,
+//!     map: BTreeMap<String, String>,
 //! }
 //!
 //! impl goldenscript::Runner for BTreeMapRunner {
+//!     type Command = BTreeMapCommand;
+//!
 //!     fn run(
 //!         &mut self,
-//!         command: &goldenscript::Command,
-//!         _context: &goldenscript::Context,
+//!         command: &BTreeMapCommand,
+//!         _: &goldenscript::Context,
 //!     ) -> Result<String, Box<dyn Error>> {
 //!         let mut output = String::new();
-//!         match command.name.as_str() {
-//!             // get KEY: fetches the value of the given key, or None if it does not exist.
-//!             "get" => {
-//!                 let mut args = command.consume_args();
-//!                 let key = args.next_pos().ok_or("key not given")?;
-//!                 args.reject_next()?;
-//!                 let value = self.map.get(key);
-//!                 writeln!(output, "get → {value:?}")?;
-//!             }
-//!
-//!             // insert KEY=VALUE...: inserts the given key/value pairs, returning the old value.
-//!             "insert" => {
-//!                 let mut args = command.consume_args();
-//!                 while let Some((key, value)) = args.next_key() {
-//!                     let old = self.map.insert(key.to_owned(), value.to_owned());
-//!                     writeln!(output, "insert → {old:?}")?;
+//!         match command {
+//!             BTreeMapCommand::Get(keys) => {
+//!                 for key in keys {
+//!                     let value = self.map.get(key);
+//!                     writeln!(output, "get {key:?} → {value:?}")?;
 //!                 }
-//!                 args.reject_next()?;
 //!             }
 //!
-//!             // range [FROM] [TO]: iterates over the key/value pairs in the range from..to.
-//!             "range" => {
+//!             BTreeMapCommand::Insert(entries) => {
+//!                 for (key, value) in entries {
+//!                     let old = self.map.insert(key.clone(), value.clone());
+//!                     writeln!(output, "insert {key:?} = {value:?} (was {old:?})")?;
+//!                 }
+//!             }
+//!
+//!             BTreeMapCommand::Range { from, to } => {
 //!                 use std::ops::Bound::*;
-//!                 let mut args = command.consume_args();
-//!                 let from =
-//!                     args.next_pos().map(|value| Included(value.to_owned())).unwrap_or(Unbounded);
-//!                 let to =
-//!                     args.next_pos().map(|value| Excluded(value.to_owned())).unwrap_or(Unbounded);
-//!                 args.reject_next()?;
+//!                 let from = from.clone().map(Included).unwrap_or(Unbounded);
+//!                 let to = to.clone().map(Excluded).unwrap_or(Unbounded);
+//!                 writeln!(output, "range {from:?} → {to:?}")?;
 //!                 for (key, value) in self.map.range((from, to)) {
-//!                     writeln!(output, "{key}={value}")?;
+//!                     writeln!(output, "{key:?} = {value:?}")?;
 //!                 }
 //!             }
-//!
-//!             name => return Err(format!("invalid command {name}").into()),
 //!         };
 //!         Ok(output)
 //!     }
@@ -164,7 +182,8 @@
 //!
 //! #[test]
 //! fn btreemap() {
-//!     goldenscript::run(&mut BTreeMapRunner::default(), "btreemap").expect("goldenscript failed")
+//!     goldenscript::run(&mut BTreeMapRunner::default(), "tests/btreemap")
+//!         .expect("goldenscript failed")
 //! }
 //! ```
 //!
@@ -351,6 +370,8 @@
 //! struct Runner;
 //!
 //! impl goldenscript::Runner for Runner {
+//!     type Command = goldenscript::Command;
+//!
 //!     fn run(
 //!         &mut self,
 //!         command: &goldenscript::Command,
@@ -380,8 +401,8 @@
 //!
 //! ## Deriving Commands
 //!
-//! `#[derive(goldenscript::Command)]` implements [`TryFrom<&Command>`](TryFrom) for an enum,
-//! allowing a parsed Goldenscript command to be converted into a typed Rust value:
+//! `#[derive(goldenscript::Command)]` implements [`TryFrom<&Command>`](TryFrom)
+//! for an enum, allowing it to be used as a runner's [`Runner::Command`] type:
 //!
 //! ```rust
 //! #[derive(goldenscript::Command)]
@@ -424,6 +445,19 @@
 //!         #[arg(key, optional)]
 //!         reverse: bool,
 //!     },
+//! }
+//!
+//! struct Runner;
+//! impl goldenscript::Runner for Runner {
+//!     type Command = Command;
+//!
+//!     fn run(
+//!         &mut self,
+//!         _command: &Command,
+//!         _context: &goldenscript::Context,
+//!     ) -> Result<String, Box<dyn std::error::Error>> {
+//!        Ok(String::new())
+//!     }
 //! }
 //! ```
 //!
@@ -516,6 +550,8 @@
 //! # }
 //! #
 //! impl goldenscript::Runner for Runner {
+//!     type Command = goldenscript::Command;
+//!
 //!     /// Implement a send command, which sends a string message to a list
 //!     /// of nodes, optionally retrying.
 //!     ///
@@ -580,6 +616,8 @@
 //! # struct Runner;
 //! #
 //! # impl goldenscript::Runner for Runner {
+//! #     type Command = goldenscript::Command;
+//! #
 //! #     fn run(
 //! #         &mut self,
 //! #         _command: &goldenscript::Command,

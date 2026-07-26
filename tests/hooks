@@ -6,21 +6,21 @@
 echo one
 ---
 start_block: echo one
-start_command: echo one
+start_command: Echo(["one"])
 one
-end_command: echo one
+end_command: Echo(["one"])
 end_block: echo one
 
 echo two
 echo three
 ---
 start_block: echo two, echo three
-start_command: echo two
+start_command: Echo(["two"])
 two
-end_command: echo two
-start_command: echo three
+end_command: Echo(["two"])
+start_command: Echo(["three"])
 three
-end_command: echo three
+end_command: Echo(["three"])
 end_block: echo two, echo three
 
 # Blank lines should cause all block output, including hook output, to be
@@ -28,20 +28,20 @@ end_block: echo two, echo three
 echo "one\n\ntwo"
 ---
 > start_block: echo "one\n\ntwo"
-> start_command: echo "one\n\ntwo"
+> start_command: Echo(["one\n\ntwo"])
 > one
 > 
 > two
-> end_command: echo "one\n\ntwo"
+> end_command: Echo(["one\n\ntwo"])
 > end_block: echo "one\n\ntwo"
 
 # Command hook output should be affected by prefixes.
 prefix: echo prefixed
 ---
 start_block: echo prefixed
-prefix: start_command: echo prefixed
+prefix: start_command: Echo(["prefixed"])
 prefix: prefixed
-prefix: end_command: echo prefixed
+prefix: end_command: Echo(["prefixed"])
 end_block: echo prefixed
 
 # Command hook output should be silenced along with the command output.
@@ -55,10 +55,10 @@ end_block: echo silent
 ! panic
 ---
 start_block: error, panic
-start_command: error
+start_command: Error
 Error: error
-end_command: error
-start_command: panic
+end_command: Error
+start_command: Panic
 Panic: panic
-end_command: panic
+end_command: Panic
 end_block: error, panic

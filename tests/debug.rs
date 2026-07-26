@@ -70,6 +70,8 @@ impl DebugRunner {
 }
 
 impl goldenscript::Runner for DebugRunner {
+    type Command = goldenscript::Command;
+
     fn run(
         &mut self,
         command: &goldenscript::Command,

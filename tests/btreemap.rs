@@ -1,56 +1,64 @@
 #![warn(clippy::all)]
 
+use std::collections::BTreeMap;
 use std::error::Error;
 use std::fmt::Write as _;
+
+/// Commands accepted by BTreeMapRunner.
+#[derive(goldenscript::Command)]
+enum BTreeMapCommand {
+    /// Fetches the given keys.
+    Get(Vec<String>),
+    /// Inserts the given key/value pairs.
+    Insert(Vec<(String, String)>),
+    /// Scans the given [from, to) range.
+    Range {
+        #[arg(key)]
+        from: Option<String>,
+        #[arg(key)]
+        to: Option<String>,
+    },
+}
 
 /// A runner for BTreeMap tests. This is used as a documentation example.
 #[derive(Default)]
 struct BTreeMapRunner {
-    map: std::collections::BTreeMap<String, String>,
+    map: BTreeMap<String, String>,
 }
 
 impl goldenscript::Runner for BTreeMapRunner {
+    type Command = BTreeMapCommand;
+
     fn run(
         &mut self,
-        command: &goldenscript::Command,
-        _context: &goldenscript::Context,
+        command: &BTreeMapCommand,
+        _: &goldenscript::Context,
     ) -> Result<String, Box<dyn Error>> {
         let mut output = String::new();
-        match command.name.as_str() {
-            // get KEY: fetches the value of the given key, or None if it does not exist.
-            "get" => {
-                let mut args = command.consume_args();
-                let key = args.next_pos().ok_or("key not given")?;
-                args.reject_next()?;
-                let value = self.map.get(key);
-                writeln!(output, "get → {value:?}")?;
-            }
-
-            // insert KEY=VALUE...: inserts the given key/value pairs, returning the old value.
-            "insert" => {
-                let mut args = command.consume_args();
-                while let Some((key, value)) = args.next_key() {
-                    let old = self.map.insert(key.to_owned(), value.to_owned());
-                    writeln!(output, "insert → {old:?}")?;
+        match command {
+            BTreeMapCommand::Get(keys) => {
+                for key in keys {
+                    let value = self.map.get(key);
+                    writeln!(output, "get {key:?} → {value:?}")?;
                 }
-                args.reject_next()?;
             }
 
-            // range [FROM] [TO]: iterates over the key/value pairs in the range from..to.
-            "range" => {
+            BTreeMapCommand::Insert(entries) => {
+                for (key, value) in entries {
+                    let old = self.map.insert(key.clone(), value.clone());
+                    writeln!(output, "insert {key:?} = {value:?} (was {old:?})")?;
+                }
+            }
+
+            BTreeMapCommand::Range { from, to } => {
                 use std::ops::Bound::*;
-                let mut args = command.consume_args();
-                let from =
-                    args.next_pos().map(|value| Included(value.to_owned())).unwrap_or(Unbounded);
-                let to =
-                    args.next_pos().map(|value| Excluded(value.to_owned())).unwrap_or(Unbounded);
-                args.reject_next()?;
+                let from = from.clone().map(Included).unwrap_or(Unbounded);
+                let to = to.clone().map(Excluded).unwrap_or(Unbounded);
+                writeln!(output, "range {from:?} → {to:?}")?;
                 for (key, value) in self.map.range((from, to)) {
-                    writeln!(output, "{key}={value}")?;
+                    writeln!(output, "{key:?} = {value:?}")?;
                 }
             }
-
-            name => return Err(format!("invalid command {name}").into()),
         };
         Ok(output)
     }
