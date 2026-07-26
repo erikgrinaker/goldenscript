@@ -14,10 +14,10 @@ proc-macro = true
 
 [dependencies]
 heck = "0.5"
-proc-macro2 = "1.0"
-quote = "1.0"
+proc-macro2 = "1.0.91"
+quote = "1.0.35"
 syn = "3.0"
 
 [dev-dependencies]
 goldenfile = "1.11"
-trybuild = "1.0"
+trybuild = "1.0.100"
