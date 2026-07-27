@@ -493,18 +493,21 @@
 //! Each parsed value type must implement [`FromStr`](std::str::FromStr), with
 //! an error that implements [`Display`](std::fmt::Display). A `many` field must
 //! implement [`FromIterator`], collecting `T` for positional arguments or
-//! `(String, T)` for keyed arguments. Missing or invalid values are reported for
+//! `(K, V)` for keyed arguments, with both `K` and `V` parsed via `FromStr`.
+//! Missing or invalid values are reported for
 //! the first field that fails.
 //!
 //! By default, a field corresponds to a required positional argument, except for the following
 //! inferred outer type names:
 //!
 //! * `Option<T>`: makes the argument optional, i.e. `#[arg(optional)]`.
+//!
 //! * `Vec<T>`, `VecDeque<T>`, `HashSet<T>`, `BTreeSet<T>`: takes one or more positional
-//!   arguments, i.e. `#[arg(pos, many)]`, except for the key/value vector below.
-//! * `Vec<(String, T)>`, `HashMap<String, T>`, `BTreeMap<String, T>`: takes one or more
-//!   key/value arguments (equivalent to `#[arg(key, many)]`). A vector preserves input order and
-//!   duplicate keys.
+//!   arguments, i.e. `#[arg(pos, many)]`, except for the key/value collections below.
+//!
+//! * `Vec<(K, V)>`, `HashMap<K, V>`, and `BTreeMap<K, V>`: takes one or more key/value
+//!   arguments (equivalent to `#[arg(key, many)]`). A vector preserves input order and duplicate
+//!   keys.
 //!
 //! Inference uses the final type path segment as written, so fully qualified
 //! forms such as `std::vec::Vec<T>` are recognized but type aliases are not.
@@ -528,7 +531,7 @@
 //! * `many`: consumes all remaining arguments of its kind (pos or key) using `FromIterator`. At
 //!   least one argument must be provided, unless `optional` is set. Duplicate input keys collected
 //!   by a keyed `many` field use the collection's `FromIterator` behavior:
-//!   `Vec<(String, T)>` retains every pair in input order, while maps use their usual duplicate-key
+//!   `Vec<(K, V)>` retains every pair in input order, while maps use their usual duplicate-key
 //!   behavior.
 //!
 //! A required positional field cannot be specified after an optional positional field. Fields with

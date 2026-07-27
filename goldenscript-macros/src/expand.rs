@@ -414,7 +414,7 @@ fn infer_field_config(field: &Field) -> FieldConfig {
 
     match ident.to_string().as_str() {
         "Option" => config.optional = true,
-        "Vec" if is_key_value_vec(&field.ty) => {
+        "Vec" if has_generic_tuple_pair(&field.ty) => {
             config.kind = ArgumentKind::Keyed;
             config.many = true;
         }
@@ -428,8 +428,8 @@ fn infer_field_config(field: &Field) -> FieldConfig {
     config
 }
 
-/// Returns whether the type is a `Vec<(String, T)>`.
-fn is_key_value_vec(ty: &Type) -> bool {
+/// Returns whether the type has a single generic `(K, V)` argument.
+fn has_generic_tuple_pair(ty: &Type) -> bool {
     let Type::Path(path) = ty else {
         return false;
     };
@@ -446,17 +446,7 @@ fn is_key_value_vec(ty: &Type) -> bool {
     if arguments.next().is_some() {
         return false;
     }
-    let mut pair = pair.elems.iter();
-    let Some(key) = pair.next() else {
-        return false;
-    };
-    let Some(_) = pair.next() else {
-        return false;
-    };
-    if pair.next().is_some() {
-        return false;
-    }
-    type_ident(key).is_some_and(|ident| ident == "String")
+    pair.elems.len() == 2
 }
 
 /// Parses attribute meta items, calling the given callback for each one.
@@ -592,11 +582,12 @@ fn emit_collect_pos(label: &str, optional: bool) -> TokenStream {
 /// Emits code that collects all key/value arguments.
 fn emit_collect_key(label: &str, optional: bool) -> TokenStream {
     let iter = emit_arg_iter(emit_next_key(), label, optional);
-    let parsed = emit_parse_value(quote!(arg), label);
+    let parsed_key = emit_parse_value(quote!(key), label);
+    let parsed_value = emit_parse_value(quote!(arg), label);
     quote! {
         #iter
             .map(|(key, arg)| {
-                #parsed.map(|value| (key.to_owned(), value))
+                #parsed_key.and_then(|key| #parsed_value.map(|value| (key, value)))
             })
             .collect::<::core::result::Result<_, _>>()?
     }

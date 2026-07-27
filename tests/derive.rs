@@ -59,17 +59,17 @@ enum Scalars {
 #[derive(Command, Debug, PartialEq)]
 enum Containers {
     #[command(name = "btree_map")]
-    BTreeMap(BTreeMap<String, Custom>),
+    BTreeMap(BTreeMap<Custom, Custom>),
     #[command(name = "btree_set")]
     BTreeSet(BTreeSet<Custom>),
     CustomSet(#[arg(many)] CustomSet),
-    HashMap(HashMap<String, Custom>),
+    HashMap(HashMap<Custom, Custom>),
     HashSet(HashSet<Custom>),
     Vec(Vec<Custom>),
     VecAlias(#[arg(many)] VecAlias<Custom>),
     VecAliasU8(#[arg(many)] VecAliasU8),
     VecDeque(VecDeque<Custom>),
-    VecKeyValue(Vec<(String, Custom)>),
+    VecKeyValue(Vec<(Custom, Custom)>),
     Option(Option<Custom>),
 }
 
@@ -170,11 +170,8 @@ fn scalar_conversion_errors() {
 #[test]
 fn container_values() -> Result<(), Box<dyn Error>> {
     assert_eq!(
-        parse::<Containers>("btree_map a=1 b=2 a=3")?,
-        Containers::BTreeMap(BTreeMap::from([
-            ("a".to_owned(), Custom(3)),
-            ("b".to_owned(), Custom(2)),
-        ]))
+        parse::<Containers>("btree_map 1=3 2=2 1=1")?,
+        Containers::BTreeMap(BTreeMap::from([(Custom(1), Custom(1)), (Custom(2), Custom(2)),]))
     );
     assert_eq!(
         parse::<Containers>("btree_set 3 1 2 1")?,
@@ -185,11 +182,8 @@ fn container_values() -> Result<(), Box<dyn Error>> {
         Containers::CustomSet(CustomSet(HashSet::from([Custom(1), Custom(2), Custom(3)])))
     );
     assert_eq!(
-        parse::<Containers>("hash_map a=1 b=2 a=3")?,
-        Containers::HashMap(HashMap::from([
-            ("a".to_owned(), Custom(3)),
-            ("b".to_owned(), Custom(2)),
-        ]))
+        parse::<Containers>("hash_map 1=3 2=2 1=1")?,
+        Containers::HashMap(HashMap::from([(Custom(1), Custom(1)), (Custom(2), Custom(2)),]))
     );
     assert_eq!(
         parse::<Containers>("hash_set 3 1 2 1")?,
@@ -209,11 +203,11 @@ fn container_values() -> Result<(), Box<dyn Error>> {
         Containers::VecDeque(VecDeque::from([Custom(3), Custom(1), Custom(2)]))
     );
     assert_eq!(
-        parse::<Containers>("vec_key_value a=1 b=2 a=3")?,
+        parse::<Containers>("vec_key_value 3=1 1=2 3=1")?,
         Containers::VecKeyValue(vec![
-            ("a".to_owned(), Custom(1)),
-            ("b".to_owned(), Custom(2)),
-            ("a".to_owned(), Custom(3)),
+            (Custom(3), Custom(1)),
+            (Custom(1), Custom(2)),
+            (Custom(3), Custom(1)),
         ])
     );
     assert_eq!(parse::<Containers>("option 3")?, Containers::Option(Some(Custom(3))));
@@ -301,6 +295,18 @@ fn argument_kinds() -> Result<(), Box<dyn Error>> {
         "invalid value 'invalid' for argument 'optional': invalid digit found in string"
     );
     Ok(())
+}
+
+#[test]
+fn keyed_collection_conversion_errors() {
+    assert_eq!(
+        parse_error::<Containers>("hash_map invalid=1"),
+        "invalid value 'invalid' for argument 'HashMap': invalid digit found in string"
+    );
+    assert_eq!(
+        parse_error::<Containers>("hash_map 1=invalid"),
+        "invalid value 'invalid' for argument 'HashMap': invalid digit found in string"
+    );
 }
 
 #[test]

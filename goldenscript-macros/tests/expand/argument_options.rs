@@ -97,7 +97,7 @@ impl ::core::convert::TryFrom<&::goldenscript::Command> for Command {
                 }
                 .map(|(key, arg)| {
                     {
-                        let __value = arg;
+                        let __value = key;
                         __value.parse().map_err(
                             |err| -> ::std::boxed::Box<dyn ::std::error::Error> {
                                 ::std::format!(
@@ -108,7 +108,21 @@ impl ::core::convert::TryFrom<&::goldenscript::Command> for Command {
                             },
                         )
                     }
-                    .map(|value| (key.to_owned(), value))
+                    .and_then(|key| {
+                        {
+                            let __value = arg;
+                            __value.parse().map_err(
+                                |err| -> ::std::boxed::Box<dyn ::std::error::Error> {
+                                    ::std::format!(
+                                        "invalid value '{__value}' for argument '{}': {err}",
+                                        "properties"
+                                    )
+                                    .into()
+                                },
+                            )
+                        }
+                        .map(|value| (key, value))
+                    })
                 })
                 .collect::<::core::result::Result<_, _>>()?;
                 __args.reject_next()?;
@@ -133,7 +147,7 @@ impl ::core::convert::TryFrom<&::goldenscript::Command> for Command {
                 let __field1 = ::core::iter::from_fn(|| __args.next_key())
                     .map(|(key, arg)| {
                         {
-                            let __value = arg;
+                            let __value = key;
                             __value.parse().map_err(
                                 |err| -> ::std::boxed::Box<dyn ::std::error::Error> {
                                     ::std::format!(
@@ -144,7 +158,21 @@ impl ::core::convert::TryFrom<&::goldenscript::Command> for Command {
                                 },
                             )
                         }
-                        .map(|value| (key.to_owned(), value))
+                        .and_then(|key| {
+                            {
+                                let __value = arg;
+                                __value.parse().map_err(
+                                    |err| -> ::std::boxed::Box<dyn ::std::error::Error> {
+                                        ::std::format!(
+                                            "invalid value '{__value}' for argument '{}': {err}",
+                                            "properties"
+                                        )
+                                        .into()
+                                    },
+                                )
+                            }
+                            .map(|value| (key, value))
+                        })
                     })
                     .collect::<::core::result::Result<_, _>>()?;
                 __args.reject_next()?;
@@ -172,7 +200,7 @@ impl ::core::convert::TryFrom<&::goldenscript::Command> for Command {
                 let __field1 = ::core::iter::from_fn(|| __args.next_key())
                     .map(|(key, arg)| {
                         {
-                            let __value = arg;
+                            let __value = key;
                             __value.parse().map_err(
                                 |err| -> ::std::boxed::Box<dyn ::std::error::Error> {
                                     ::std::format!(
@@ -183,7 +211,21 @@ impl ::core::convert::TryFrom<&::goldenscript::Command> for Command {
                                 },
                             )
                         }
-                        .map(|value| (key.to_owned(), value))
+                        .and_then(|key| {
+                            {
+                                let __value = arg;
+                                __value.parse().map_err(
+                                    |err| -> ::std::boxed::Box<dyn ::std::error::Error> {
+                                        ::std::format!(
+                                            "invalid value '{__value}' for argument '{}': {err}",
+                                            "properties"
+                                        )
+                                        .into()
+                                    },
+                                )
+                            }
+                            .map(|value| (key, value))
+                        })
                     })
                     .collect::<::core::result::Result<_, _>>()?;
                 __args.reject_next()?;
