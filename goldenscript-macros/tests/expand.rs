@@ -67,6 +67,15 @@ expand_test! {
 }
 
 expand_test! {
+    other_command,
+    enum Command {
+        Known,
+        #[command(other)]
+        Other(goldenscript::Command),
+    }
+}
+
+expand_test! {
     data_types,
     enum Command {
         Scalar(bool),

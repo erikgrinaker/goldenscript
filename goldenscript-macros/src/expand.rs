@@ -22,6 +22,7 @@ fn is_helper_attr(attr: &Attribute) -> bool {
 #[derive(Default)]
 pub struct CommandExpander {
     command_names: HashSet<String>,
+    has_other: bool,
 }
 
 impl CommandExpander {
@@ -66,6 +67,14 @@ impl CommandExpander {
 
         // Emit the TryFrom implementation.
         let ident = &input.ident;
+        let unknown_arm = (!self.has_other).then(|| {
+            quote! {
+                name => ::core::result::Result::Err(
+                    ::std::format!("unknown command '{name}'").into()
+                ),
+            }
+        });
+
         Ok(quote! {
             impl ::core::convert::TryFrom<&::goldenscript::Command> for #ident
             {
@@ -79,9 +88,7 @@ impl CommandExpander {
                 > {
                     match command.name.as_str() {
                         #(#command_arms)*
-                        name => ::core::result::Result::Err(
-                            ::std::format!("unknown command '{name}'").into()
-                        ),
+                        #unknown_arm
                     }
                 }
             }
@@ -115,13 +122,36 @@ impl<'a> VariantExpander<'a> {
 
     /// Expands an enum variant as a command parser.
     pub fn expand(mut self, variant: &Variant) -> Result<TokenStream> {
-        // Parse the variant config and check+register the command name.
-        let VariantConfig { command_name } = parse_variant(variant)?;
+        let ident = &variant.ident;
 
-        if !self.command_expander.command_names.insert(command_name.clone()) {
+        if self.command_expander.has_other {
             return Err(Error::new_spanned(
                 &variant.ident,
-                format!("duplicate command name '{command_name}'"),
+                "command with 'other' must be the last enum variant",
+            ));
+        }
+
+        // Parse the variant config.
+        let VariantConfig { name, other } = parse_variant(variant)?;
+
+        let name = match (name, other) {
+            (Some(name), false) => name,
+            (None, true) => {
+                // `#[command(other)]´ just emits a wildcard arm
+                self.command_expander.has_other = true;
+                return Ok(quote! {
+                    _ => ::core::result::Result::Ok(Self::#ident(command.clone()))
+                });
+            }
+
+            // parse_variant ensures these invariants hold.
+            (Some(_), true) | (None, false) => panic!("must give name or other"),
+        };
+
+        if !self.command_expander.command_names.insert(name.clone()) {
+            return Err(Error::new_spanned(
+                &variant.ident,
+                format!("duplicate command name '{name}'"),
             ));
         }
 
@@ -157,7 +187,7 @@ impl<'a> VariantExpander<'a> {
 
         // Emit the generated code for the command match arm.
         Ok(quote! {
-            #command_name => {
+            #name => {
                 let mut __args = command.consume_args();
                 #(#statements)*
                 __args.reject_next()?;
@@ -237,18 +267,29 @@ impl<'a> VariantExpander<'a> {
 
 /// Parsed config for an enum variant (i.e. command).
 struct VariantConfig {
-    command_name: String,
+    name: Option<String>,
+    other: bool,
 }
 
 /// Parses a VariantConfig from an enum variant.
 fn parse_variant(variant: &Variant) -> Result<VariantConfig> {
     // Parse the `#[command]` attribute, if any.
-    let mut command_name = None;
+    let mut name = None;
+    let mut other = false;
     for attr in &variant.attrs {
         if attr.path().is_ident("command") {
             parse_attr_meta(attr, |meta| {
                 if meta.path.is_ident("name") {
-                    command_name = Some(meta.value()?.parse::<LitStr>()?.value());
+                    if other {
+                        return Err(meta.error("name and other are exclusive"));
+                    }
+                    name = Some(meta.value()?.parse::<LitStr>()?.value());
+                } else if meta.path.is_ident("other") {
+                    ensure_bare_meta(&meta)?;
+                    if name.is_some() {
+                        return Err(meta.error("name and other are exclusive"));
+                    }
+                    other = true;
                 } else {
                     return Err(meta.error("unknown command option"));
                 }
@@ -260,9 +301,27 @@ fn parse_variant(variant: &Variant) -> Result<VariantConfig> {
     }
 
     // Resolve the command name.
-    let command_name = command_name.unwrap_or_else(|| variant.ident.to_string().to_snake_case());
+    let name = (!other).then(|| name.unwrap_or_else(|| variant.ident.to_string().to_snake_case()));
+    assert!(name.is_some() != other);
 
-    Ok(VariantConfig { command_name })
+    // Validate the catch-all variant.
+    if other {
+        if !matches!(
+            &variant.fields,
+            Fields::Unnamed(fields) if fields.unnamed.len() == 1
+        ) {
+            return Err(Error::new_spanned(
+                &variant.ident,
+                "other command must have exactly one unnamed field",
+            ));
+        }
+        let field = variant.fields.iter().next().expect("checked one field");
+        if let Some(attr) = field.attrs.iter().find(|attr| is_helper_attr(attr)) {
+            return Err(Error::new_spanned(attr, "attribute not valid on 'other' command field"));
+        }
+    }
+
+    Ok(VariantConfig { name, other })
 }
 
 #[derive(Default)]

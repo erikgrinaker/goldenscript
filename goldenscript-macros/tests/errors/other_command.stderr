@@ -1,0 +1,41 @@
+error: command with 'other' must be the last enum variant
+ --> tests/errors/other_command.rs:6:9
+  |
+6 |         Known,
+  |         ^^^^^
+
+error: other command must have exactly one unnamed field
+  --> tests/errors/other_command.rs:14:9
+   |
+14 |         Other,
+   |         ^^^^^
+
+error: other command must have exactly one unnamed field
+  --> tests/errors/other_command.rs:22:9
+   |
+22 |         Other { command: goldenscript::Command },
+   |         ^^^^^
+
+error: other command must have exactly one unnamed field
+  --> tests/errors/other_command.rs:30:9
+   |
+30 |         Other(goldenscript::Command, String),
+   |         ^^^^^
+
+error: attribute not valid on 'other' command field
+  --> tests/errors/other_command.rs:38:15
+   |
+38 |         Other(#[arg] goldenscript::Command),
+   |               ^^^^^^
+
+error: name and other are exclusive
+  --> tests/errors/other_command.rs:45:35
+   |
+45 |         #[command(name = "other", other)]
+   |                                   ^^^^^
+
+error: other does not accept a value
+  --> tests/errors/other_command.rs:53:19
+   |
+53 |         #[command(other = true)]
+   |                   ^^^^^

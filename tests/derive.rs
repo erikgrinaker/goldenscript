@@ -324,6 +324,23 @@ fn optional_defaults() -> Result<(), Box<dyn Error>> {
 }
 
 #[test]
+fn other_command() -> Result<(), Box<dyn Error>> {
+    /// An enum with a fallback for unrecognized commands.
+    #[derive(Command, Debug, PartialEq)]
+    enum CommandsWithOther {
+        Known,
+        #[command(other)]
+        Other(Command),
+    }
+
+    assert_eq!(parse::<CommandsWithOther>("known")?, CommandsWithOther::Known);
+
+    let raw = command("unknown value key=7")?;
+    assert_eq!(CommandsWithOther::try_from(&raw)?, CommandsWithOther::Other(raw));
+    Ok(())
+}
+
+#[test]
 fn fixed_key_uses_last_value_and_removes_all_matches() -> Result<(), Box<dyn Error>> {
     #[derive(Command, Debug, PartialEq)]
     enum FixedKeys {
