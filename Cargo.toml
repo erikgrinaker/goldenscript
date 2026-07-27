@@ -16,7 +16,7 @@ default-members = [".", "goldenscript-macros"]
 resolver = "2"
 
 [workspace.package]
-version = "0.7.0"
+version = "0.8.0"
 authors = ["Erik Grinaker <erik@grinaker.me>"]
 license = "Apache-2.0"
 homepage = "https://github.com/erikgrinaker/goldenscript"
@@ -26,7 +26,7 @@ rust-version = "1.88.0"
 
 [dependencies]
 goldenfile = "1.11"
-goldenscript-macros = { version = "=0.7.0", path = "goldenscript-macros" }
+goldenscript-macros = { version = "=0.8.0", path = "goldenscript-macros" }
 nom = "8.0"
 nom_locate = "5.0"
 

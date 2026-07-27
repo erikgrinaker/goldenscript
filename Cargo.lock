@@ -103,7 +103,7 @@ dependencies = [
 
 [[package]]
 name = "goldenscript"
-version = "0.7.0"
+version = "0.8.0"
 dependencies = [
  "goldenfile",
  "goldenscript-macros",
@@ -114,7 +114,7 @@ dependencies = [
 
 [[package]]
 name = "goldenscript-macros"
-version = "0.7.0"
+version = "0.8.0"
 dependencies = [
  "goldenfile",
  "heck",

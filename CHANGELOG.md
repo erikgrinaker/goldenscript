@@ -1,4 +1,4 @@
-# 0.8.0 (unreleased)
+# 0.8.0 (2026-07-27)
 
 This release adds support for custom `Runner::Command` types, and a
 `#[derive(Command)]` macro that automatically generates command+argument parsing
