@@ -56,6 +56,8 @@
 //! As a very simple example, add `tests/echo.rs`:
 //!
 //! ```no_run
+//! # use std::error::Error;
+//! # use std::fmt::Write as _;
 //! #[derive(goldenscript::Command)]
 //! enum Command {
 //!     Echo(String),
@@ -87,7 +89,7 @@
 //!
 //! And a simple test script in `tests/echo`, with no expected output after `---`:
 //!
-//! ```
+//! ```text
 //! # echo should output its argument.
 //! echo foo
 //! ---
@@ -105,7 +107,7 @@
 //!
 //! Inspect the generated output in `tests/echo` to verify it:
 //!
-//! ```
+//! ```text
 //! # echo should output its argument.
 //! echo foo
 //! ---
@@ -144,7 +146,7 @@
 //! defaults will be derived from the enum's structure. They are processed in
 //! source order.
 //!
-//! This example illustraties various features:
+//! This example illustrates various features:
 //!
 //! ```no_run
 //! #[derive(goldenscript::Command)]
@@ -213,7 +215,7 @@
 //!
 //! The optional `#[command]` attribute can be used to specify:
 //!
-//! * `name = [name]`: specifies the command name. Must be unique within the
+//! * `name = "name"`: specifies the command name. Must be unique within the
 //!   enum.
 //!
 //! * `other`: makes the variant match any otherwise unknown command and is given
@@ -243,7 +245,7 @@
 //! * `pos`: a positional argument. This is the default. Conflicts with `key`.
 //!
 //! * `key`: a key/value argument. Uses the field name as the key by default,
-//!   but can be aliased as `key = [name]` (required for tuple fields). Key
+//!   but can be aliased as `key = "name"` (required for tuple fields). Key
 //!   names must be unique within a variant. Conflicts with `pos`.
 //!
 //! * `optional`: allows the argument to be omitted, yielding the [`Default`]
@@ -264,12 +266,12 @@
 //! which at minimum requires specifying:
 //!
 //! * [`Runner::Command`]: the command type passed to the runner. This will
-//!   typically be an enum using [`#[derive(Command)]`](struct@Command), but can
+//!   typically be an enum using [`#[derive(Command)]`](derive@Command), but can
 //!   also be a raw unprocessed [`struct@Command`], or any other type that
 //!   implements [`TryFrom<&goldenscript::Command>`](TryFrom).
 //!
 //! * [`Runner::run`]: a method that takes a [`Runner::Command`] and its
-//!   [`Context`], executes it, and returns
+//!   [`Context`], executes it, and returns appropriate script output.
 //!
 //! A minimal runner implementation can be seen in the
 //! [Writing Tests](#writing-tests) section.
@@ -293,7 +295,7 @@
 //!
 //! ### Manual Command Processing
 //!
-//! It may sometimes be useful to process raw a [`struct@Command`] instead of
+//! It may sometimes be useful to process a raw [`struct@Command`] instead of
 //! using [`#[derive(Command)]`](derive@Command), for example when customized
 //! processing is needed or in combination with `#[command(other)]` wildcards.
 //!
@@ -323,10 +325,10 @@
 //!             // Example: send foo 1 2 3
 //!             "send" => {
 //!                 let mut args = command.consume_args();
-//!        
+//!
 //!                 // The first positional argument is a required string message.
 //!                 let message = args.next_pos().ok_or("message not given")?;
-//!        
+//!
 //!                 // The remaining positional arguments are numeric node IDs.
 //!                 let ids: Vec<u32> = std::iter::from_fn(|| args.next_pos())
 //!                     .map(|value| value.parse())
@@ -334,14 +336,14 @@
 //!                 if ids.is_empty() {
 //!                     return Err("no node IDs given".into())
 //!                 }
-//!        
+//!
 //!                 // An optional retry=bool key/value argument can also be given.
 //!                 let retry: bool =
 //!                     args.take_key("retry").map(|v| v.parse()).transpose()?.unwrap_or(false);
-//!        
+//!
 //!                 // Any other arguments that haven't been processed above should error.
 //!                 args.reject_next()?;
-//!        
+//!
 //!                 // Execute the send.
 //!                 self.send(&ids, message, retry)?;
 //!             }
