@@ -1,3 +1,41 @@
+# 0.8.0 (unreleased)
+
+This release adds custom `Runner::Command` types, and a `#[derive(Command)]` macro that
+automatically generates command+argument parsing code for an enum. Command metadata has been split
+out to a separate `Context` struct, and the `ArgumentConsumer` helper has been simplified and
+stripped down.
+
+**Breaking changes**
+
+* [`a0ba334`] Runners now specify a `Runner::Command` type.
+* [`dcf8722`] Add a `Context` type with command metadata moved from `Command`, and pass it
+  separately to `Runner::run()`, `start_command()`, and `end_command()`.
+* [`bebc62a`] Replace the `Argument` struct with `Argument::Positional(String)` and `Argument::KeyValue(String, String)`.
+* [`97249a3`] Remove `Argument::name()`.
+* [`f846624`] Simplify `ArgumentConsumer` API.
+* [`e986109`] Use `BTreeSet` for command tags.
+* [`c7b353f`] Make command line numbers private.
+* [`49a0431`] Pass `&Block` to `Runner::start_block()` and `end_block()`.
+* [`ebe9524`] Raise the minimum supported Rust version to 1.88.
+
+**Improvements**
+
+* [`da0cccc`] Add `#[derive(Command)]` for generating command parser code for an enum.
+* [`bb585fa`] Implement `Display` for `Command` and `Argument`.
+
+[`a0ba334`]: https://github.com/erikgrinaker/goldenscript/commit/a0ba334ac89de77e1793a74fc20e19091d986945
+[`dcf8722`]: https://github.com/erikgrinaker/goldenscript/commit/dcf8722df6bae9db99430ab9d263a01976f71c88
+[`49a0431`]: https://github.com/erikgrinaker/goldenscript/commit/49a043147cb3246eb9b7b2f203e58aae1ee1f1b3
+[`c7b353f`]: https://github.com/erikgrinaker/goldenscript/commit/c7b353f6d123ab903732e25703195f2323e0deae
+[`e986109`]: https://github.com/erikgrinaker/goldenscript/commit/e9861094d2bc82744c8cee9059e99e2d669186d0
+[`bebc62a`]: https://github.com/erikgrinaker/goldenscript/commit/bebc62ad0e15178514d89741a75176e324151a2b
+[`97249a3`]: https://github.com/erikgrinaker/goldenscript/commit/97249a3ac49b4d7232ae3ab965c79b36a01ac887
+[`f846624`]: https://github.com/erikgrinaker/goldenscript/commit/f846624587ecabd3949c69fa02b987c29cc4e4ff
+[`ebe9524`]: https://github.com/erikgrinaker/goldenscript/commit/ebe9524bf070a9050585ebbb287a35e4cfcd4aac
+[`a746369`]: https://github.com/erikgrinaker/goldenscript/commit/a7463690b0b733b76738c4ca86b52b033c9497f1
+[`da0cccc`]: https://github.com/erikgrinaker/goldenscript/commit/da0cccc95c53cdb5b5b82eaa124799c0536573d2
+[`bb585fa`]: https://github.com/erikgrinaker/goldenscript/commit/bb585fa2198d7d14f31edc5e8c8744e5ae341eb3
+
 # 0.7.0 (2024-07-01)
 
 **Improvements**
