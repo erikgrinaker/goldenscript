@@ -238,7 +238,7 @@
 //!   arguments, i.e. `#[arg(pos, many)]`.
 //!
 //! * `Vec<(K, V)>`, `HashMap<K, V>`, and `BTreeMap<K, V>`: takes one or more key/value
-//!   arguments, i.e. `#[arg(key, many)]`).
+//!   arguments, i.e. `#[arg(key, many)]`.
 //!
 //! The optional `#[arg]` attribute can be used to specify:
 //!
