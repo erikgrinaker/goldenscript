@@ -1,5 +1,5 @@
 use crate::parser::parse;
-use crate::{Block, Context};
+use crate::{Block, Command, Context};
 
 use std::error::Error;
 use std::io::Write as _;
@@ -14,7 +14,7 @@ pub trait Runner {
     /// [`Command`](macro@crate::Command). To process arguments manually, use
     /// [`Command`](struct@crate::Command) itself; its conversion clones the parsed
     /// command.
-    type Command: for<'a> TryFrom<&'a crate::Command, Error = Box<dyn Error>>;
+    type Command: for<'a> TryFrom<&'a Command, Error = Box<dyn Error>>;
 
     /// Runs a goldenscript command, returning its output, or an error if the
     /// command fails.
