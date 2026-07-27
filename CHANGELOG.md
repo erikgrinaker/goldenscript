@@ -1,9 +1,9 @@
 # 0.8.0 (unreleased)
 
-This release adds custom `Runner::Command` types, and a `#[derive(Command)]` macro that
-automatically generates command+argument parsing code for an enum. Command metadata has been split
-out to a separate `Context` struct, and the `ArgumentConsumer` helper has been simplified and
-stripped down.
+This release adds support for custom `Runner::Command` types, and a
+`#[derive(Command)]` macro that automatically generates command+argument parsing
+code for an enum. Command metadata has been split out to a separate `Context`
+struct, and the `ArgumentConsumer` helper has been simplified and stripped down.
 
 **Breaking changes**
 
@@ -32,7 +32,6 @@ stripped down.
 [`97249a3`]: https://github.com/erikgrinaker/goldenscript/commit/97249a3ac49b4d7232ae3ab965c79b36a01ac887
 [`f846624`]: https://github.com/erikgrinaker/goldenscript/commit/f846624587ecabd3949c69fa02b987c29cc4e4ff
 [`ebe9524`]: https://github.com/erikgrinaker/goldenscript/commit/ebe9524bf070a9050585ebbb287a35e4cfcd4aac
-[`a746369`]: https://github.com/erikgrinaker/goldenscript/commit/a7463690b0b733b76738c4ca86b52b033c9497f1
 [`da0cccc`]: https://github.com/erikgrinaker/goldenscript/commit/da0cccc95c53cdb5b5b82eaa124799c0536573d2
 [`bb585fa`]: https://github.com/erikgrinaker/goldenscript/commit/bb585fa2198d7d14f31edc5e8c8744e5ae341eb3
 
