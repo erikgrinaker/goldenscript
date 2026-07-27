@@ -8,11 +8,11 @@ use std::io::Write as _;
 pub trait Runner {
     /// The command type accepted by this runner.
     ///
-    /// Parsed Goldenscript [`Command`](crate::Command)s are converted to this
+    /// Parsed Goldenscript [`Command`](struct@crate::Command)s are converted to this
     /// type before being passed to the command hooks and [`Runner::run`].
     /// Custom command types can usually derive this conversion with
     /// [`Command`](macro@crate::Command). To process arguments manually, use
-    /// [`Command`](crate::Command) itself; its conversion clones the parsed
+    /// [`Command`](struct@crate::Command) itself; its conversion clones the parsed
     /// command.
     type Command: for<'a> TryFrom<&'a crate::Command, Error = Box<dyn Error>>;
 

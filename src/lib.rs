@@ -475,7 +475,7 @@
 //!   resolved command names must be unique within the enum.
 //!
 //! * `other`: makes the variant match any otherwise unknown command and passes
-//!   it the original raw [`Command`]. This must be the last enum variant and
+//!   it the original raw [`struct@Command`]. This must be the last enum variant and
 //!   must have exactly one unnamed field of type `goldenscript::Command`.
 //!
 //! ### Fields: `#[arg]`
