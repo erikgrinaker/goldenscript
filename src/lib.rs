@@ -587,7 +587,7 @@
 //! * [toyDB MVCC](https://github.com/erikgrinaker/toydb/tree/master/src/storage/testscripts/mvcc):
 //!   ACID transaction implementation.
 //! * [goldenscript parser](https://github.com/erikgrinaker/goldenscript/tree/main/tests/scripts):
-//!   Goldenscript is used to test its own parser.
+//!   Goldenscript tests its own parser.
 //!
 //! Below is a basic example testing the Rust standard library's
 //! [`BTreeMap`](https://doc.rust-lang.org/std/collections/struct.BTreeMap.html):
@@ -660,7 +660,7 @@
 //! # use std::error::Error;
 //! # use std::fmt::Write as _;
 //!
-//! /// Derive a command parser for an enum.
+//! // Derive a command parser for an enum.
 //! #[derive(goldenscript::Command)]
 //! enum BTreeMapCommand {
 //!     /// Fetches the given keys.

@@ -6,7 +6,7 @@ use std::collections::BTreeMap;
 use std::error::Error;
 use std::fmt::Write as _;
 
-/// Derive a command parser for an enum.
+// Derive a command parser for an enum.
 #[derive(goldenscript::Command)]
 enum BTreeMapCommand {
     /// Fetches the given keys.
