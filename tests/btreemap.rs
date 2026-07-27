@@ -1,10 +1,12 @@
 #![warn(clippy::all)]
 
+//! This is used as a documentation example.
+
 use std::collections::BTreeMap;
 use std::error::Error;
 use std::fmt::Write as _;
 
-/// Commands accepted by BTreeMapRunner.
+/// Derive a command parser for an enum.
 #[derive(goldenscript::Command)]
 enum BTreeMapCommand {
     /// Fetches the given keys.
@@ -20,7 +22,7 @@ enum BTreeMapCommand {
     },
 }
 
-/// A runner for BTreeMap tests. This is used as a documentation example.
+/// A runner for BTreeMap tests.
 #[derive(Default)]
 struct BTreeMapRunner {
     map: BTreeMap<String, String>,
@@ -51,9 +53,9 @@ impl goldenscript::Runner for BTreeMapRunner {
             }
 
             BTreeMapCommand::Range { from, to } => {
-                use std::ops::Bound::*;
-                let from = from.clone().map(Included).unwrap_or(Unbounded);
-                let to = to.clone().map(Excluded).unwrap_or(Unbounded);
+                use std::ops::Bound;
+                let from = from.clone().map(Bound::Included).unwrap_or(Bound::Unbounded);
+                let to = to.clone().map(Bound::Excluded).unwrap_or(Bound::Unbounded);
                 writeln!(output, "range {from:?} → {to:?}")?;
                 for (key, value) in self.map.range((from, to)) {
                     writeln!(output, "{key:?} = {value:?}")?;
@@ -64,8 +66,8 @@ impl goldenscript::Runner for BTreeMapRunner {
     }
 }
 
+/// Run the test script in tests/btreemap.
 #[test]
-fn btreemap() {
+fn btreemap() -> std::io::Result<()> {
     goldenscript::run(&mut BTreeMapRunner::default(), "tests/btreemap")
-        .expect("goldenscript failed")
 }

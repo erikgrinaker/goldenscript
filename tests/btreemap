@@ -40,6 +40,11 @@ range Unbounded → Excluded("c")
 "a" = "1"
 "b" = "2"
 
+range from=b to=c
+---
+range Included("b") → Excluded("c")
+"b" = "2"
+
 # An end bound less than the start bound panics. Expect the failure with !.
 !range from=b to=a
 ---

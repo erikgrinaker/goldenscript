@@ -106,7 +106,7 @@ pub fn run<R: Runner, P: AsRef<std::path::Path>>(runner: &mut R, path: P) -> std
     goldenfile::Mint::new(dir).new_goldenfile(filename)?.write_all(output.as_bytes())
 }
 
-/// Generates output for a goldenscript input, without comparing them.
+/// Generates output for a goldenscript input, without comparing it.
 pub fn generate<R: Runner>(runner: &mut R, input: &str) -> std::io::Result<String> {
     let mut output = String::with_capacity(input.len()); // common case: output == input
 
