@@ -25,7 +25,7 @@ get foo
 ---
 get foo → None
 set foo=bar → new
-get foo → 1
+get foo → bar
 ```
 
 Commands are executed by a provided
