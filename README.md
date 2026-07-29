@@ -50,8 +50,8 @@ new output and inspect it.
 
 ## Documentation
 
-See the [crate documentation](https://docs.rs/goldenscript/latest/goldenscript/)
-which has more information on syntax and features.
+The [crate documentation](https://docs.rs/goldenscript/latest/goldenscript/)
+has more details on syntax and features.
 
 ## Examples
 
